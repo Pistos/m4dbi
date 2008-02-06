@@ -14,28 +14,40 @@ module DBI
     end
     
     def self.[]( pk_value )
-      @dbh.select_one(
-        "SELECT * FROM #{@table} WHERE #{@pk} = ?",
-        pk_value
+      self.new(
+        @dbh.select_one(
+          "SELECT * FROM #{@table} WHERE #{@pk} = ?",
+          pk_value
+        )
       )
     end
     
     def self.where( conditions, *args )
       case conditions
         when String
-          @dbh.select_all(
-            "SELECT * FROM #{@table} WHERE #{conditions}",
-            *args
-          )
+          sql = "SELECT * FROM #{@table} WHERE #{conditions}"
+          params = args
         when Hash
           cond = conditions.keys.map { |field|
             "#{field} = ?"
           }.join( " AND " )
-          @dbh.select_all(
-            "SELECT * FROM #{@table} WHERE #{cond}",
-            *( conditions.values )
-          )
+          sql = "SELECT * FROM #{@table} WHERE #{cond}"
+          params = conditions.values
       end
+      
+      puts "\nparams: #{params.inspect}"
+      @dbh.select_all(
+        sql,
+        *params
+      ).map { |r| self.new( r ) }
+    end
+    
+    def initialize( row )
+      @row = row
+    end
+    
+    def method_missing( method, *args )
+      @row.send( method, *args )
     end
   end
   
