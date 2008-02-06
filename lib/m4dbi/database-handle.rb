@@ -4,7 +4,7 @@ module DBI
   class DatabaseHandle
     alias old_initialize initialize
     def initialize( handle )
-      DBI::DatabaseHandle.last_handle = handle
+      DBI::DatabaseHandle.last_handle = self
       old_initialize( handle )
     end
     
