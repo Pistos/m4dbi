@@ -12,24 +12,36 @@ module DBI
     end
     
     def self.[]( pk_value )
-      dbh.select_one( "SELECT * FROM #{@table} WHERE #{@pk} = ?", pk_value )
+      ancestral_trait[ :dbh ].select_one(
+        "SELECT * FROM #{ancestral_trait[ :table ]} WHERE #{pk} = ?",
+        pk_value
+      )
     end
     
+    def self.pk
+      @pk || 'id'
+    end
     def self.pk=( col )
       @pk = col
     end
+    
     def self.table=( t )
       @table = t
     end
     
   end
   
-  def self.Model( table )
+  def self.Model( table, pk = 'id' )
     c = Class.new( DBI::Model )
-    h = c.instance_variable_set( '@dbh', DBI::DatabaseHandle.last_handle )
+    
+    h = DBI::DatabaseHandle.last_handle
     if h.nil?
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
+    
+    c.trait[ :dbh ] = h
+    c.trait[ :table ] = table
+    c.pk = pk
     c
   end
   
