@@ -30,7 +30,7 @@ describe 'DBI::Model' do
     o.class.should.equal @m_author
   end
   
-  it 'should provide multi-record access via #where' do
+  it 'should provide multi-record access via #where( Hash )' do
     posts = @m_post.where(
       :author_id => 1
     )
@@ -44,8 +44,9 @@ describe 'DBI::Model' do
     }
     p = sorted_posts.first
     p.text.should == 'First post.'
+  end    
     
-    
+  it 'should provide multi-record access via #where( String )' do
     posts = @m_post.where( "id < 3" )
     posts.should.not.equal nil
     posts.should.not.be.empty
