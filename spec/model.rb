@@ -22,10 +22,12 @@ describe 'DBI::Model' do
     o = @m_author[ 1 ]
     o.should.not.equal nil
     o.name.should == 'author1'
+    o.class.should.equal @m_author
     
     o = @m_author[ 2 ]
     o.should.not.equal nil
     o.name.should == 'author2'
+    o.class.should.equal @m_author
   end
   
   it 'should provide multi-record access via #where' do
