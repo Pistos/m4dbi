@@ -35,12 +35,25 @@ describe 'DBI::Model' do
     posts.should.not.equal nil
     posts.should.not.be.empty
     posts.size.should == 2
-    posts[ 0 ].class.should == @m_post
+    posts[ 0 ].class.should.equal @m_post
       
     sorted_posts = posts.sort { |p1,p2|
       p1._id <=> p2._id
     }
     p = sorted_posts.first
     p.text.should == 'First post.'
+    
+    
+    posts = @m_post.where( "id < 3" )
+    posts.should.not.equal nil
+    posts.should.not.be.empty
+    posts.size.should == 2
+    posts[ 0 ].class.should.equal @m_post
+      
+    sorted_posts = posts.sort { |p1,p2|
+      p2._id <=> p1._id
+    }
+    p = sorted_posts.first
+    p.text.should == 'Second post.'
   end
 end
