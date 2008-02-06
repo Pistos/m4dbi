@@ -35,7 +35,6 @@ module DBI
           params = conditions.values
       end
       
-      puts "\nparams: #{params.inspect}"
       @dbh.select_all(
         sql,
         *params
