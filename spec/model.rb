@@ -14,17 +14,17 @@ describe 'DBI::Model' do
   end
   
   it 'should be defined' do
-    @m_author.should != nil
-    @m_post.should != nil
+    @m_author.should.not.equal nil
+    @m_post.should.not.equal nil
   end
   
   it 'should provide hash-like single-record access by primary key' do
     o = @m_author[ 1 ]
-    o.should != nil
+    o.should.not.equal nil
     o.name.should == 'author1'
     
     o = @m_author[ 2 ]
-    o.should != nil
+    o.should.not.equal nil
     o.name.should == 'author2'
   end
   
@@ -32,7 +32,7 @@ describe 'DBI::Model' do
     posts = @m_post.where(
       :author_id => 1
     )
-    posts.should != nil
+    posts.should.not.equal nil
     posts.should.not.be.empty
     posts.size.should == 2
     posts[ 0 ].class.should == @m_post
