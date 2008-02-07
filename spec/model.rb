@@ -67,4 +67,22 @@ describe 'DBI::Model' do
     p = @m_post[ 3 ]
     p.pk.should.equal 3
   end
+  
+  it 'should provide read access to fields via identically-named readers' do
+    p = @m_post[ 2 ]
+    
+    should.not.raise( NoMethodError ) do
+      p.id
+      p.author_id
+      p.text
+    end
+    
+    should.raise( NoMethodError ) do
+      p.foobar
+    end
+    
+    p.id.should.equal 2
+    p.author_id.should.equal 2
+    p.text.should.equal 'Second post.'
+  end
 end

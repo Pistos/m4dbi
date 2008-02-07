@@ -37,6 +37,14 @@ module DBI
     
     def initialize( row )
       @row = row
+      @row.column_names.each do |col|
+        self.class.send( :define_method, col.to_sym ) do
+          @row[ col ]
+        end
+        self.class.send( :define_method, "#{col}=".to_sym ) do
+          @row[ col ] = new_value
+        end
+      end
     end
     
     def method_missing( method, *args )
@@ -48,6 +56,10 @@ module DBI
     end
   end
   
+  # Define a new DBI::Model like this:
+  #   class Post < DBI::Model( :posts ); end
+  # You can specify the primary key column like so:
+  #   class Author < DBI::Model( :authors, 'id' ); end
   def self.Model( table, pk = 'id' )
     Class.new( DBI::Model ) do |klass|
       h = DBI::DatabaseHandle.last_handle
