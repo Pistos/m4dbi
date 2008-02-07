@@ -21,12 +21,12 @@ describe 'DBI::Model' do
   it 'should provide hash-like single-record access via #[ primary_key_value ]' do
     o = @m_author[ 1 ]
     o.should.not.equal nil
-    o.name.should == 'author1'
+    o.name.should.equal 'author1'
     o.class.should.equal @m_author
     
     o = @m_author[ 2 ]
     o.should.not.equal nil
-    o.name.should == 'author2'
+    o.name.should.equal 'author2'
     o.class.should.equal @m_author
   end
   
@@ -36,28 +36,28 @@ describe 'DBI::Model' do
     )
     posts.should.not.equal nil
     posts.should.not.be.empty
-    posts.size.should == 2
+    posts.size.should.equal 2
     posts[ 0 ].class.should.equal @m_post
       
     sorted_posts = posts.sort { |p1,p2|
       p1._id <=> p2._id
     }
     p = sorted_posts.first
-    p.text.should == 'First post.'
+    p.text.should.equal 'First post.'
   end    
     
   it 'should provide multi-record access via #where( String )' do
     posts = @m_post.where( "id < 3" )
     posts.should.not.equal nil
     posts.should.not.be.empty
-    posts.size.should == 2
+    posts.size.should.equal 2
     posts[ 0 ].class.should.equal @m_post
       
     sorted_posts = posts.sort { |p1,p2|
       p2._id <=> p1._id
     }
     p = sorted_posts.first
-    p.text.should == 'Second post.'
+    p.text.should.equal 'Second post.'
   end
   
   it 'should provide access to primary key' do
@@ -100,5 +100,12 @@ describe 'DBI::Model' do
     # Shouldn't change other rows
     p2_ = @m_post[ 2 ]
     p2_.text.should.equal p2.text
+  end
+  
+  it 'should maintain identity across multiple DB hits' do
+    px = @m_post[ 1 ]
+    py = @m_post[ 1 ]
+    
+    px.should.equal py
   end
 end

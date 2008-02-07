@@ -51,6 +51,10 @@ module DBI
     def pk_column
       self.class.pk
     end
+    
+    def ==( other )
+      other and ( pk == other.pk )
+    end
   end
   
   # Define a new DBI::Model like this:
