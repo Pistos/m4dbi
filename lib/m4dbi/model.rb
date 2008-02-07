@@ -55,6 +55,17 @@ module DBI
     def ==( other )
       other and ( pk == other.pk )
     end
+    
+    def set( hash )
+      set_clause = hash.keys.map { |key|
+        "#{key} = ?"
+      }.join( ', ' )
+      params = hash.values + [ pk ]
+      dbh.do(
+        "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
+        *params
+      )
+    end
   end
   
   # Define a new DBI::Model like this:

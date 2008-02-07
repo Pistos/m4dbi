@@ -1,7 +1,16 @@
 require 'spec/helper'
 
-$dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 # See test-schema.sql and test-data.sql
+
+def reset_data
+  dir = File.dirname( __FILE__ )
+  File.read( "#{dir}/test-data.sql" ).split( /;/ ).each do |command|
+    $dbh.do( command )
+  end
+end
+
+$dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+reset_data
 
 describe 'DBI::Model' do
   before do
@@ -100,6 +109,8 @@ describe 'DBI::Model' do
     # Shouldn't change other rows
     p2_ = @m_post[ 2 ]
     p2_.text.should.equal p2.text
+    
+    reset_data
   end
   
   it 'should maintain identity across multiple DB hits' do
@@ -107,5 +118,20 @@ describe 'DBI::Model' do
     py = @m_post[ 1 ]
     
     px.should.equal py
+  end
+  
+  it 'should provide multi-column writability via Model#set' do
+    p = @m_post[ 1 ]
+    the_new_text = 'The 3rd post.'
+    p.set(
+      :author_id => 2,
+      :text => the_new_text
+    )
+    
+    p_ = @m_post[ 1 ]
+    p_.author_id.should.equal 2
+    p_.text.should.equal the_new_text
+    
+    reset_data
   end
 end
