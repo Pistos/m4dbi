@@ -44,7 +44,7 @@ module DBI
     end
     
     def pk
-      @row[ pk ]
+      @row[ self.class.pk ]
     end
   end
   

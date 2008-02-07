@@ -62,9 +62,9 @@ describe 'DBI::Model' do
   
   it 'should provide access to primary key' do
     a = @m_author[ 1 ]
-    #a.pk.should.equal 1
+    a.pk.should.equal 1
     
     p = @m_post[ 3 ]
-    #p.pk.should.equal 3
+    p.pk.should.equal 3
   end
 end
