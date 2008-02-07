@@ -3,6 +3,7 @@ require 'metaid'
 
 module DBI
   class Model
+    ancestral_trait_reader :dbh, :table, :pk
     ancestral_trait_class_reader :dbh, :table, :pk
     
     def self.[]( pk_value )
@@ -41,8 +42,13 @@ module DBI
         self.class.send( :define_method, col.to_sym ) do
           @row[ col ]
         end
-        self.class.send( :define_method, "#{col}=".to_sym ) do
-          @row[ col ] = new_value
+        self.class.send( :define_method, "#{col}=".to_sym ) do |new_value|
+          num_changed = dbh.do(
+            "UPDATE #{table} SET #{col} = ?", new_value
+          )
+          if num_changed > 0
+            @row[ col ] = new_value
+          end
         end
       end
     end

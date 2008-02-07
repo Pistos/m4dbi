@@ -85,4 +85,14 @@ describe 'DBI::Model' do
     p.author_id.should.equal 2
     p.text.should.equal 'Second post.'
   end
+  
+  it 'should provide write access to fields via identically-named writers' do
+    the_new_text = 'Here is some new text.'
+    
+    p = @m_post[ 3 ]
+    p.text = the_new_text
+    
+    p2 = @m_post[ 3 ]
+    p2.text.should.equal the_new_text
+  end
 end
