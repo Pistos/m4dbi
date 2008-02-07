@@ -75,4 +75,17 @@ class Object
       self.class.trait
     end
   end
+  
+  def ancestral_trait_reader( *names )
+    names.each do |name|
+      name = name.to_sym
+      define_method( name ) { ancestral_trait[ name ] }
+    end
+  end
+  def ancestral_trait_class_reader( *names )
+    names.each do |name|
+      name = name.to_sym
+      meta_def( name ) { ancestral_trait[ name ] }
+    end
+  end
 end

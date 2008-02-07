@@ -18,7 +18,7 @@ describe 'DBI::Model' do
     @m_post.should.not.equal nil
   end
   
-  it 'should provide hash-like single-record access by primary key' do
+  it 'should provide hash-like single-record access via #[ primary_key_value ]' do
     o = @m_author[ 1 ]
     o.should.not.equal nil
     o.name.should == 'author1'
@@ -58,5 +58,13 @@ describe 'DBI::Model' do
     }
     p = sorted_posts.first
     p.text.should == 'Second post.'
+  end
+  
+  it 'should provide access to primary key' do
+    a = @m_author[ 1 ]
+    #a.pk.should.equal 1
+    
+    p = @m_post[ 3 ]
+    #p.pk.should.equal 3
   end
 end
