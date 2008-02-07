@@ -134,4 +134,41 @@ describe 'DBI::Model' do
     
     reset_data
   end
+  
+  it 'should provide a means to create new records via #create( Hash )' do
+    a = @m_author.create(
+      :id => 3,
+      :name => 'author3'
+    )
+    a.should.not.equal nil
+    a.class.should.equal @m_author
+    puts "\na: #{a.inspect}"
+      #puts "\nid: #{a.id.inspect}"
+    #a.id.should.equal 3
+    a.should.respond_to :name
+    a.name.should.equal 'author3'
+    
+    a_ = @m_author[ 3 ]
+    a_.should.equal a
+    a_.name.should.equal 'author3'
+    
+    reset_data
+  end
+  
+  it 'should provide a means to create new records via #create { |r| }' do
+    a = @m_author.create { |rec|
+      rec.id = 3
+      rec.name = 'author3'
+    }
+    a.should.not.equal nil
+    a.class.should.equal @m_author
+    a.id.should.equal 3
+    a.name.should.equal 'author3'
+    
+    a_ = @m_author[ 3 ]
+    a_.should.equal a
+    a_.name.should.equal 'author3'
+    
+    reset_data
+  end
 end

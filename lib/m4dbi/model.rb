@@ -34,10 +34,21 @@ module DBI
       ).map { |r| self.new( r ) }
     end
     
+    def self.create( hash )
+      if block_given?
+      else
+        keys = hash.keys
+        values = keys.collect { |k| hash[ k ] }
+        row = DBI::Row.new( keys, values )
+        self.new( row )
+      end
+    end
+    
     # ------------------- :nodoc:
     
     def initialize( row )
       @row = row
+      $stderr.puts "setting @row to #{@row.inspect}"
     end
     
     def method_missing( method, *args )
@@ -66,6 +77,7 @@ module DBI
         *params
       )
     end
+    
   end
   
   # Define a new DBI::Model like this:
@@ -87,6 +99,8 @@ module DBI
         colname = col[ 'name' ]
         
         class_def( colname.to_sym ) do
+          $stderr.puts "foo from #{colname} (#{colname.class}): '#{@row[ colname ]}' at " +  caller.find { |s| s !~ /bacon/ }
+          $stderr.puts "@row is |#{@row.column_names}| #{@row.inspect} (#{@row.class})"
           @row[ colname ]
         end
         
