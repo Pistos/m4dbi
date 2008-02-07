@@ -12,7 +12,7 @@ end
 $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 reset_data
 
-describe 'DBI::Model' do
+describe 'A DBI::Model subclass' do
   before do
     @m_author = Class.new(
       DBI::Model( :authors )
@@ -82,7 +82,62 @@ describe 'DBI::Model' do
     p.should.be.empty
   end
   
-  it 'should provide access to primary key' do
+  it 'should provide a means to create new records via #create( Hash )' do
+    a = @m_author.create(
+      :id => 3,
+      :name => 'author3'
+    )
+    a.should.not.equal nil
+    a.class.should.equal @m_author
+    a.id.should.equal 3
+    a.should.respond_to :name
+    a.should.not.respond_to :no_column_by_this_name
+    a.name.should.equal 'author3'
+    
+    a_ = @m_author[ 3 ]
+    a_.should.not.equal nil
+    a_.should.equal a
+    a_.name.should.equal 'author3'
+    
+    reset_data
+  end
+  
+  it 'should provide a means to create new records via #create { |r| }' do
+    should.raise( NoMethodError ) do
+      @m_author.create { |rec|
+        rec.no_such_column = 'foobar'
+      }
+    end
+    
+    a = @m_author.create { |rec|
+      rec.id = 3
+      rec.name = 'author3'
+    }
+    a.should.not.equal nil
+    a.class.should.equal @m_author
+    a.id.should.equal 3
+    a.name.should.equal 'author3'
+    
+    a_ = @m_author[ 3 ]
+    a_.should.equal a
+    a_.name.should.equal 'author3'
+    
+    reset_data
+  end
+  
+end
+
+describe 'A DBI::Model subclass instance' do
+  before do
+    @m_author = Class.new(
+      DBI::Model( :authors )
+    )
+    @m_post = Class.new(
+      DBI::Model( :posts )
+    )
+  end
+  
+  it 'should provide access to primary key value' do
     a = @m_author[ 1 ]
     a.pk.should.equal 1
     
@@ -148,46 +203,8 @@ describe 'DBI::Model' do
     reset_data
   end
   
-  it 'should provide a means to create new records via #create( Hash )' do
-    a = @m_author.create(
-      :id => 3,
-      :name => 'author3'
-    )
-    a.should.not.equal nil
-    a.class.should.equal @m_author
-    a.id.should.equal 3
-    a.should.respond_to :name
-    a.should.not.respond_to :no_column_by_this_name
-    a.name.should.equal 'author3'
+  it 'should be deleted by #delete' do
     
-    a_ = @m_author[ 3 ]
-    a_.should.not.equal nil
-    a_.should.equal a
-    a_.name.should.equal 'author3'
-    
-    reset_data
   end
-  
-  it 'should provide a means to create new records via #create { |r| }' do
-    should.raise( NoMethodError ) do
-      @m_author.create { |rec|
-        rec.no_such_column = 'foobar'
-      }
-    end
-    
-    a = @m_author.create { |rec|
-      rec.id = 3
-      rec.name = 'author3'
-    }
-    a.should.not.equal nil
-    a.class.should.equal @m_author
-    a.id.should.equal 3
-    a.name.should.equal 'author3'
-    
-    a_ = @m_author[ 3 ]
-    a_.should.equal a
-    a_.name.should.equal 'author3'
-    
-    reset_data
-  end
+
 end
