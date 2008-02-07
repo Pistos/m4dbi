@@ -38,21 +38,6 @@ module DBI
     
     def initialize( row )
       @row = row
-      @row.column_names.each do |col|
-        self.class.send( :define_method, col.to_sym ) do
-          @row[ col ]
-        end
-        self.class.send( :define_method, "#{col}=".to_sym ) do |new_value|
-          num_changed = dbh.do(
-            "UPDATE #{table} SET #{col} = ? WHERE #{pk_column} = ?",
-            new_value,
-            pk
-          )
-          if num_changed > 0
-            @row[ col ] = new_value
-          end
-        end
-      end
     end
     
     def method_missing( method, *args )
@@ -72,7 +57,7 @@ module DBI
   #   class Post < DBI::Model( :posts ); end
   # You can specify the primary key column like so:
   #   class Author < DBI::Model( :authors, 'id' ); end
-  def self.Model( table, pk = 'id' )
+  def self.Model( table, pk_ = 'id' )
     Class.new( DBI::Model ) do |klass|
       h = DBI::DatabaseHandle.last_handle
       if h.nil?
@@ -81,7 +66,26 @@ module DBI
       
       klass.trait[ :dbh ] = h
       klass.trait[ :table ] = table
-      klass.trait[ :pk ] = pk
+      klass.trait[ :pk ] = pk_
+      
+      h.columns( table.to_s ).each do |col|
+        colname = col[ 'name' ]
+        
+        class_def( colname.to_sym ) do
+          @row[ colname ]
+        end
+        
+        class_def( "#{colname}=".to_sym ) do |new_value|
+          num_changed = dbh.do(
+            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_column} = ?",
+            new_value,
+            pk
+          )
+          if num_changed > 0
+            @row[ colname ] = new_value
+          end
+        end
+      end
     end
   end
   
