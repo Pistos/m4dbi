@@ -89,10 +89,16 @@ describe 'DBI::Model' do
   it 'should provide write access to fields via identically-named writers' do
     the_new_text = 'Here is some new text.'
     
-    p = @m_post[ 3 ]
-    p.text = the_new_text
+    p2 = @m_post[ 2 ]
     
-    p2 = @m_post[ 3 ]
-    p2.text.should.equal the_new_text
+    p3 = @m_post[ 3 ]
+    p3.text = the_new_text
+    
+    p3_ = @m_post[ 3 ]
+    p3_.text.should.equal the_new_text
+    
+    # Shouldn't change other rows
+    p2_ = @m_post[ 2 ]
+    p2_.text.should.equal p2.text
   end
 end

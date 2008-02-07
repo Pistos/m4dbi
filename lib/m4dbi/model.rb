@@ -44,7 +44,9 @@ module DBI
         end
         self.class.send( :define_method, "#{col}=".to_sym ) do |new_value|
           num_changed = dbh.do(
-            "UPDATE #{table} SET #{col} = ?", new_value
+            "UPDATE #{table} SET #{col} = ? WHERE #{pk_column} = ?",
+            new_value,
+            pk
           )
           if num_changed > 0
             @row[ col ] = new_value
@@ -59,6 +61,10 @@ module DBI
     
     def pk
       @row[ self.class.pk ]
+    end
+    
+    def pk_column
+      self.class.pk
     end
   end
   
