@@ -95,6 +95,15 @@ module DBI
         *params
       )
     end
+    
+    # Returns true iff the record and only the record was successfully deleted.
+    def delete
+      num_deleted = dbh.do(
+        "DELETE FROM #{table} WHERE #{pk_column} = ?",
+        pk
+      )
+      num_deleted == 1
+    end
   end
   
   # Define a new DBI::Model like this:
