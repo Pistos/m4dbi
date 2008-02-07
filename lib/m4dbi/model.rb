@@ -18,6 +18,10 @@ module DBI
       end
     end
     
+    def self.from_rows( rows )
+      rows.map { |r| self.new( r ) }
+    end
+    
     def self.where( conditions, *args )
       case conditions
         when String
@@ -31,10 +35,18 @@ module DBI
           params = conditions.values
       end
       
-      dbh.select_all(
-        sql,
-        *params
-      ).map { |r| self.new( r ) }
+      self.from_rows(
+        dbh.select_all(
+          sql,
+          *params
+        )
+      )
+    end
+    
+    def self.all
+      self.from_rows(
+        dbh.select_all( "SELECT * FROM #{table}" )
+      )
     end
     
     def self.create( hash = nil )

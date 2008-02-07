@@ -8,3 +8,8 @@ CREATE TABLE posts (
     author_id INTEGER NOT NULL REFERENCES authors( id ),
     text VARCHAR( 4096 ) NOT NULL
 );
+
+CREATE TABLE empty_table (
+    id SERIAL NOT NULL PRIMARY KEY,
+    i INTEGER
+);

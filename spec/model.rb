@@ -20,6 +20,9 @@ describe 'A DBI::Model subclass' do
     @m_post = Class.new(
       DBI::Model( :posts )
     )
+    @m_empty = Class.new(
+      DBI::Model( :empty_table )
+    )
   end
   
   it 'should be defined' do
@@ -80,6 +83,24 @@ describe 'A DBI::Model subclass' do
     
     p = @m_post.where( "text = 'aoeu'" )
     p.should.be.empty
+  end
+  
+  it 'should return all table records via #all' do
+    rows = @m_author.all
+    rows.should.not.be.nil
+    rows.should.not.be.empty
+    rows.size.should.equal 2
+    
+    rows[ 0 ].id.should.equal 1
+    rows[ 0 ].name.should.equal 'author1'
+    rows[ 1 ].id.should.equal 2
+    rows[ 1 ].name.should.equal 'author2'
+  end
+  
+  it 'should return an empty array when #all is called on an empty table' do
+    rows = @m_empty.all
+    rows.should.not.be.nil
+    rows.should.be.empty
   end
   
   it 'should provide a means to create new records via #create( Hash )' do
