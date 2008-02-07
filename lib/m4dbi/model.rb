@@ -108,10 +108,12 @@ module DBI
         raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
       end
       
-      klass.trait[ :dbh ] = h
-      klass.trait[ :table ] = table
-      klass.trait[ :pk ] = pk_
-      klass.trait[ :columns ] = h.columns( table.to_s )
+      klass.trait( {
+        :dbh => h,
+        :table => table,
+        :pk => pk_,
+        :columns => h.columns( table.to_s ),
+      } )
       
       klass.trait[ :columns ].each do |col|
         colname = col[ 'name' ]
