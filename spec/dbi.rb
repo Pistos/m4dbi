@@ -30,7 +30,7 @@ end
 
 describe 'accessors' do
   
-  it 'should provide access via ".fieldname" syntax' do
+  it 'should provide read access via #fieldname' do
     row = $dbh.select_one(
       "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
     )
@@ -42,6 +42,24 @@ describe 'accessors' do
     row.text.should.be.same_as row[ 'text' ]
     
     row.text.should.equal 'Second post.'
+  end
+  
+  it 'should provide in-memory (non-syncing) write access via #fieldname=' do
+    row = $dbh.select_one(
+      "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
+    )
+    row.should.not.equal nil
+    
+    old_id = row._id
+    row.id = old_id + 1
+    row._id.should.not.equal old_id
+    row._id.should.equal( old_id + 1 )
+    
+    old_text = row.text
+    new_text = 'This is the new post text.'
+    row.text = new_text
+    row.text.should.not.equal old_text
+    row.text.should.equal new_text
   end
   
 end

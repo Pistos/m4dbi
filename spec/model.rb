@@ -39,6 +39,11 @@ describe 'DBI::Model' do
     o.class.should.equal @m_author
   end
   
+  it 'should return nil from #[] when no record found' do
+    o = @m_author[ 999 ]
+    o.should.equal nil
+  end
+  
   it 'should provide multi-record access via #where( Hash )' do
     posts = @m_post.where(
       :author_id => 1
@@ -67,6 +72,14 @@ describe 'DBI::Model' do
     }
     p = sorted_posts.first
     p.text.should.equal 'Second post.'
+  end
+  
+  it 'should return an empty array from #where when no records found' do
+    a = @m_author.where( :id => 999 )
+    a.should.be.empty
+    
+    p = @m_post.where( "text = 'aoeu'" )
+    p.should.be.empty
   end
   
   it 'should provide access to primary key' do
@@ -142,13 +155,13 @@ describe 'DBI::Model' do
     )
     a.should.not.equal nil
     a.class.should.equal @m_author
-    puts "\na: #{a.inspect}"
-      #puts "\nid: #{a.id.inspect}"
-    #a.id.should.equal 3
+    a.id.should.equal 3
     a.should.respond_to :name
+    a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author3'
     
     a_ = @m_author[ 3 ]
+    a_.should.not.equal nil
     a_.should.equal a
     a_.name.should.equal 'author3'
     
@@ -156,6 +169,12 @@ describe 'DBI::Model' do
   end
   
   it 'should provide a means to create new records via #create { |r| }' do
+    should.raise( NoMethodError ) do
+      @m_author.create { |rec|
+        rec.no_such_column = 'foobar'
+      }
+    end
+    
     a = @m_author.create { |rec|
       rec.id = 3
       rec.name = 'author3'

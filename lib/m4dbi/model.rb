@@ -3,16 +3,19 @@ require 'metaid'
 
 module DBI
   class Model
+    #attr_reader :row
     ancestral_trait_reader :dbh, :table, :pk
-    ancestral_trait_class_reader :dbh, :table, :pk
+    ancestral_trait_class_reader :dbh, :table, :pk, :columns
     
     def self.[]( pk_value )
-      self.new(
-        dbh.select_one(
-          "SELECT * FROM #{table} WHERE #{pk} = ?",
-          pk_value
-        )
+      row = dbh.select_one(
+        "SELECT * FROM #{table} WHERE #{pk} = ?",
+        pk_value
       )
+      
+      if row
+        self.new( row )
+      end
     end
     
     def self.where( conditions, *args )
@@ -34,21 +37,36 @@ module DBI
       ).map { |r| self.new( r ) }
     end
     
-    def self.create( hash )
+    def self.create( hash = nil )
       if block_given?
+        row = DBI::Row.new( columns.collect { |c| c[ 'name' ] } )
+        yield row
       else
         keys = hash.keys
         values = keys.collect { |k| hash[ k ] }
-        row = DBI::Row.new( keys, values )
-        self.new( row )
+        row = DBI::Row.new( keys.collect { |k| k.to_s }, values )
       end
+      
+      new_record = self.new( row )
+      
+      cols = row.column_names.join( ',' )
+      values = row.column_names.map { |col| row[ col ] }
+      value_placeholders = values.map { |v| '?' }.join( ',' )
+      dbh.do(
+        "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
+        *values
+      )
+      
+      new_record
     end
     
     # ------------------- :nodoc:
     
     def initialize( row )
+      if row.nil?
+        raise DBI::Error.new( "Attempted to instantiate DBI::Model with a nil DBI::Row." )
+      end
       @row = row
-      $stderr.puts "setting @row to #{@row.inspect}"
     end
     
     def method_missing( method, *args )
@@ -77,7 +95,6 @@ module DBI
         *params
       )
     end
-    
   end
   
   # Define a new DBI::Model like this:
@@ -94,13 +111,12 @@ module DBI
       klass.trait[ :dbh ] = h
       klass.trait[ :table ] = table
       klass.trait[ :pk ] = pk_
+      klass.trait[ :columns ] = h.columns( table.to_s )
       
-      h.columns( table.to_s ).each do |col|
+      klass.trait[ :columns ].each do |col|
         colname = col[ 'name' ]
         
         class_def( colname.to_sym ) do
-          $stderr.puts "foo from #{colname} (#{colname.class}): '#{@row[ colname ]}' at " +  caller.find { |s| s !~ /bacon/ }
-          $stderr.puts "@row is |#{@row.column_names}| #{@row.inspect} (#{@row.class})"
           @row[ colname ]
         end
         
