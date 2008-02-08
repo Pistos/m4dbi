@@ -4,7 +4,7 @@ require 'metaid'
 module DBI
   class Model
     #attr_reader :row
-    ancestral_trait_reader :dbh, :table, :pk
+    ancestral_trait_reader :dbh, :table
     ancestral_trait_class_reader :dbh, :table, :pk, :columns
     
     def self.[]( pk_value )
@@ -87,12 +87,54 @@ module DBI
     
     # Example:
     #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
+    #   her_posts = some_author.posts
+    #   the_author = some_post.author
     def self.one_to_many( the_one, the_many, many_as, one_as, the_one_fk )
       the_one.class_def( many_as.to_sym ) do
         the_many.where( the_one_fk => pk )
       end
       the_many.class_def( one_as.to_sym ) do
         the_one[ @row[ the_one_fk ] ]
+      end
+    end
+    
+    # Example:
+    #   DBI::Model.many_to_many(
+    #     @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
+    #   )
+    #   her_fans = some_author.fans
+    #   favourite_authors = fan.authors_liked
+    def self.many_to_many( model1, model2, m1_as, m2_as, join_table, m1_fk, m2_fk )
+      model1.class_def( m2_as.to_sym ) do
+        model2.select_all(
+          %{
+            SELECT
+              m2.*
+            FROM
+              #{model2.table} m2,
+              #{join_table} j
+            WHERE
+              j.#{m1_fk} = ?
+              AND m2.id = j.#{m2_fk}
+          },
+          pk
+        )
+      end
+      
+      model2.class_def( m1_as.to_sym ) do
+        model1.select_all(
+          %{
+            SELECT
+              m1.*
+            FROM
+              #{model1.table} m1,
+              #{join_table} j
+            WHERE
+              j.#{m2_fk} = ?
+              AND m1.id = j.#{m1_fk}
+          },
+          pk
+        )
       end
     end
     

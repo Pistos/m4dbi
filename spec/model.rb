@@ -14,15 +14,9 @@ reset_data
 
 describe 'A DBI::Model subclass' do
   before do
-    @m_author = Class.new(
-      DBI::Model( :authors )
-    )
-    @m_post = Class.new(
-      DBI::Model( :posts )
-    )
-    @m_empty = Class.new(
-      DBI::Model( :empty_table )
-    )
+    @m_author = Class.new( DBI::Model( :authors ) )
+    @m_post = Class.new( DBI::Model( :posts ) )
+    @m_empty = Class.new( DBI::Model( :empty_table ) )
   end
   
   it 'should be defined' do
@@ -89,7 +83,7 @@ describe 'A DBI::Model subclass' do
     rows = @m_author.all
     rows.should.not.be.nil
     rows.should.not.be.empty
-    rows.size.should.equal 2
+    rows.size.should.equal 3
     
     rows[ 0 ].id.should.equal 1
     rows[ 0 ].name.should.equal 'author1'
@@ -105,20 +99,20 @@ describe 'A DBI::Model subclass' do
   
   it 'should provide a means to create new records via #create( Hash )' do
     a = @m_author.create(
-      :id => 3,
-      :name => 'author3'
+      :id => 9,
+      :name => 'author9'
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id.should.equal 3
+    a.id.should.equal 9
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
-    a.name.should.equal 'author3'
+    a.name.should.equal 'author9'
     
-    a_ = @m_author[ 3 ]
+    a_ = @m_author[ 9 ]
     a_.should.not.be.nil
     a_.should.equal a
-    a_.name.should.equal 'author3'
+    a_.name.should.equal 'author9'
     
     reset_data
   end
@@ -131,17 +125,17 @@ describe 'A DBI::Model subclass' do
     end
     
     a = @m_author.create { |rec|
-      rec.id = 3
-      rec.name = 'author3'
+      rec.id = 9
+      rec.name = 'author9'
     }
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id.should.equal 3
-    a.name.should.equal 'author3'
+    a.id.should.equal 9
+    a.name.should.equal 'author9'
     
-    a_ = @m_author[ 3 ]
+    a_ = @m_author[ 9 ]
     a_.should.equal a
-    a_.name.should.equal 'author3'
+    a_.name.should.equal 'author9'
     
     reset_data
   end
@@ -205,12 +199,8 @@ end
 
 describe 'A DBI::Model subclass instance' do
   before do
-    @m_author = Class.new(
-      DBI::Model( :authors )
-    )
-    @m_post = Class.new(
-      DBI::Model( :posts )
-    )
+    @m_author = Class.new( DBI::Model( :authors ) )
+    @m_post = Class.new( DBI::Model( :posts ) )
   end
   
   it 'should provide access to primary key value' do
@@ -291,25 +281,67 @@ describe 'A DBI::Model subclass instance' do
 
 end
 
-describe 'DBI::Model relationships' do
+describe 'DBI::Model (relationships)' do
   before do
-    @m_author = Class.new(
-      DBI::Model( :authors )
-    )
-    @m_post = Class.new(
-      DBI::Model( :posts )
-    )
+    @m_author = Class.new( DBI::Model( :authors ) )
+    @m_post = Class.new( DBI::Model( :posts ) )
+    @m_fan = Class.new( DBI::Model( :fans ) )
   end
   
-  it 'should permit relating one to many' do
+  it 'should facilitate relating one to many' do
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
     a = @m_author[ 1 ]
     a.posts.should.not.be.empty
-    p = @m_post[ 1 ]
+    p = @m_post[ 3 ]
     p.author.should.not.be.nil
     p.author.id.should.equal 1
   end
   
+  it 'should facilitate relating many to many' do
+    DBI::Model.many_to_many(
+      @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
+    )
+    a1 = @m_author[ 1 ]
+    a2 = @m_author[ 2 ]
+    f2 = @m_fan[ 2 ]
+    f3 = @m_fan[ 3 ]
+    
+    a1f = a1.fans
+    a1f.should.not.be.nil
+    a1f.should.not.be.empty
+    a1f.size.should.equal 2
+    a1f[ 0 ].class.should.equal @m_fan
+    a1f.find { |f| f.name == 'fan1' }.should.be.nil
+    a1f.find { |f| f.name == 'fan2' }.should.not.be.nil
+    a1f.find { |f| f.name == 'fan3' }.should.not.be.nil
+    
+    a2f = a2.fans
+    a2f.should.not.be.nil
+    a2f.should.not.be.empty
+    a2f.size.should.equal 2
+    a2f[ 0 ].class.should.equal @m_fan
+    a2f.find { |f| f.name == 'fan1' }.should.be.nil
+    a2f.find { |f| f.name == 'fan3' }.should.not.be.nil
+    a2f.find { |f| f.name == 'fan4' }.should.not.be.nil
+    
+    f2a = f2.authors_liked
+    f2a.should.not.be.nil
+    f2a.should.not.be.empty
+    f2a.size.should.equal 1
+    f2a[ 0 ].class.should.equal @m_author
+    f2a[ 0 ].name.should.equal 'author1'
+    
+    f3a = f3.authors_liked
+    f3a.should.not.be.nil
+    f3a.should.not.be.empty
+    f3a.size.should.equal 2
+    f3a.find { |a| a.name == 'author1' }.should.not.be.nil
+    f3a.find { |a| a.name == 'author2' }.should.not.be.nil
+    f3a.find { |a| a.name == 'author3' }.should.be.nil
+    
+    @m_author[ 3 ].fans.should.be.empty
+    @m_fan[ 5 ].authors_liked.should.be.empty
+  end
 end
