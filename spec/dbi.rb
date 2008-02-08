@@ -16,14 +16,14 @@ describe 'select_column' do
     name = $dbh.select_column(
       "SELECT name FROM authors ORDER BY name DESC"
     )
-    name.should.equal 'author2'
+    name.should.equal 'author3'
   end
   
   it 'should select first column of first row' do
     name = $dbh.select_column(
       "SELECT name, id FROM authors ORDER BY name DESC"
     )
-    name.should.equal 'author2'
+    name.should.equal 'author3'
   end
   
 end
