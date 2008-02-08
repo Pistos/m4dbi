@@ -5,6 +5,7 @@
   - metaid (gem install metaid)
   - dbi (of course)
     - DBDs for your choice of DBs
+  - bacon (optional, for running tests; gem install bacon)
     
 === Installation
 
