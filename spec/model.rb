@@ -168,6 +168,38 @@ describe 'A DBI::Model subclass' do
     posts[ 0 ].text.should.equal 'First post.'
     posts[ 1 ].id.should.equal 3
     posts[ 1 ].text.should.equal 'Third post.'
+    
+    no_posts = @m_post.select_all( "SELECT * FROM posts WHERE FALSE" )
+    no_posts.should.not.be.nil
+    no_posts.should.be.empty
+  end
+  
+  it 'should provide a means to use generic raw SQL to select one model instance' do
+    post = @m_post.select_one(
+      %{
+        SELECT
+          p.*
+        FROM
+          posts p,
+          authors a
+        WHERE
+          p.author_id = a.id
+          AND a.name = ?
+        ORDER BY
+          id DESC
+      },
+      'author1'
+    )
+    
+    post.should.not.be.nil
+    post.class.should.equal @m_post
+    
+    post.id.should.equal 3
+    post.author_id.should.equal 1
+    post.text.should.equal 'Third post.'
+    
+    no_post = @m_post.select_one( "SELECT * FROM posts WHERE FALSE" )
+    no_post.should.be.nil
   end
 end
 

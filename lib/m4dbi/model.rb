@@ -78,6 +78,13 @@ module DBI
       )
     end
     
+    def self.select_one( *args )
+      row = dbh.select_one( *args )
+      if row
+        self.new( row )
+      end
+    end
+    
     # ------------------- :nodoc:
     
     def initialize( row )
