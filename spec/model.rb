@@ -289,9 +289,7 @@ describe 'DBI::Model (relationships)' do
   end
   
   it 'should facilitate relating one to many, providing read access' do
-    DBI::Model.one_to_many(
-      @m_author, @m_post, :posts, :author, :author_id
-    )
+    DBI::Model.one_to_many( @m_author, @m_post, :posts, :author, :author_id )
     a = @m_author[ 1 ]
     a.posts.should.not.be.empty
     p = @m_post[ 3 ]
@@ -313,7 +311,23 @@ describe 'DBI::Model (relationships)' do
     reset_data
   end
   
-  it 'should facilitate relating many to many' do
+  it 'should allow adding to the many in a one to many relationship' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    a = @m_author[ 1 ]
+    the_text = 'A new post.'
+    new_post = @m_post.create( :author_id => a.id, :text => the_text )
+    a.posts << new_post
+    a.posts.find { |p| p.text == the_text }.should.not.be.nil
+    
+    a_ = @m_author[ 1 ]
+    a_.posts.find { |p| p.text == the_text }.should.not.be.nil
+    
+    reset_data
+  end
+  
+  it 'should facilitate relating many to many, providing read access' do
     DBI::Model.many_to_many(
       @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
     )
