@@ -288,7 +288,7 @@ describe 'DBI::Model (relationships)' do
     @m_fan = Class.new( DBI::Model( :fans ) )
   end
   
-  it 'should facilitate relating one to many' do
+  it 'should facilitate relating one to many, providing read access' do
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
@@ -297,6 +297,20 @@ describe 'DBI::Model (relationships)' do
     p = @m_post[ 3 ]
     p.author.should.not.be.nil
     p.author.id.should.equal 1
+  end
+  
+  it 'should facilitate relating one to many, allowing one of the many to set its one' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    p = @m_post[ 3 ]
+    p.author.should.not.be.nil
+    p.author.id.should.equal 1
+    p.author = @m_author.create( :id => 4, :name => 'author4' )
+    p_ = @m_post[ 3 ]
+    p_.author.id.should.equal 4
+    
+    reset_data
   end
   
   it 'should facilitate relating many to many' do

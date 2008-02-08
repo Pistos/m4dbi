@@ -96,6 +96,9 @@ module DBI
       the_many.class_def( one_as.to_sym ) do
         the_one[ @row[ the_one_fk ] ]
       end
+      the_many.class_def( "#{one_as}=".to_sym ) do |new_one|
+        send( "#{the_one_fk}=".to_sym, new_one.pk )
+      end
     end
     
     # Example:
