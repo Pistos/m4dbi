@@ -14,9 +14,11 @@ module DBI
       elements.send( method, *args, &blk )
     end
     
-    def <<( new_item_hash )
+    def push( new_item_hash )
       new_item_hash[ @the_one_fk ] = @the_one.pk
       @the_many_model.create( new_item_hash )
     end
+    alias << push
+    alias add push
   end
 end

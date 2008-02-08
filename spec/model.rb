@@ -365,7 +365,7 @@ describe 'DBI::Collection' do
     @m_fan = Class.new( DBI::Model( :fans ) )
   end
   
-  it 'should allow adding to the many in a one to many relationship' do
+  it 'should accept additions' do
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
@@ -379,4 +379,5 @@ describe 'DBI::Collection' do
     
     reset_data
   end
+  
 end
