@@ -13,8 +13,19 @@ task :default => ['spec']
 task :test => ['spec']
 
 desc "generate rdoc"
-task :rdoc => [:clean, :readme2html] do
-  sh "rdoc #{(RDOC_OPTS + RDOC_FILES).join(' ')}"
+Rake::RDocTask.new do |rdoc|
+  files = [ 'lib/**/*.rb', 'spec/**/*.rb', 'HIM', 'READHIM' ]
+  rdoc.rdoc_files.add( files )
+  rdoc.main = "HIM" # page to start on
+  rdoc.title = "M4DBI - Models For DBI"
+  rdoc.template = "/misc/pistos/unpack/allison-2.3/allison.rb"
+  rdoc.rdoc_dir = '/var/www/localhost/htdocs/m4dbi/rdoc' # rdoc output folder
+  rdoc.options << '--line-numbers' << '--inline-source'
+end
+
+desc 'Run coverage examiner (rcov)'
+task 'rcov' do
+   exec( "rcov -o /var/www/localhost/htdocs/m4dbi/rcov spec/*.rb" )
 end
 
 # Stolen from Ramaze  http://ramaze.net

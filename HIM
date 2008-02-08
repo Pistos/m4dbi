@@ -1,0 +1,31 @@
+== M4DBI - Models (and more) For DBI
+
+=== Dependencies
+
+  - metaid (gem install metaid)
+  - dbi (of course)
+    - DBDs for your choice of DBs
+    
+=== Installation
+
+There is no gem or tarball or anything for M4DBI yet.  You must use the
+repository version, using Subversion.  http://subversion.tigris.org
+Chances are, there is a Subversion package for your Linux/UNIX flavour.
+
+  cd /where/you/want/m4dbi
+  svn co http://rome.purepistos.net/svn/m4dbi
+  
+Change the following to whatever the equivalent paths are for your system:
+
+  cd /usr/lib/ruby/site_ruby/1.8
+  ln -s /path/to/checked/out/m4dbi/trunk/lib/m4dbi
+  ln -s /path/to/checked/out/m4dbi/trunk/lib/m4dbi.rb
+
+=== Usage
+
+Look at the spec files under the spec/ dir.
+
+=== Feedback and Support
+
+On IRC: irc.freenode.net \#mathetes or \#ramaze .
+Use http://mibbit.com if you don't have an IRC client.
