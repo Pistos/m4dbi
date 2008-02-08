@@ -72,6 +72,12 @@ module DBI
       new_record
     end
     
+    def self.select_all( *args )
+      self.from_rows(
+        dbh.select_all( *args )
+      )
+    end
+    
     # ------------------- :nodoc:
     
     def initialize( row )

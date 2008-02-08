@@ -146,6 +146,29 @@ describe 'A DBI::Model subclass' do
     reset_data
   end
   
+  it 'should provide a means to use generic raw SQL to select model instances' do
+    posts = @m_post.select_all(
+      %{
+        SELECT
+          p.*
+        FROM
+          posts p,
+          authors a
+        WHERE
+          p.author_id = a.id
+          AND a.name = ?
+      },
+      'author1'
+    )
+    posts.should.not.be.nil
+    posts.should.not.be.empty
+    posts.size.should.equal 2
+    
+    posts[ 0 ].id.should.equal 1
+    posts[ 0 ].text.should.equal 'First post.'
+    posts[ 1 ].id.should.equal 3
+    posts[ 1 ].text.should.equal 'Third post.'
+  end
 end
 
 describe 'A DBI::Model subclass instance' do
@@ -230,6 +253,8 @@ describe 'A DBI::Model subclass instance' do
     successfully_deleted = p.delete
     successfully_deleted.should.be.true
     @m_post[ 3 ].should.be.nil
+    
+    reset_data
   end
 
 end
