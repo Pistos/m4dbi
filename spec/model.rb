@@ -290,3 +290,26 @@ describe 'A DBI::Model subclass instance' do
   end
 
 end
+
+describe 'DBI::Model relationships' do
+  before do
+    @m_author = Class.new(
+      DBI::Model( :authors )
+    )
+    @m_post = Class.new(
+      DBI::Model( :posts )
+    )
+  end
+  
+  it 'should permit relating one to many' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    a = @m_author[ 1 ]
+    a.posts.should.not.be.empty
+    p = @m_post[ 1 ]
+    p.author.should.not.be.nil
+    p.author.id.should.equal 1
+  end
+  
+end

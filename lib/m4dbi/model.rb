@@ -85,6 +85,17 @@ module DBI
       end
     end
     
+    # Example:
+    #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
+    def self.one_to_many( the_one, the_many, many_as, one_as, the_one_fk )
+      the_one.class_def( many_as.to_sym ) do
+        the_many.where( the_one_fk => pk )
+      end
+      the_many.class_def( one_as.to_sym ) do
+        the_one[ @row[ the_one_fk ] ]
+      end
+    end
+    
     # ------------------- :nodoc:
     
     def initialize( row )
