@@ -14,8 +14,9 @@ module DBI
       elements.send( method, *args, &blk )
     end
     
-    def <<( new_item_of_the_many )
-      new_item_of_the_many.send( "#{@the_one_fk}=".to_sym, @the_one.pk )
+    def <<( new_item_hash )
+      new_item_hash[ @the_one_fk ] = @the_one.pk
+      @the_many_model.create( new_item_hash )
     end
   end
 end

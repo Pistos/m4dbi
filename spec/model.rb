@@ -311,22 +311,6 @@ describe 'DBI::Model (relationships)' do
     reset_data
   end
   
-  it 'should allow adding to the many in a one to many relationship' do
-    DBI::Model.one_to_many(
-      @m_author, @m_post, :posts, :author, :author_id
-    )
-    a = @m_author[ 1 ]
-    the_text = 'A new post.'
-    new_post = @m_post.create( :author_id => a.id, :text => the_text )
-    a.posts << new_post
-    a.posts.find { |p| p.text == the_text }.should.not.be.nil
-    
-    a_ = @m_author[ 1 ]
-    a_.posts.find { |p| p.text == the_text }.should.not.be.nil
-    
-    reset_data
-  end
-  
   it 'should facilitate relating many to many, providing read access' do
     DBI::Model.many_to_many(
       @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
@@ -371,5 +355,28 @@ describe 'DBI::Model (relationships)' do
     
     @m_author[ 3 ].fans.should.be.empty
     @m_fan[ 5 ].authors_liked.should.be.empty
+  end
+end
+
+describe 'DBI::Collection' do
+  before do
+    @m_author = Class.new( DBI::Model( :authors ) )
+    @m_post = Class.new( DBI::Model( :posts ) )
+    @m_fan = Class.new( DBI::Model( :fans ) )
+  end
+  
+  it 'should allow adding to the many in a one to many relationship' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    a = @m_author[ 1 ]
+    the_text = 'A new post.'
+    a.posts << { :text => the_text }
+    a.posts.find { |p| p.text == the_text }.should.not.be.nil
+    
+    a_ = @m_author[ 1 ]
+    a_.posts.find { |p| p.text == the_text }.should.not.be.nil
+    
+    reset_data
   end
 end
