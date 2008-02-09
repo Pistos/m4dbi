@@ -68,13 +68,13 @@ class Object
 
   # trait for self.class
 
-  def class_trait
-    if respond_to?(:ancestors)
-      trait
-    else
-      self.class.trait
-    end
-  end
+  #def class_trait
+    #if respond_to?(:ancestors)
+      #trait
+    #else
+      #self.class.trait
+    #end
+  #end
   
   def ancestral_trait_reader( *names )
     names.each do |name|
