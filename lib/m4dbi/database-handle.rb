@@ -15,6 +15,13 @@ module DBI
       end
     end
     
+    alias s select_all
+    alias s1 select_one
+    alias sc select_column
+    alias u do
+    alias i do
+    alias d do
+    
     class << self
       def last_handle
         @handle# ||= create_handle

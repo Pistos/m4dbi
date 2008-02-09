@@ -85,6 +85,11 @@ module DBI
       end
     end
     
+    class << self
+      alias s select_all
+      alias s1 select_one
+    end
+    
     # Example:
     #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
     #   her_posts = some_author.posts

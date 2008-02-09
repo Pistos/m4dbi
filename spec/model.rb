@@ -141,7 +141,7 @@ describe 'A DBI::Model subclass' do
   end
   
   it 'should provide a means to use generic raw SQL to select model instances' do
-    posts = @m_post.select_all(
+    posts = @m_post.s(
       %{
         SELECT
           p.*
@@ -163,13 +163,13 @@ describe 'A DBI::Model subclass' do
     posts[ 1 ].id.should.equal 3
     posts[ 1 ].text.should.equal 'Third post.'
     
-    no_posts = @m_post.select_all( "SELECT * FROM posts WHERE FALSE" )
+    no_posts = @m_post.s( "SELECT * FROM posts WHERE FALSE" )
     no_posts.should.not.be.nil
     no_posts.should.be.empty
   end
   
   it 'should provide a means to use generic raw SQL to select one model instance' do
-    post = @m_post.select_one(
+    post = @m_post.s1(
       %{
         SELECT
           p.*
@@ -192,7 +192,7 @@ describe 'A DBI::Model subclass' do
     post.author_id.should.equal 1
     post.text.should.equal 'Third post.'
     
-    no_post = @m_post.select_one( "SELECT * FROM posts WHERE FALSE" )
+    no_post = @m_post.s1( "SELECT * FROM posts WHERE FALSE" )
     no_post.should.be.nil
   end
 end
