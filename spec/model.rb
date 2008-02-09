@@ -380,4 +380,34 @@ describe 'DBI::Collection' do
     reset_data
   end
   
+  it 'should facilitate single record deletions' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    a = @m_author[ 1 ]
+    posts = a.posts
+    n = posts.size
+    p = posts[ 0 ]
+    
+    posts.delete( p ).should.be.true
+    a.posts.size.should.equal( n - 1 )
+    posts.find { |p_| p_ == p }.should.be.nil
+    
+    reset_data
+  end
+    
+  it 'should facilitate multi-record deletions' do
+    DBI::Model.one_to_many(
+      @m_author, @m_post, :posts, :author, :author_id
+    )
+    a = @m_author[ 1 ]
+    posts = a.posts
+    n = posts.size
+    posts.delete( :text => 'Third post.' ).should.equal 1
+    a.posts.size.should.equal( n - 1 )
+    posts.find { |p| p.text == 'Third post.' }.should.be.nil
+    posts.find { |p| p.text == 'First post.' }.should.not.be.nil
+    
+    reset_data
+  end
 end
