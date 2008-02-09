@@ -363,12 +363,13 @@ describe 'DBI::Collection' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_fan = Class.new( DBI::Model( :fans ) )
-  end
-  
-  it 'should accept additions' do
+    
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
+  end
+  
+  it 'should accept additions' do
     a = @m_author[ 1 ]
     the_text = 'A new post.'
     a.posts << { :text => the_text }
@@ -381,9 +382,6 @@ describe 'DBI::Collection' do
   end
   
   it 'should facilitate single record deletions' do
-    DBI::Model.one_to_many(
-      @m_author, @m_post, :posts, :author, :author_id
-    )
     a = @m_author[ 1 ]
     posts = a.posts
     n = posts.size
@@ -397,9 +395,6 @@ describe 'DBI::Collection' do
   end
     
   it 'should facilitate multi-record deletions' do
-    DBI::Model.one_to_many(
-      @m_author, @m_post, :posts, :author, :author_id
-    )
     a = @m_author[ 1 ]
     posts = a.posts
     n = posts.size
@@ -407,6 +402,15 @@ describe 'DBI::Collection' do
     a.posts.size.should.equal( n - 1 )
     posts.find { |p| p.text == 'Third post.' }.should.be.nil
     posts.find { |p| p.text == 'First post.' }.should.not.be.nil
+    
+    reset_data
+  end
+  
+  it 'should facilitate table-wide deletion' do
+    a = @m_author[ 1 ]
+    a.posts.should.not.be.empty
+    a.posts.clear.should.be > 0
+    a.posts.should.be.empty
     
     reset_data
   end

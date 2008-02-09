@@ -53,5 +53,16 @@ module DBI
           )
       end
     end
+    
+    # Returns the number of records deleted
+    def clear
+      @the_many_model.dbh.do(
+        %{
+          DELETE FROM #{@the_many_model.table}
+          WHERE #{@the_one_fk} = ?
+        },
+        @the_one.pk
+      )
+    end
   end
 end
