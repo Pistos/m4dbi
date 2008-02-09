@@ -9,8 +9,14 @@
     
 === Installation
 
-There is no gem or tarball or anything for M4DBI yet.  You must use the
-repository version, using Subversion.  http://subversion.tigris.org
+==== Nightly Gem
+
+  wget http://rome.purepistos.net/m4dbi/nightlies/m4dbi-nightly.gem
+  gem install m4dbi-nightly.gem
+  
+==== Repository
+
+To use the repository version, you need Subversion (http://subversion.tigris.org).
 Chances are, there is a Subversion package for your Linux/UNIX flavour.
 
   cd /where/you/want/m4dbi
@@ -29,8 +35,9 @@ Look at the spec files under the spec/ dir.
 === Source Code
 
 Browse source at http://rome.purepistos.net/svn/m4dbi/trunk .
+See coverage at http://rome.purepistos.net/m4dbi/rcov .
 
 === Feedback and Support
 
-On IRC: irc.freenode.net \#mathetes or \#ramaze .
+On IRC: irc.freenode.net ##mathetes or ##ramaze .
 Use http://mibbit.com if you don't have an IRC client.
