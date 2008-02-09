@@ -5,6 +5,8 @@ require 'rake/rdoctask'
 
 $:.unshift File.join( File.dirname(__FILE__), "lib" )
 
+root = File.expand_path( File.dirname(__FILE__) )
+
 # ------------------
 
 task :default => ['spec']
@@ -28,6 +30,13 @@ end
 
 desc 'Run all specs'
 task 'spec' do
-  root = File.expand_path( File.dirname(__FILE__) )
   exec "bacon #{root}/spec/*.rb"
+end
+
+desc 'Build nightly gem'
+task 'nightly' do
+  output = `gem build #{root}/gemspecs/m4dbi-nightly.gemspec`
+  file = output[ /File: (\S+\.gem)/, 1 ]
+  `cp #{file} /var/www/localhost/htdocs/m4dbi/nightlies`
+  `mv #{file} /var/www/localhost/htdocs/m4dbi/nightlies/m4dbi-nightly.gem`
 end
