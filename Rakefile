@@ -36,7 +36,6 @@ end
 desc 'Build nightly gem'
 task 'nightly' do
   output = `gem build #{root}/gemspecs/m4dbi-nightly.gemspec`
-  file = output[ /File: (\S+\.gem)/, 1 ]
-  `cp #{file} /var/www/localhost/htdocs/m4dbi/nightlies`
-  `mv #{file} /var/www/localhost/htdocs/m4dbi/nightlies/m4dbi-nightly.gem`
+  version = Time.now.strftime( "%Y.%m.%d" )
+  `mv m4dbi-#{version}.gem m4dbi-nightly.gem`
 end
