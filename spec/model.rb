@@ -27,17 +27,32 @@ describe 'A DBI::Model subclass' do
   it 'should provide hash-like single-record access via #[ primary_key_value ]' do
     o = @m_author[ 1 ]
     o.should.not.be.nil
-    o.name.should.equal 'author1'
     o.class.should.equal @m_author
+    o.name.should.equal 'author1'
     
     o = @m_author[ 2 ]
     o.should.not.be.nil
-    o.name.should.equal 'author2'
     o.class.should.equal @m_author
+    o.name.should.equal 'author2'
+  end
+  
+  it 'should provide hash-like single-record access via #[ field_hash ]' do
+    o = @m_author[ :name => 'author1' ]
+    o.should.not.be.nil
+    o.class.should.equal @m_author
+    o.id.should.equal 1
+    
+    o = @m_post[ :author_id => 1 ]
+    o.should.not.be.nil
+    o.class.should.equal @m_post
+    o.text.should.equal 'First post.'
   end
   
   it 'should return nil from #[] when no record found' do
     o = @m_author[ 999 ]
+    o.should.be.nil
+    
+    o = @m_author[ :name => 'foobar' ]
     o.should.be.nil
   end
   

@@ -7,11 +7,20 @@ module DBI
     ancestral_trait_reader :dbh, :table
     ancestral_trait_class_reader :dbh, :table, :pk, :columns
     
-    def self.[]( pk_value )
-      row = dbh.select_one(
-        "SELECT * FROM #{table} WHERE #{pk} = ?",
-        pk_value
-      )
+    def self.[]( hash_or_pk_value )
+      case hash_or_pk_value
+        when Hash
+          clause, values = hash_or_pk_value.to_where_clause
+          row = dbh.select_one(
+            "SELECT * FROM #{table} WHERE #{clause}",
+            *values
+          )
+        else
+          row = dbh.select_one(
+            "SELECT * FROM #{table} WHERE #{pk} = ?",
+            hash_or_pk_value
+          )
+      end
       
       if row
         self.new( row )
@@ -28,11 +37,8 @@ module DBI
           sql = "SELECT * FROM #{table} WHERE #{conditions}"
           params = args
         when Hash
-          cond = conditions.keys.map { |field|
-            "#{field} = ?"
-          }.join( " AND " )
+          cond, params = conditions.to_where_clause
           sql = "SELECT * FROM #{table} WHERE #{cond}"
-          params = conditions.values
       end
       
       self.from_rows(
