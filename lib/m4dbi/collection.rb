@@ -9,6 +9,7 @@ module DBI
     def elements
       @the_many_model.where( @the_one_fk => @the_one.pk )
     end
+    alias copy elements
     
     def method_missing( method, *args, &blk )
       elements.send( method, *args, &blk )
