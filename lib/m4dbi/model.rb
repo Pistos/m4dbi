@@ -216,6 +216,11 @@ module DBI
       )
       num_deleted == 1
     end
+    
+    # save does nothing.  It exists to provide compatibility with other ORMs.
+    def save
+      nil
+    end
   end
   
   # Define a new DBI::Model like this:

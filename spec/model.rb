@@ -328,6 +328,13 @@ describe 'A DBI::Model subclass instance' do
     reset_data
   end
 
+  it 'should do nothing on #save' do
+    p = @m_post[ 1 ]
+    should.not.raise do
+      p.save
+    end
+  end
+  
 end
 
 describe 'DBI::Model (relationships)' do
