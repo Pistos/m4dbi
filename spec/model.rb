@@ -94,6 +94,29 @@ describe 'A DBI::Model subclass' do
     p.should.be.empty
   end
   
+  it 'should provide single-record access via #one_where( Hash )' do
+    post = @m_post.one_where( :author_id => 2 )
+    post.should.not.be.nil
+    post.class.should.equal @m_post
+    post.text.should.equal 'Second post.'
+  end
+  
+  it 'should provide single-record access via #one_where( String )' do
+    post = @m_post.one_where( "text LIKE '%Third%'" )
+    post.should.not.be.nil
+    post.class.should.equal @m_post
+    post.id.should.equal 3
+  end
+  
+  it 'should return nil from #one_where when no record is found' do
+    a = @m_author.one_where( :id => 999 )
+    a.should.be.nil
+    
+    p = @m_post.one_where( "text = 'aoeu'" )
+    p.should.be.nil
+  end
+  
+  
   it 'should return all table records via #all' do
     rows = @m_author.all
     rows.should.not.be.nil

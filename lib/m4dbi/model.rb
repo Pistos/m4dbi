@@ -42,11 +42,24 @@ module DBI
       end
       
       self.from_rows(
-        dbh.select_all(
-          sql,
-          *params
-        )
+        dbh.select_all( sql, *params )
       )
+    end
+    
+    def self.one_where( conditions, *args )
+      case conditions
+        when String
+          sql = "SELECT * FROM #{table} WHERE #{conditions} LIMIT 1"
+          params = args
+        when Hash
+          cond, params = conditions.to_where_clause
+          sql = "SELECT * FROM #{table} WHERE #{cond} LIMIT 1"
+      end
+      
+      row = dbh.select_one( sql, *params )
+      if row
+        self.new( row )
+      end
     end
     
     def self.all
