@@ -75,6 +75,10 @@ module DBI
       end
     end
     
+    def self.count
+      dbh.select_column( "SELECT COUNT(*) FROM #{table}" )
+    end
+    
     def self.create( hash = nil )
       if block_given?
         row = DBI::Row.new( columns.collect { |c| c[ 'name' ] } )
@@ -96,6 +100,14 @@ module DBI
       )
       
       new_record
+    end
+    
+    def self.find_or_create( hash = nil )
+      item = self.where( hash ).first
+      if item.nil?
+        item = self.create( hash )
+      end
+      item
     end
     
     def self.select_all( *args )

@@ -146,6 +146,11 @@ describe 'A DBI::Model subclass' do
     one.should.be.nil
   end
   
+  it 'should return the record count via #count' do
+    n = @m_author.count
+    n.should.equal 3
+  end
+  
   it 'should provide a means to create new records via #create( Hash )' do
     a = @m_author.create(
       :id => 9,
@@ -183,6 +188,43 @@ describe 'A DBI::Model subclass' do
     a.name.should.equal 'author9'
     
     a_ = @m_author[ 9 ]
+    a_.should.equal a
+    a_.name.should.equal 'author9'
+    
+    reset_data
+  end
+  
+  it 'should return a record via #find_or_create( Hash )' do
+    n = @m_author.count
+    a = @m_author.find_or_create(
+      :id => 1,
+      :name => 'author1'
+    )
+    a.should.not.be.nil
+    a.class.should.equal @m_author
+    a.id.should.equal 1
+    a.should.respond_to :name
+    a.should.not.respond_to :no_column_by_this_name
+    a.name.should.equal 'author1'
+    @m_author.count.should.equal n
+  end
+  
+  it 'should create a record via #find_or_create( Hash )' do
+    n = @m_author.count
+    a = @m_author.find_or_create(
+      :id => 9,
+      :name => 'author9'
+    )
+    a.should.not.be.nil
+    a.class.should.equal @m_author
+    a.id.should.equal 9
+    a.should.respond_to :name
+    a.should.not.respond_to :no_column_by_this_name
+    a.name.should.equal 'author9'
+    @m_author.count.should.equal n+1
+    
+    a_ = @m_author[ 9 ]
+    a_.should.not.be.nil
     a_.should.equal a
     a_.name.should.equal 'author9'
     
