@@ -135,6 +135,17 @@ describe 'A DBI::Model subclass' do
     rows.should.be.empty
   end
   
+  it 'should return any single record from #one' do
+    one = @m_author.one
+    one.should.not.be.nil
+    one.class.should.equal @m_author
+  end
+  
+  it 'should return nil from #one on an empty table' do
+    one = @m_empty.one
+    one.should.be.nil
+  end
+  
   it 'should provide a means to create new records via #create( Hash )' do
     a = @m_author.create(
       :id => 9,

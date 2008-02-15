@@ -68,6 +68,13 @@ module DBI
       )
     end
     
+    def self.one
+      row = dbh.select_one( "SELECT * FROM #{table} LIMIT 1" )
+      if row
+        self.new( row )
+      end
+    end
+    
     def self.create( hash = nil )
       if block_given?
         row = DBI::Row.new( columns.collect { |c| c[ 'name' ] } )
