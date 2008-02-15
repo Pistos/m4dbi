@@ -9,6 +9,14 @@ def reset_data
   end
 end
 
+describe 'DBI::Model' do
+  it 'should raise an exception when trying to define a model before connecting to a database' do
+    should.raise( DBI::Error ) do
+      @m_author = Class.new( DBI::Model( :authors ) )
+    end
+  end
+end
+
 $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 reset_data
 
@@ -22,6 +30,12 @@ describe 'A DBI::Model subclass' do
   it 'should be defined' do
     @m_author.should.not.be.nil
     @m_post.should.not.be.nil
+  end
+  
+  it 'should raise an exception when creating with a nil row' do
+    should.raise( DBI::Error ) do
+      @m_author.new nil
+    end
   end
   
   it 'should provide hash-like single-record access via #[ primary_key_value ]' do
