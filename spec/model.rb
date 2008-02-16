@@ -302,7 +302,53 @@ describe 'A DBI::Model subclass' do
   end
 end
 
-describe 'A DBI::Model subclass instance' do
+describe 'A created DBI::Model subclass instance' do
+  before do
+    @m_mc = Class.new( DBI::Model( :many_col_table ) )
+  end
+  
+  it 'should provide read access to fields via identically-named readers' do
+    mc = @m_mc.create(
+      :c3 => 3,
+      :c4 => 4
+    )
+    mc.should.not.be.nil
+    should.not.raise do
+      mc.id
+      mc.c1
+      mc.c2
+      mc.c5
+    end
+    mc.id.should.not.be.nil
+    mc.c3.should.equal 3
+    mc.c4.should.equal 4
+  end
+    
+  it 'should provide write access to fields via identically-named writers' do
+    mc = @m_mc.create(
+      :c3 => 30,
+      :c4 => 40
+    )
+    mc.should.not.be.nil
+    mc.c1 = 10
+    mc.c2 = 20
+    mc.c1.should.equal 10
+    mc.c2.should.equal 20
+    mc.c3.should.equal 30
+    mc.c4.should.equal 40
+    id_ = mc.id
+    id_.should.not.be.nil
+    
+    mc_ = @m_mc[ id_ ]
+    mc_.id.should.equal id_
+    mc_.c1.should.equal 10
+    mc_.c2.should.equal 20
+    mc_.c3.should.equal 30
+    mc_.c4.should.equal 40
+  end
+end
+
+describe 'A found DBI::Model subclass instance' do
   before do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )

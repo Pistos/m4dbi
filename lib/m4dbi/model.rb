@@ -7,6 +7,8 @@ module DBI
     ancestral_trait_reader :dbh, :table
     ancestral_trait_class_reader :dbh, :table, :pk, :columns
     
+    M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
+    
     def self.[]( hash_or_pk_value )
       case hash_or_pk_value
         when Hash
@@ -79,27 +81,51 @@ module DBI
       dbh.select_column( "SELECT COUNT(*) FROM #{table}" )
     end
     
-    def self.create( hash = nil )
+    def self.create( hash = {} )
       if block_given?
-        row = DBI::Row.new( columns.collect { |c| c[ 'name' ] } )
+        row = DBI::Row.new(
+          columns.collect { |c| c[ 'name' ] },
+          [ M4DBI_UNASSIGNED ] * columns.size
+        )
         yield row
-      else
-        keys = hash.keys
-        values = keys.collect { |k| hash[ k ] }
-        row = DBI::Row.new( keys.collect { |k| k.to_s }, values )
+        hash = row.to_h
+        hash.to_a.each do |key,value|
+          if value == M4DBI_UNASSIGNED
+            hash.delete( key )
+          end
+        end
       end
       
-      new_record = self.new( row )
-      
-      cols = row.column_names.join( ',' )
-      values = row.column_names.map { |col| row[ col ] }
+      keys = hash.keys
+      cols = keys.join( ',' )
+      values = keys.map { |key| hash[ key ] }
       value_placeholders = values.map { |v| '?' }.join( ',' )
-      dbh.do(
-        "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
-        *values
-      )
+      rec = nil
       
-      new_record
+      auto_commit = dbh[ 'AutoCommit' ]
+      dbh[ 'AutoCommit' ] = false
+      dbh.transaction do |dbh_|
+        num_inserted = dbh_.do(
+          "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
+          *values
+        )
+        if num_inserted > 0
+          pk_value = hash[ self.pk.to_sym ] || hash[ self.pk.to_s ]
+          if pk_value
+            rec = self.one_where( self.pk => pk_value )
+          else
+            begin
+              rec = last_record( dbh_ )
+            rescue NoMethodError => e
+              # ignore
+              #puts "not implemented: #{e.message}"
+            end
+          end
+        end
+      end
+      dbh[ 'AutoCommit' ] = auto_commit
+      
+      rec
     end
     
     def self.find_or_create( hash = nil )
@@ -252,6 +278,14 @@ module DBI
         :pk => pk_,
         :columns => h.columns( table.to_s ),
       } )
+      
+      case h.handle
+        when DBI::DBD::Pg::Database
+          meta_def( "last_record".to_sym ) do |dbh_|
+            self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
+          end
+        # TODO: more DBDs
+      end
       
       klass.trait[ :columns ].each do |col|
         colname = col[ 'name' ]

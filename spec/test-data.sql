@@ -2,6 +2,7 @@ DELETE FROM posts;
 DELETE FROM authors_fans;
 DELETE FROM fans;
 DELETE FROM authors;
+DELETE FROM many_col_table;
 
 INSERT INTO authors (id, name) VALUES ( 1, 'author1' );
 INSERT INTO authors (id, name) VALUES ( 2, 'author2' );

@@ -23,3 +23,12 @@ CREATE TABLE empty_table (
     id SERIAL NOT NULL PRIMARY KEY,
     i INTEGER
 );
+
+CREATE TABLE many_col_table (
+    id SERIAL NOT NULL PRIMARY KEY,
+    c1 INTEGER,
+    c2 INTEGER,
+    c3 INTEGER,
+    c4 INTEGER,
+    c5 INTEGER
+);

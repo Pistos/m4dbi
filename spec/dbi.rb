@@ -9,6 +9,7 @@ describe 'select_column' do
     name = $dbh.select_column(
       "SELECT name FROM authors LIMIT 1"
     )
+    name.class.should.not.equal Array
     name.should.equal 'author1'
   end
   
