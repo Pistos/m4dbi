@@ -11,7 +11,10 @@ end
 
 describe 'DBI::Model' do
   it 'should raise an exception when trying to define a model before connecting to a database' do
-    should.raise( DBI::Error ) do
+    if $dbh
+      $dbh.disconnect
+    end
+    should.raise do
       @m_author = Class.new( DBI::Model( :authors ) )
     end
   end
