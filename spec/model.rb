@@ -11,7 +11,7 @@ end
 
 describe 'DBI::Model' do
   it 'should raise an exception when trying to define a model before connecting to a database' do
-    if $dbh
+    if $dbh and $dbh.respond_to? :disconnect
       $dbh.disconnect
     end
     should.raise do
