@@ -235,6 +235,14 @@ module DBI
       other and ( pk == other.pk )
     end
     
+    def hash
+      "#{self.class.hash}#{pk}".to_i
+    end
+    
+    def eql?( other )
+      hash == other.hash
+    end
+    
     def set( hash )
       set_clause = hash.keys.map { |key|
         "#{key} = ?"
@@ -268,7 +276,7 @@ module DBI
   def self.Model( table, pk_ = 'id' )
     Class.new( DBI::Model ) do |klass|
       h = DBI::DatabaseHandle.last_handle
-      if h.nil?
+      if h.nil? or not h.connected?
         raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
       end
       

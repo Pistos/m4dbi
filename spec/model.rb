@@ -11,8 +11,9 @@ end
 
 describe 'DBI::Model' do
   it 'should raise an exception when trying to define a model before connecting to a database' do
-    if $dbh and $dbh.respond_to? :disconnect
-      $dbh.disconnect
+    dbh = DBI::DatabaseHandle.last_handle
+    if dbh and dbh.respond_to? :disconnect
+      dbh.disconnect
     end
     should.raise do
       @m_author = Class.new( DBI::Model( :authors ) )
@@ -308,6 +309,8 @@ end
 describe 'A created DBI::Model subclass instance' do
   before do
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
+    @m_author = Class.new( DBI::Model( :authors ) )
+    @m_post = Class.new( DBI::Model( :posts ) )
   end
   
   it 'should provide read access to fields via identically-named readers' do
@@ -348,6 +351,22 @@ describe 'A created DBI::Model subclass instance' do
     mc_.c2.should.equal 20
     mc_.c3.should.equal 30
     mc_.c4.should.equal 40
+  end
+  
+  it 'should maintain Hash key equality across different fetches' do
+    h = Hash.new
+    a = @m_author[ 1 ]
+    h[ a ] = 123
+    a_ = @m_author[ 1 ]
+    h[ a_].should.equal 123
+  end
+  
+  it 'should maintain Hash key distinction for different Model subclasses' do
+    h = Hash.new
+    a = @m_author[ 1 ]
+    h[ a ] = 123
+    p = @m_post[ 1 ]
+    h[ p ].should.not.equal 123
   end
 end
 
