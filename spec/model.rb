@@ -553,7 +553,9 @@ describe 'DBI::Collection' do
     a = @m_author[ 1 ]
     the_text = 'A new post.'
     a.posts << { :text => the_text }
-    a.posts.find { |p| p.text == the_text }.should.not.be.nil
+    p = a.posts.find { |p| p.text == the_text }
+    p.should.not.be.nil
+    p.author.should.equal a
     
     a_ = @m_author[ 1 ]
     a_.posts.find { |p| p.text == the_text }.should.not.be.nil
