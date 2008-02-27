@@ -26,11 +26,11 @@ reset_data
 
 class ManyCol < DBI::Model( :many_col_table )
   def inc
-    c1 = c1 + 10
+    self.c1 = c1 + 10
   end
   
   def dec
-    c1 = c1 - 10
+    self.c1 = c1 - 10
   end
 end
 
