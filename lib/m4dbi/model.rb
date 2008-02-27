@@ -9,7 +9,7 @@ module DBI
     
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
     
-    include Enumerable
+    extend Enumerable
     
     def self.[]( hash_or_pk_value )
       case hash_or_pk_value

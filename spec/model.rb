@@ -308,14 +308,20 @@ describe 'A DBI::Model subclass' do
   it 'should be Enumerable' do
     should.not.raise do
       @m_author.each { |a| }
+      names = @m_author.map { |a| a.name }
+      names.find { |name| name == 'author1' }.should.not.be.nil
+      names.find { |name| name == 'author2' }.should.not.be.nil
+      names.find { |name| name == 'author3' }.should.not.be.nil
+      names.find { |name| name == 'author99' }.should.be.nil
     end
     authors = []
     @m_author.each do |a|
       authors << a
     end
-    authors.find { |a| a.name = 'author1' }.should.not.be.nil
-    authors.find { |a| a.name = 'author2' }.should.not.be.nil
-    authors.find { |a| a.name = 'author3' }.should.not.be.nil
+    authors.find { |a| a.name == 'author1' }.should.not.be.nil
+    authors.find { |a| a.name == 'author2' }.should.not.be.nil
+    authors.find { |a| a.name == 'author3' }.should.not.be.nil
+    authors.find { |a| a.name == 'author99' }.should.be.nil
   end
 end
 
