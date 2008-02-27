@@ -9,6 +9,8 @@ module DBI
     
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
     
+    include Enumerable
+    
     def self.[]( hash_or_pk_value )
       case hash_or_pk_value
         when Hash
@@ -68,6 +70,11 @@ module DBI
       self.from_rows(
         dbh.select_all( "SELECT * FROM #{table}" )
       )
+    end
+    
+    # TODO: Perhaps we'll use cursors for Model#each.
+    def self.each( &block )
+      self.all.each( &block )
     end
     
     def self.one

@@ -304,6 +304,19 @@ describe 'A DBI::Model subclass' do
     no_post = @m_post.s1( "SELECT * FROM posts WHERE FALSE" )
     no_post.should.be.nil
   end
+  
+  it 'should be Enumerable' do
+    should.not.raise do
+      @m_author.each { |a| }
+    end
+    authors = []
+    @m_author.each do |a|
+      authors << a
+    end
+    authors.find { |a| a.name = 'author1' }.should.not.be.nil
+    authors.find { |a| a.name = 'author2' }.should.not.be.nil
+    authors.find { |a| a.name = 'author3' }.should.not.be.nil
+  end
 end
 
 describe 'A created DBI::Model subclass instance' do
