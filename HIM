@@ -2,9 +2,9 @@
 
 === Dependencies
 
-  - metaid (gem install metaid)
   - dbi (of course)
     - DBDs for your choice of DBs
+  - metaid (gem install metaid)
   - bacon (optional, for running tests; gem install bacon)
     
 === Installation
@@ -30,12 +30,14 @@ Change the following to whatever the equivalent paths are for your system:
 
 === Usage
 
-Look at the spec files under the spec/ dir.
+See http://rome.purepistos.net/m4dbi/examples/ .  These are automatically
+generated from the spec files under the spec/ dir.
 
 === Source Code
 
-Browse source at http://rome.purepistos.net/svn/m4dbi/trunk .
+Browse source at http://rome.purepistos.net/issues/m4dbi/browser/trunk .
 See coverage at http://rome.purepistos.net/m4dbi/rcov .
+Very limited rdocs at http://rome.purepistos.net/m4dbi/rdoc .
 
 === Feedback and Support
 

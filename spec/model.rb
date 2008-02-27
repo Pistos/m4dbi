@@ -10,7 +10,7 @@ def reset_data
 end
 
 describe 'DBI::Model' do
-  it 'should raise an exception when trying to define a model before connecting to a database' do
+  it 'raises an exception when trying to define a model before connecting to a database' do
     dbh = DBI::DatabaseHandle.last_handle
     if dbh and dbh.respond_to? :disconnect
       dbh.disconnect
@@ -41,18 +41,18 @@ describe 'A DBI::Model subclass' do
     @m_empty = Class.new( DBI::Model( :empty_table ) )
   end
   
-  it 'should be defined' do
+  it 'can be defined' do
     @m_author.should.not.be.nil
     @m_post.should.not.be.nil
   end
   
-  it 'should raise an exception when creating with a nil row' do
+  it 'raises an exception when creating with a nil row' do
     should.raise( DBI::Error ) do
       @m_author.new nil
     end
   end
   
-  it 'should provide hash-like single-record access via #[ primary_key_value ]' do
+  it 'provides hash-like single-record access via #[ primary_key_value ]' do
     o = @m_author[ 1 ]
     o.should.not.be.nil
     o.class.should.equal @m_author
@@ -64,7 +64,7 @@ describe 'A DBI::Model subclass' do
     o.name.should.equal 'author2'
   end
   
-  it 'should provide hash-like single-record access via #[ field_hash ]' do
+  it 'provides hash-like single-record access via #[ field_hash ]' do
     o = @m_author[ :name => 'author1' ]
     o.should.not.be.nil
     o.class.should.equal @m_author
@@ -76,7 +76,7 @@ describe 'A DBI::Model subclass' do
     o.text.should.equal 'First post.'
   end
   
-  it 'should return nil from #[] when no record found' do
+  it 'returns nil from #[] when no record is found' do
     o = @m_author[ 999 ]
     o.should.be.nil
     
@@ -84,7 +84,7 @@ describe 'A DBI::Model subclass' do
     o.should.be.nil
   end
   
-  it 'should provide multi-record access via #where( Hash )' do
+  it 'provides multi-record access via #where( Hash )' do
     posts = @m_post.where(
       :author_id => 1
     )
@@ -100,7 +100,7 @@ describe 'A DBI::Model subclass' do
     p.text.should.equal 'First post.'
   end    
     
-  it 'should provide multi-record access via #where( String )' do
+  it 'provides multi-record access via #where( String )' do
     posts = @m_post.where( "id < 3" )
     posts.should.not.be.nil
     posts.should.not.be.empty
@@ -114,7 +114,7 @@ describe 'A DBI::Model subclass' do
     p.text.should.equal 'Second post.'
   end
   
-  it 'should return an empty array from #where when no records found' do
+  it 'returns an empty array from #where when no records are found' do
     a = @m_author.where( :id => 999 )
     a.should.be.empty
     
@@ -122,21 +122,21 @@ describe 'A DBI::Model subclass' do
     p.should.be.empty
   end
   
-  it 'should provide single-record access via #one_where( Hash )' do
+  it 'provides single-record access via #one_where( Hash )' do
     post = @m_post.one_where( :author_id => 2 )
     post.should.not.be.nil
     post.class.should.equal @m_post
     post.text.should.equal 'Second post.'
   end
   
-  it 'should provide single-record access via #one_where( String )' do
+  it 'provides single-record access via #one_where( String )' do
     post = @m_post.one_where( "text LIKE '%Third%'" )
     post.should.not.be.nil
     post.class.should.equal @m_post
     post.id.should.equal 3
   end
   
-  it 'should return nil from #one_where when no record is found' do
+  it 'returns nil from #one_where when no record is found' do
     a = @m_author.one_where( :id => 999 )
     a.should.be.nil
     
@@ -145,7 +145,7 @@ describe 'A DBI::Model subclass' do
   end
   
   
-  it 'should return all table records via #all' do
+  it 'returns all table records via #all' do
     rows = @m_author.all
     rows.should.not.be.nil
     rows.should.not.be.empty
@@ -157,29 +157,29 @@ describe 'A DBI::Model subclass' do
     rows[ 1 ].name.should.equal 'author2'
   end
   
-  it 'should return an empty array when #all is called on an empty table' do
+  it 'returns an empty array when #all is called on an empty table' do
     rows = @m_empty.all
     rows.should.not.be.nil
     rows.should.be.empty
   end
   
-  it 'should return any single record from #one' do
+  it 'returns any single record from #one' do
     one = @m_author.one
     one.should.not.be.nil
     one.class.should.equal @m_author
   end
   
-  it 'should return nil from #one on an empty table' do
+  it 'returns nil from #one on an empty table' do
     one = @m_empty.one
     one.should.be.nil
   end
   
-  it 'should return the record count via #count' do
+  it 'returns the record count via #count' do
     n = @m_author.count
     n.should.equal 3
   end
   
-  it 'should provide a means to create new records via #create( Hash )' do
+  it 'provides a means to create new records via #create( Hash )' do
     a = @m_author.create(
       :id => 9,
       :name => 'author9'
@@ -199,7 +199,7 @@ describe 'A DBI::Model subclass' do
     reset_data
   end
   
-  it 'should provide a means to create new records via #create { |r| }' do
+  it 'provides a means to create new records via #create { |r| }' do
     should.raise( NoMethodError ) do
       @m_author.create { |rec|
         rec.no_such_column = 'foobar'
@@ -222,7 +222,7 @@ describe 'A DBI::Model subclass' do
     reset_data
   end
   
-  it 'should return a record via #find_or_create( Hash )' do
+  it 'returns a record via #find_or_create( Hash )' do
     n = @m_author.count
     a = @m_author.find_or_create(
       :id => 1,
@@ -237,7 +237,7 @@ describe 'A DBI::Model subclass' do
     @m_author.count.should.equal n
   end
   
-  it 'should create a record via #find_or_create( Hash )' do
+  it 'creates a record via #find_or_create( Hash )' do
     n = @m_author.count
     a = @m_author.find_or_create(
       :id => 9,
@@ -259,7 +259,7 @@ describe 'A DBI::Model subclass' do
     reset_data
   end
   
-  it 'should provide a means to use generic raw SQL to select model instances' do
+  it 'provides a means to use generic raw SQL to select model instances' do
     posts = @m_post.s(
       %{
         SELECT
@@ -287,7 +287,7 @@ describe 'A DBI::Model subclass' do
     no_posts.should.be.empty
   end
   
-  it 'should provide a means to use generic raw SQL to select one model instance' do
+  it 'provides a means to use generic raw SQL to select one model instance' do
     post = @m_post.s1(
       %{
         SELECT
@@ -315,7 +315,7 @@ describe 'A DBI::Model subclass' do
     no_post.should.be.nil
   end
   
-  it 'should be Enumerable' do
+  it 'is Enumerable' do
     should.not.raise do
       @m_author.each { |a| }
       names = @m_author.map { |a| a.name }
@@ -342,7 +342,7 @@ describe 'A created DBI::Model subclass instance' do
     @m_post = Class.new( DBI::Model( :posts ) )
   end
   
-  it 'should provide read access to fields via identically-named readers' do
+  it 'provides read access to fields via identically-named readers' do
     mc = @m_mc.create(
       :c3 => 3,
       :c4 => 4
@@ -359,7 +359,7 @@ describe 'A created DBI::Model subclass instance' do
     mc.c4.should.equal 4
   end
     
-  it 'should provide write access to fields via identically-named writers' do
+  it 'provides write access to fields via identically-named writers' do
     mc = @m_mc.create(
       :c3 => 30,
       :c4 => 40
@@ -382,7 +382,7 @@ describe 'A created DBI::Model subclass instance' do
     mc_.c4.should.equal 40
   end
   
-  it 'should maintain Hash key equality across different fetches' do
+  it 'maintains Hash key equality across different fetches' do
     h = Hash.new
     a = @m_author[ 1 ]
     h[ a ] = 123
@@ -400,7 +400,7 @@ describe 'A created DBI::Model subclass instance' do
     h[ a2_ ].should.equal 456
   end
   
-  it 'should maintain Hash key distinction for different Model subclasses' do
+  it 'maintains Hash key distinction for different Model subclasses' do
     h = Hash.new
     a = @m_author[ 1 ]
     h[ a ] = 123
@@ -419,7 +419,7 @@ describe 'A found DBI::Model subclass instance' do
     @m_post = Class.new( DBI::Model( :posts ) )
   end
   
-  it 'should provide access to primary key value' do
+  it 'provides access to primary key value' do
     a = @m_author[ 1 ]
     a.pk.should.equal 1
     
@@ -427,7 +427,7 @@ describe 'A found DBI::Model subclass instance' do
     p.pk.should.equal 3
   end
   
-  it 'should provide read access to fields via identically-named readers' do
+  it 'provides read access to fields via identically-named readers' do
     p = @m_post[ 2 ]
     
     should.not.raise( NoMethodError ) do
@@ -445,7 +445,7 @@ describe 'A found DBI::Model subclass instance' do
     p.text.should.equal 'Second post.'
   end
   
-  it 'should provide write access to fields via identically-named writers' do
+  it 'provides write access to fields via identically-named writers' do
     the_new_text = 'Here is some new text.'
     
     p2 = @m_post[ 2 ]
@@ -463,14 +463,14 @@ describe 'A found DBI::Model subclass instance' do
     reset_data
   end
   
-  it 'should maintain identity across multiple DB hits' do
+  it 'maintains identity across multiple DB hits' do
     px = @m_post[ 1 ]
     py = @m_post[ 1 ]
     
     px.should.equal py
   end
   
-  it 'should provide multi-column writability via Model#set' do
+  it 'provides multi-column writability via Model#set' do
     p = @m_post[ 1 ]
     the_new_text = 'The 3rd post.'
     p.set(
@@ -485,7 +485,7 @@ describe 'A found DBI::Model subclass instance' do
     reset_data
   end
   
-  it 'should be deleted by #delete' do
+  it 'is deleted by #delete' do
     p = @m_post[ 3 ]
     p.should.not.be.nil
     successfully_deleted = p.delete
@@ -495,20 +495,20 @@ describe 'A found DBI::Model subclass instance' do
     reset_data
   end
 
-  it 'should do nothing on #save' do
+  it 'does nothing on #save' do
     p = @m_post[ 1 ]
     should.not.raise do
       p.save
     end
   end
   
-  it 'should allow a field to be incremented' do
+  it 'allows a field to be incremented' do
     mc = ManyCol.create( :c1 => 50 )
     should.not.raise do
       mc.inc
     end
   end
-  it 'should allow a field to be decremented' do
+  it 'allows a field to be decremented' do
     mc = ManyCol.create( :c1 => 50 )
     should.not.raise do
       mc.dec
@@ -523,7 +523,7 @@ describe 'DBI::Model (relationships)' do
     @m_fan = Class.new( DBI::Model( :fans ) )
   end
   
-  it 'should facilitate relating one to many, providing read access' do
+  it 'facilitates relating one to many, providing read access' do
     DBI::Model.one_to_many( @m_author, @m_post, :posts, :author, :author_id )
     a = @m_author[ 1 ]
     a.posts.should.not.be.empty
@@ -532,7 +532,7 @@ describe 'DBI::Model (relationships)' do
     p.author.id.should.equal 1
   end
   
-  it 'should facilitate relating one to many, allowing one of the many to set its one' do
+  it 'facilitates relating one to many, allowing one of the many to set its one' do
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
@@ -546,7 +546,7 @@ describe 'DBI::Model (relationships)' do
     reset_data
   end
   
-  it 'should facilitate relating many to many, providing read access' do
+  it 'facilitates relating many to many, providing read access' do
     DBI::Model.many_to_many(
       @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
     )
@@ -604,7 +604,7 @@ describe 'DBI::Collection' do
     )
   end
   
-  it 'should accept additions' do
+  it 'accepts additions' do
     a = @m_author[ 1 ]
     the_text = 'A new post.'
     a.posts << { :text => the_text }
@@ -618,7 +618,7 @@ describe 'DBI::Collection' do
     reset_data
   end
   
-  it 'should facilitate single record deletions' do
+  it 'facilitates single record deletions' do
     a = @m_author[ 1 ]
     posts = a.posts
     n = posts.size
@@ -631,7 +631,7 @@ describe 'DBI::Collection' do
     reset_data
   end
     
-  it 'should facilitate multi-record deletions' do
+  it 'facilitates multi-record deletions' do
     a = @m_author[ 1 ]
     posts = a.posts
     n = posts.size
@@ -643,7 +643,7 @@ describe 'DBI::Collection' do
     reset_data
   end
   
-  it 'should facilitate table-wide deletion' do
+  it 'facilitates table-wide deletion' do
     a = @m_author[ 1 ]
     a.posts.should.not.be.empty
     a.posts.clear.should.be > 0

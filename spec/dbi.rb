@@ -3,9 +3,9 @@ require 'spec/helper'
 $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 # See test-schema.sql and test-data.sql
 
-describe 'select_column' do
+describe 'DBI::DatabaseHandle.select_column' do
   
-  it 'should select one column' do
+  it 'selects one column' do
     name = $dbh.select_column(
       "SELECT name FROM authors LIMIT 1"
     )
@@ -13,14 +13,14 @@ describe 'select_column' do
     name.should.equal 'author1'
   end
   
-  it 'should select one column of first row' do
+  it 'selects one column of first row' do
     name = $dbh.select_column(
       "SELECT name FROM authors ORDER BY name DESC"
     )
     name.should.equal 'author3'
   end
   
-  it 'should select first column of first row' do
+  it 'selects first column of first row' do
     name = $dbh.select_column(
       "SELECT name, id FROM authors ORDER BY name DESC"
     )
@@ -29,9 +29,9 @@ describe 'select_column' do
   
 end
 
-describe 'accessors' do
+describe 'DBI::Row accessors' do
   
-  it 'should provide read access via #fieldname' do
+  it 'provide read access via #fieldname' do
     row = $dbh.select_one(
       "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
     )
@@ -45,7 +45,7 @@ describe 'accessors' do
     row.text.should.equal 'Second post.'
   end
   
-  it 'should provide in-memory (non-syncing) write access via #fieldname=' do
+  it 'provide in-memory (non-syncing) write access via #fieldname=' do
     row = $dbh.select_one(
       "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
     )

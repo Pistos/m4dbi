@@ -1,7 +1,7 @@
 require 'spec/helper'
 
 describe 'Hash' do
-  it 'should be convertible to a where subclause and matching value Array' do
+  it 'is convertible to a where subclause and matching value Array' do
     h = {
       :a => 2,
       :b => 'foo',
