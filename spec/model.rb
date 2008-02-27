@@ -24,6 +24,16 @@ end
 $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 reset_data
 
+class ManyCol < DBI::Model( :many_col_table )
+  def inc
+    c1 = c1 + 10
+  end
+  
+  def dec
+    c1 = c1 - 10
+  end
+end
+
 describe 'A DBI::Model subclass' do
   before do
     @m_author = Class.new( DBI::Model( :authors ) )
@@ -492,6 +502,18 @@ describe 'A found DBI::Model subclass instance' do
     end
   end
   
+  it 'should allow a field to be incremented' do
+    mc = ManyCol.create( :c1 => 50 )
+    should.not.raise do
+      mc.inc
+    end
+  end
+  it 'should allow a field to be decremented' do
+    mc = ManyCol.create( :c1 => 50 )
+    should.not.raise do
+      mc.dec
+    end
+  end
 end
 
 describe 'DBI::Model (relationships)' do
