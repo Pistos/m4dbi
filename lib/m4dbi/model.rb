@@ -109,9 +109,7 @@ module DBI
       value_placeholders = values.map { |v| '?' }.join( ',' )
       rec = nil
       
-      auto_commit = dbh[ 'AutoCommit' ]
-      dbh[ 'AutoCommit' ] = false
-      dbh.transaction do |dbh_|
+      dbh.one_transaction do |dbh_|
         num_inserted = dbh_.do(
           "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
           *values
@@ -130,17 +128,27 @@ module DBI
           end
         end
       end
-      dbh[ 'AutoCommit' ] = auto_commit
       
       rec
     end
     
     def self.find_or_create( hash = nil )
-      item = self.where( hash ).first
+      item = nil
+      error = nil
+      item = self.one_where( hash )
       if item.nil?
-        item = self.create( hash )
+        item =
+          begin
+            self.create( hash )
+          rescue => error
+            self.one_where( hash )
+          end
       end
-      item
+      if item
+        item
+      else
+        raise error
+      end
     end
     
     def self.select_all( *args )
