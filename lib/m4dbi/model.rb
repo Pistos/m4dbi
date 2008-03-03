@@ -289,7 +289,9 @@ module DBI
   # You can specify the primary key column like so:
   #   class Author < DBI::Model( :authors, 'id' ); end
   def self.Model( table, pk_ = 'id' )
-    Class.new( DBI::Model ) do |klass|
+    @models ||= Hash.new
+    
+    @models[ table ] ||= Class.new( DBI::Model ) do |klass|
       h = DBI::DatabaseHandle.last_handle
       if h.nil? or not h.connected?
         raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )

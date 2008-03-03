@@ -46,6 +46,25 @@ describe 'A DBI::Model subclass' do
     @m_post.should.not.be.nil
   end
   
+  it 'maintains identity across different inheritances' do
+    should.not.raise do
+      class Author < DBI::Model( :authors ); end
+      class Author < DBI::Model( :authors ); end
+    end
+  end
+  
+  it 'maintains member methods across redefinitions' do
+    class Author < DBI::Model( :authors )
+      def method1; 1; end
+    end
+    class Author < DBI::Model( :authors )
+      def method2; 2; end
+    end
+    a = Author[ 3 ]
+    a.method1.should.equal 1
+    a.method2.should.equal 2
+  end
+  
   it 'raises an exception when creating with a nil row' do
     should.raise( DBI::Error ) do
       @m_author.new nil
