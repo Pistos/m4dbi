@@ -2,10 +2,10 @@ require 'spec/helper'
 
 # See test-schema.sql and test-data.sql
 
-def reset_data
+def reset_data( dbh = $dbh, datafile = "test-data.sql" )
   dir = File.dirname( __FILE__ )
-  File.read( "#{dir}/test-data.sql" ).split( /;/ ).each do |command|
-    $dbh.do( command )
+  File.read( "#{dir}/#{datafile}" ).split( /;/ ).each do |command|
+    dbh.do( command )
   end
 end
 
@@ -39,6 +39,7 @@ describe 'A DBI::Model subclass' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_empty = Class.new( DBI::Model( :empty_table ) )
+    class Author < DBI::Model( :authors ); end
   end
   
   it 'can be defined' do
@@ -63,6 +64,47 @@ describe 'A DBI::Model subclass' do
     a = Author[ 3 ]
     a.method1.should.equal 1
     a.method2.should.equal 2
+  end
+  
+  it 'maintains identity across different database handles of the same database' do
+    should.not.raise do
+      original_handle = DBI::DatabaseHandle.last_handle
+      
+      class Author < DBI::Model( :authors ); end
+        
+      dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+      new_handle = DBI::DatabaseHandle.last_handle
+      new_handle.should.equal dbh
+      new_handle.should.not.equal original_handle
+      
+      class Author < DBI::Model( :authors ); end
+    end
+  end
+  
+  it 'maintains distinction from models of the same name in different databases' do
+    begin
+      a1 = @m_author[ 1 ]
+      a1.should.not.be.nil
+      a1.name.should.equal 'author1'
+      
+      dbh = DBI.connect( "DBI:Pg:m4dbi2", "m4dbi", "m4dbi" )
+      reset_data( dbh, "test-data2.sql" )
+      
+      @m_author2 = Class.new( DBI::Model( :authors ) )
+      
+      @m_author2[ 1 ].should.be.nil
+      a11 = @m_author2[ 11 ]
+      a11.should.not.be.nil
+      a11.name.should.equal 'author11'
+      
+      a2 = @m_author[ 2 ]
+      a2.should.not.be.nil
+      a2.name.should.equal 'author2'
+    ensure
+      # Clean up handles for later specs
+      dbh.disconnect if dbh and dbh.connected?
+      DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+    end
   end
   
   it 'raises an exception when creating with a nil row' do

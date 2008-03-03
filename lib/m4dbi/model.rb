@@ -284,19 +284,30 @@ module DBI
     end
   end
   
+  def self.models
+    @models
+  end
+  
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
   # You can specify the primary key column like so:
   #   class Author < DBI::Model( :authors, 'id' ); end
   def self.Model( table, pk_ = 'id' )
-    @models ||= Hash.new
+    h = DBI::DatabaseHandle.last_handle
+    if h.nil? or not h.connected?
+      raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
+    end
     
-    @models[ table ] ||= Class.new( DBI::Model ) do |klass|
-      h = DBI::DatabaseHandle.last_handle
-      if h.nil? or not h.connected?
-        raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
-      end
-      
+    model_key = case h.handle
+      when DBI::DBD::Pg::Database
+        "#{h.dbname}::#{table}"
+      # TODO: more DBDs
+      else
+        table
+    end
+    
+    @models ||= Hash.new
+    @models[ model_key ] ||= Class.new( DBI::Model ) do |klass|
       klass.trait( {
         :dbh => h,
         :table => table,

@@ -2,12 +2,40 @@ require 'dbi'
 require 'thread'
 
 module DBI
+  
+  # Here, we engage in some hackery to get database handles to provide us
+  # with the name of the database connected to.  For mystical reasons, this
+  # is hidden in normal DBI.
+  # Retrieve the database name with DatabaseHandle#dbname.
+  module DBD; module Pg
+    module ConnectionDatabaseNameAccessor
+      def dbname
+        @connection.db
+      end
+    end
+    module DatabaseNameAccessor
+      def dbname
+        @handle.dbname
+      end
+    end
+  end; end
+  
   class DatabaseHandle
     alias old_initialize initialize
     def initialize( handle )
       DBI::DatabaseHandle.last_handle = self
-      old_initialize( handle )
+      handle = old_initialize( handle )
       @mutex = Mutex.new
+      
+      # Hackery to expose dbname.
+      case @handle
+        when DBI::DBD::Pg::Database
+          @handle.extend DBI::DBD::Pg::ConnectionDatabaseNameAccessor
+          extend DBI::DBD::Pg::DatabaseNameAccessor
+        # TODO: more DBDs
+      end
+      
+      handle
     end
     
     # Atomically disable autocommit, do transaction, and reenable.
