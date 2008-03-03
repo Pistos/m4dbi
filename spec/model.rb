@@ -67,6 +67,8 @@ describe 'A DBI::Model subclass' do
   end
   
   it 'maintains identity across different database handles of the same database' do
+    # Subclassing in Ruby raises an exception if you try to subclass a class
+    # again, but with a different parent class.
     should.not.raise do
       original_handle = DBI::DatabaseHandle.last_handle
       
