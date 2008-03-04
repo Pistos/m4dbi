@@ -39,6 +39,7 @@ describe 'A DBI::Model subclass' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_empty = Class.new( DBI::Model( :empty_table ) )
+    @m_mc = Class.new( DBI::Model( :many_col_table ) )
     class Author < DBI::Model( :authors ); end
   end
   
@@ -281,6 +282,22 @@ describe 'A DBI::Model subclass' do
     a_ = @m_author[ 9 ]
     a_.should.equal a
     a_.name.should.equal 'author9'
+    
+    m = nil
+    should.not.raise do
+      m = @m_mc.create { |rec|
+        rec.id = 1
+        rec.c2 = 7
+        rec.c3 = 8
+      }
+    end
+    m_ = @m_mc[ 1 ]
+    m_.id.should.equal 1
+    m_.c1.should.be.nil
+    m_.c2.should.equal 7
+    m_.c3.should.equal 8
+    m_.c4.should.be.nil
+    m_.c5.should.be.nil
     
     reset_data
   end
