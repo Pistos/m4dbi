@@ -50,6 +50,7 @@ module DBI
         # nested calls (otherwise we have thread deadlock waiting on
         # the mutex).
         # TODO: This stuff may be premature optimization.  We may take it out.
+        # TODO: This is actually not threadsafe, either.
         yield self
       else
         t = Thread.new do
