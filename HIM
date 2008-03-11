@@ -5,9 +5,9 @@ M4DBI is a Ruby library that provides ORM modelling to the Ruby DBI package
 
 === Dependencies
 
-  - dbi (of course)
+  - dbi (of course) http://ruby-dbi.rubyforge.org/
     - DBDs for your choice of DBs
-  - metaid (gem install metaid)
+  - metaid (gem install metaid) http://whytheluckystiff.net/articles/seeingMetaclassesClearly.html
   - bacon (optional, for running tests; gem install bacon)
     
 === Installation
