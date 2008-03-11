@@ -284,10 +284,6 @@ module DBI
     end
   end
   
-  def self.models
-    @models
-  end
-  
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
   # You can specify the primary key column like so:
