@@ -3,7 +3,7 @@ require 'spec/helper'
 $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 # See test-schema.sql and test-data.sql
 
-describe 'DBI::DatabaseHandle.select_column' do
+describe 'DBI::DatabaseHandle#select_column' do
   
   it 'selects one column' do
     name = $dbh.select_column(
@@ -25,6 +25,68 @@ describe 'DBI::DatabaseHandle.select_column' do
       "SELECT name, id FROM authors ORDER BY name DESC"
     )
     name.should.equal 'author3'
+  end
+  
+end
+
+describe 'DBI::DatabaseHandle#one_transaction' do
+  
+  it 'turns off autocommit for the duration of a single transaction' do
+    $dbh.d( "DELETE FROM many_col_table;" )
+    $dbh.i( "INSERT INTO many_col_table ( id, c1 ) VALUES ( 1, 10 );" )
+    
+    # Here we will attempt to increment a value two times in parallel.
+    # If each multi-operation transaction is truly atomic, we expect that
+    # the final value will reflect two increments.
+    # If atomicity is not respected, the value should only reflect one
+    # increment.
+    
+    # First, we test the non-transactional case, to show failure.
+    
+    thread1 = Thread.new do
+      value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+      value.should.equal 10
+      sleep 5 # seconds
+      $dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
+    end
+    
+    thread2 = Thread.new do
+      value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+      value.should.equal 10
+      # Update right away
+      $dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
+    end
+    
+    thread2.join
+    thread1.join
+    
+    value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+    # Failure; two increments should give a final value of 12.
+    value.should.equal( 10 + 1 )
+    
+    # Now, we show that transactions keep things sane.
+    
+    thread1 = Thread.new do
+      $dbh.one_transaction do |dbh|
+        value = dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+        sleep 5 # seconds
+        dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
+      end
+    end
+    
+    thread2 = Thread.new do
+      $dbh.one_transaction do |dbh|
+        value = dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+        # Update right away
+        dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
+      end
+    end
+    
+    thread2.join
+    thread1.join
+    
+    value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
+    value.should.equal( 11 + 1 + 1 )
   end
   
 end
