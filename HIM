@@ -14,7 +14,7 @@ M4DBI is a Ruby library that provides ORM modelling to the Ruby DBI package
 
 ==== Nightly Gem
 
-  wget http://rome.purepistos.net/m4dbi/nightlies/m4dbi-nightly.gem
+  wget http://rome.purepistos.net/m4dbi/m4dbi-nightly.gem
   gem install m4dbi-nightly.gem
   
 ==== Repository
