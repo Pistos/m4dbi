@@ -39,3 +39,12 @@ task 'nightly' do
   version = Time.now.strftime( "%Y.%m.%d" )
   `mv m4dbi-#{version}.gem m4dbi-nightly.gem`
 end
+
+desc 'Build examples from specs'
+task 'examples' do
+  Dir[ 'spec/*.rb' ].each do |specfile|
+    next if specfile =~ /helper\.rb/
+    base = File.basename( specfile, ".rb" )
+    `ruby -I /misc/svn/specs2examples/lib /misc/svn/specs2examples/bin/specs2examples #{specfile} > /var/www/localhost/htdocs/m4dbi/examples/#{base}.html`
+  end
+end
