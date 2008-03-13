@@ -169,6 +169,32 @@ module DBI
       alias s1 select_one
     end
     
+    def self.update( where_hash_or_clause, set_hash )
+      where_clause = nil
+      set_clause = nil
+      where_params = nil
+      
+      if where_hash_or_clause.respond_to? :keys
+        where_hash = where_hash_or_clause
+        where_clause = where_hash.keys.map { |key|
+          "#{key} = ?"
+        }.join( ' AND ' )
+        where_params = where_hash.values
+      else
+        where_clause = where_hash_or_clause
+        where_params = []
+      end
+      
+      set_clause = set_hash.keys.map { |key|
+        "#{key} = ?"
+      }.join( ', ' )
+      params = set_hash.values + where_params
+      dbh.do(
+        "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
+        *params
+      )
+    end
+    
     # Example:
     #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
     #   her_posts = some_author.posts

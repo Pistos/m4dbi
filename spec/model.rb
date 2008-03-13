@@ -36,6 +36,9 @@ end
 
 describe 'A DBI::Model subclass' do
   before do
+    # Here we subclass DBI::Model.
+    # This is nearly equivalent to the typical "ChildClassName < ParentClassName"
+    # syntax, but allows us to refer to the class in our specs.
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_empty = Class.new( DBI::Model( :empty_table ) )
@@ -68,8 +71,8 @@ describe 'A DBI::Model subclass' do
   end
   
   it 'maintains identity across different database handles of the same database' do
-    # Subclassing in Ruby raises an exception if you try to subclass a class
-    # again, but with a different parent class.
+    # If you try to subclass a class a second time with a different parent class,
+    # Ruby raises an exception.
     should.not.raise do
       original_handle = DBI::DatabaseHandle.last_handle
       
@@ -412,6 +415,39 @@ describe 'A DBI::Model subclass' do
     authors.find { |a| a.name == 'author2' }.should.not.be.nil
     authors.find { |a| a.name == 'author3' }.should.not.be.nil
     authors.find { |a| a.name == 'author99' }.should.be.nil
+  end
+  
+  it 'provides a means to update records referred to by primary key value' do
+    new_text = 'This is some new text.'
+    
+    p2 = @m_post[ 2 ]
+    p2.text.should.not.equal new_text
+    
+    @m_post.update_one( 2, { :text => new_text } )
+    
+    p2_ = @m_post[ 2 ]
+    p2_.text.should.equal new_text
+    
+    reset_data
+  end
+  
+  it 'provides a means to update records referred to by a value hash' do
+    new_text = 'This is some new text.'
+    
+    posts = @m_post.where( :author_id => 1 )
+    posts.size.should.equal 2
+    posts.find_all { |p| p.text == new_text }.should.be.empty
+    
+    @m_post.update(
+      { :author_id => 1 },
+      { :text => new_text }
+    )
+    
+    posts_ = @m_post.where( :author_id => 1 )
+    posts_.size.should.equal 2
+    posts_.find_all { |p| p.text == new_text }.should.equal posts_
+    
+    reset_data
   end
 end
 
