@@ -175,22 +175,25 @@ module DBI
       where_params = nil
       
       if where_hash_or_clause.respond_to? :keys
-        where_hash = where_hash_or_clause
-        where_clause = where_hash.keys.map { |key|
-          "#{key} = ?"
-        }.join( ' AND ' )
-        where_params = where_hash.values
+        where_clause, where_params = where_hash_or_clause.to_where_clause
       else
         where_clause = where_hash_or_clause
         where_params = []
       end
       
-      set_clause = set_hash.keys.map { |key|
-        "#{key} = ?"
-      }.join( ', ' )
-      params = set_hash.values + where_params
+      set_clause, set_params = set_hash.to_set_clause
+      params = set_params + where_params
       dbh.do(
-        "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
+        "UPDATE #{table} SET #{set_clause} WHERE #{where_clause}",
+        *params
+      )
+    end
+    
+    def self.update_one( pk_value, set_hash )
+      set_clause, set_params = set_hash.to_set_clause
+      params = set_params + [ pk_value ]
+      dbh.do(
+        "UPDATE #{table} SET #{set_clause} WHERE #{pk} = ?",
         *params
       )
     end
@@ -285,13 +288,11 @@ module DBI
     end
     
     def set( hash )
-      set_clause = hash.keys.map { |key|
-        "#{key} = ?"
-      }.join( ', ' )
-      params = hash.values + [ pk ]
+      set_clause, set_params = hash.to_set_clause
+      set_params << pk
       dbh.do(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
-        *params
+        *set_params
       )
     end
     

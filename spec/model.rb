@@ -449,6 +449,25 @@ describe 'A DBI::Model subclass' do
     
     reset_data
   end
+  
+  it 'provides a means to update records specified by a raw WHERE clause' do
+    new_text = 'This is some new text.'
+    
+    posts = @m_post.where( :author_id => 1 )
+    posts.size.should.equal 2
+    posts.find_all { |p| p.text == new_text }.should.be.empty
+    
+    @m_post.update(
+      "author_id < 2",
+      { :text => new_text }
+    )
+    
+    posts_ = @m_post.where( :author_id => 1 )
+    posts_.size.should.equal 2
+    posts_.find_all { |p| p.text == new_text }.should.equal posts_
+    
+    reset_data
+  end
 end
 
 describe 'A created DBI::Model subclass instance' do
