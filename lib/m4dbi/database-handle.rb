@@ -44,29 +44,14 @@ module DBI
     # since we need to thread protect the AutoCommit property of the
     # database handle.
     def one_transaction
-      if @mutex_holder == Thread.current
-        # No need to start another transaction.
-        # This permits us to use one_transaction in recursive or
-        # nested calls (otherwise we have thread deadlock waiting on
-        # the mutex).
-        # TODO: This stuff may be premature optimization.  We may take it out.
-        # TODO: This is actually not threadsafe, either.
-        yield self
-      else
-        t = Thread.new do
-          @mutex.synchronize do
-            @mutex_holder = Thread.current
-            auto_commit = self[ 'AutoCommit' ]
-            self[ 'AutoCommit' ] = false
-            result = transaction do
-              yield self
-            end
-            self[ 'AutoCommit' ] = auto_commit
-            @mutex_holder = nil
-            result
-          end
+      @mutex.synchronize do
+        auto_commit = self[ 'AutoCommit' ]
+        self[ 'AutoCommit' ] = false
+        result = transaction do
+          yield self
         end
-        t.value
+        self[ 'AutoCommit' ] = auto_commit
+        result
       end
     end
     
