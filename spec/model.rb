@@ -113,9 +113,15 @@ describe 'A DBI::Model subclass' do
     end
   end
   
-  it 'raises an exception when creating with a nil row' do
+  it 'raises an exception when creating with invalid arguments' do
     should.raise( DBI::Error ) do
       @m_author.new nil
+    end
+    should.raise( DBI::Error ) do
+      @m_author.new 2
+    end
+    should.raise( DBI::Error ) do
+      @m_author.new Object.new
     end
   end
   

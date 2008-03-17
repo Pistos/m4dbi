@@ -257,8 +257,11 @@ module DBI
     # ------------------- :nodoc:
     
     def initialize( row )
-      if row.nil?
-        raise DBI::Error.new( "Attempted to instantiate DBI::Model with a nil DBI::Row." )
+      if not row.respond_to?( "[]".to_sym ) or not row.respond_to?( "[]=".to_sym )
+        raise DBI::Error.new( "Attempted to instantiate DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
+      end
+      if caller[ 1 ] !~ %r{/m4dbi/model\.rb:}
+        warn "Do not call DBI::Model#new directly; use DBI::create instead."
       end
       @row = row
     end
