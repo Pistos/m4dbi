@@ -261,7 +261,7 @@ module DBI
         raise DBI::Error.new( "Attempted to instantiate DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
       end
       if caller[ 1 ] !~ %r{/m4dbi/model\.rb:}
-        warn "Do not call DBI::Model#new directly; use DBI::create instead."
+        warn "Do not call DBI::Model#new directly; use DBI::Model#create instead."
       end
       @row = row
     end
