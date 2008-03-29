@@ -28,12 +28,11 @@ module DBI
       @mutex = Mutex.new
       
       # Hackery to expose dbname.
-      case @handle
-        when DBI::DBD::Pg::Database
-          @handle.extend DBI::DBD::Pg::ConnectionDatabaseNameAccessor
-          extend DBI::DBD::Pg::DatabaseNameAccessor
-        # TODO: more DBDs
-      end
+      if defined?( DBI::DBD::Pg::Database ); case @handle; when DBI::DBD::Pg::Database
+        @handle.extend DBI::DBD::Pg::ConnectionDatabaseNameAccessor
+        extend DBI::DBD::Pg::DatabaseNameAccessor
+      end; end 
+      # TODO: more DBDs
       
       handle
     end
