@@ -324,13 +324,13 @@ module DBI
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
     
-    model_key = case h.handle
-      when DBI::DBD::Pg::Database
+    model_key =
+      if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
         "#{h.dbname}::#{table}"
       # TODO: more DBDs
       else
         table
-    end
+      end
     
     @models ||= Hash.new
     @models[ model_key ] ||= Class.new( DBI::Model ) do |klass|
@@ -341,12 +341,11 @@ module DBI
         :columns => h.columns( table.to_s ),
       } )
       
-      case h.handle
-        when DBI::DBD::Pg::Database
-          meta_def( "last_record".to_sym ) do |dbh_|
-            self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
-          end
-        # TODO: more DBDs
+      if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
+        meta_def( "last_record".to_sym ) do |dbh_|
+          self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
+        end
+      # TODO: more DBDs
       end
       
       klass.trait[ :columns ].each do |col|
