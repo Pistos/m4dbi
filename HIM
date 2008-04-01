@@ -1,5 +1,7 @@
 == M4DBI - Models (and more) For DBI
 
+http://purepistos.net/m4dbi
+
 M4DBI is a Ruby library that provides ORM modelling to the Ruby DBI package
 ( http://ruby-dbi.rubyforge.org/ ).
 
