@@ -368,8 +368,10 @@ describe 'A DBI::Model subclass' do
     
     posts[ 0 ].id.should.equal 1
     posts[ 0 ].text.should.equal 'First post.'
+    posts[ 0 ].class.should.equal @m_post
     posts[ 1 ].id.should.equal 3
     posts[ 1 ].text.should.equal 'Third post.'
+    posts[ 1 ].class.should.equal @m_post
     
     no_posts = @m_post.s( "SELECT * FROM posts WHERE FALSE" )
     no_posts.should.not.be.nil
