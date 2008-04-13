@@ -267,7 +267,15 @@ module DBI
     end
     
     def method_missing( method, *args )
-      @row.send( method, *args )
+      begin
+        @row.send( method, *args )
+      rescue NoMethodError => e
+        raise NoMethodError.new(
+          "undefined method '#{method}' for #{self}",
+          method,
+          args
+        )
+      end
     end
     
     def pk
