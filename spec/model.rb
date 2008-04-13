@@ -225,8 +225,10 @@ describe 'A DBI::Model subclass' do
     rows.size.should.equal 3
     
     rows[ 0 ].id.should.equal 1
+    rows[ 0 ].class.should.equal @m_author
     rows[ 0 ].name.should.equal 'author1'
     rows[ 1 ].id.should.equal 2
+    rows[ 1 ].class.should.equal @m_author
     rows[ 1 ].name.should.equal 'author2'
   end
   
