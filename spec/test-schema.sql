@@ -30,5 +30,6 @@ CREATE TABLE many_col_table (
     c2 INTEGER,
     c3 INTEGER,
     c4 INTEGER,
-    c5 INTEGER
+    c5 INTEGER,
+    ts TIMESTAMP
 );
