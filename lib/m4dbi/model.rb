@@ -303,10 +303,16 @@ module DBI
     def set( hash )
       set_clause, set_params = hash.to_set_clause
       set_params << pk
-      dbh.do(
+      num_updated = dbh.do(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
         *set_params
       )
+      if num_updated > 0
+        hash.each do |key,value|
+          @row[ key ] = value
+        end
+      end
+      num_updated
     end
     
     # Returns true iff the record and only the record was successfully deleted.
@@ -361,10 +367,12 @@ module DBI
       klass.trait[ :columns ].each do |col|
         colname = col[ 'name' ]
         
+        # Column readers
         class_def( colname.to_sym ) do
           @row[ colname ]
         end
         
+        # Column writers
         class_def( "#{colname}=".to_sym ) do |new_value|
           num_changed = dbh.do(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_column} = ?",

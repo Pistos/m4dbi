@@ -597,6 +597,7 @@ describe 'A found DBI::Model subclass instance' do
     
     p3 = @m_post[ 3 ]
     p3.text = the_new_text
+    p3.text.should.equal the_new_text
     
     p3_ = @m_post[ 3 ]
     p3_.text.should.equal the_new_text
@@ -622,6 +623,8 @@ describe 'A found DBI::Model subclass instance' do
       :author_id => 2,
       :text => the_new_text
     )
+    p.author_id.should.equal 2
+    p.text.should.equal the_new_text
     
     p_ = @m_post[ 1 ]
     p_.author_id.should.equal 2
