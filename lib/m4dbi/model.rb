@@ -233,6 +233,7 @@ module DBI
               j.#{m1_fk} = ?
               AND m2.id = j.#{m2_fk}
           },
+          # TODO: m2.id?  Should be m2.pk or something
           pk
         )
       end
@@ -249,6 +250,7 @@ module DBI
               j.#{m2_fk} = ?
               AND m1.id = j.#{m1_fk}
           },
+          # TODO: Should be m1.pk not m1.id
           pk
         )
       end
