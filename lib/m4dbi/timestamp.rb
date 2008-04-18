@@ -12,5 +12,9 @@ module DBI
         )
       end
     end
+    
+    def <=>( other )
+      to_time <=> other.to_time
+    end
   end
 end
