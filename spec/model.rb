@@ -562,6 +562,7 @@ describe 'A found DBI::Model subclass instance' do
   before do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
+    @m_mc = Class.new( DBI::Model( :many_col_table ) )
   end
   
   it 'provides access to primary key value' do
@@ -606,6 +607,16 @@ describe 'A found DBI::Model subclass instance' do
     p2_ = @m_post[ 2 ]
     p2_.text.should.equal p2.text
     
+    mc1 = @m_mc.create(
+      :id => 1,
+      :c1 => 2
+    )
+    mc1.c1.should.equal 2
+    mc1.c1 = nil
+    mc1.c1.should.be.nil
+    mc1_ = @m_mc[ 1 ]
+    mc1_.c1.should.be.nil
+    
     reset_data
   end
   
@@ -629,6 +640,21 @@ describe 'A found DBI::Model subclass instance' do
     p_ = @m_post[ 1 ]
     p_.author_id.should.equal 2
     p_.text.should.equal the_new_text
+    
+    mc1 = @m_mc.create(
+      :id => 1,
+      :c1 => 2,
+      :c2 => 3
+    )
+    mc1.set(
+      :c1 => nil,
+      :c2 => 4
+    )
+    mc1.c1.should.be.nil
+    mc1.c2.should.equal 4
+    mc1_ = @m_mc[ 1 ]
+    mc1_.c1.should.be.nil
+    mc1_.c2.should.equal 4
     
     reset_data
   end
