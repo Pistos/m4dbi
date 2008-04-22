@@ -21,11 +21,14 @@ module DBI
   end; end
   
   class DatabaseHandle
+    attr_reader :transactions
+    
     alias old_initialize initialize
     def initialize( handle )
       DBI::DatabaseHandle.last_handle = self
       handle = old_initialize( handle )
       @mutex = Mutex.new
+      @transactions = Array.new
       
       # Hackery to expose dbname.
       if defined?( DBI::DBD::Pg::Database ) and ( DBI::DBD::Pg::Database === @handle )
@@ -44,12 +47,18 @@ module DBI
     # database handle.
     def one_transaction
       @mutex.synchronize do
+        # Keep track of transactions for debugging purposes
+        transaction = { :time => ::Time.now, :stack => caller }
+        @transactions << transaction
+        
         auto_commit = self[ 'AutoCommit' ]
         self[ 'AutoCommit' ] = false
         result = transaction do
           yield self
         end
         self[ 'AutoCommit' ] = auto_commit
+        
+        @transactions.delete transaction
         result
       end
     end
