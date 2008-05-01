@@ -1,3 +1,11 @@
+## 0.5.5
+
+- Improved and added numerous specs.
+- More precise NoMethodError? thrown on Model instances. (r2601)
+- DBI::Timestamp now behaves like Time. (r2602)
+- Model instance writers now properly modify object values (not just database).
+- nil values in condition clauses ([] and "where") no longer generate wrong SQL.
+
 ## 0.5.0
 
-First official public release.
+- First official public release.
