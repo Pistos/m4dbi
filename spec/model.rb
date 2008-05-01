@@ -147,6 +147,16 @@ describe 'A DBI::Model subclass' do
     o.should.not.be.nil
     o.class.should.equal @m_post
     o.text.should.equal 'First post.'
+    
+    o = @m_mc[ :c1 => 100, :c2 => 50 ]
+    o.should.not.be.nil
+    o.class.should.equal @m_mc
+    o.c3.should.equal 20
+    
+    o = @m_mc[ :c1 => 100, :c2 => nil ]
+    o.should.not.be.nil
+    o.class.should.equal @m_mc
+    o.c3.should.equal 40
   end
   
   it 'returns nil from #[] when no record is found' do
@@ -158,9 +168,7 @@ describe 'A DBI::Model subclass' do
   end
   
   it 'provides multi-record access via #where( Hash )' do
-    posts = @m_post.where(
-      :author_id => 1
-    )
+    posts = @m_post.where( :author_id => 1 )
     posts.should.not.be.nil
     posts.should.not.be.empty
     posts.size.should.equal 2
@@ -171,6 +179,24 @@ describe 'A DBI::Model subclass' do
     }
     p = sorted_posts.first
     p.text.should.equal 'First post.'
+    
+    rows = @m_mc.where( :c1 => 100, :c2 => 50 )
+    rows.should.not.be.nil
+    rows.should.not.be.empty
+    rows.size.should.equal 1
+    row = rows[ 0 ]
+    row.class.should.equal @m_mc
+    row.c1.should.equal 100
+    row.c3.should.equal 20
+    
+    rows = @m_mc.where( :c1 => 100, :c2 => nil )
+    rows.should.not.be.nil
+    rows.should.not.be.empty
+    rows.size.should.equal 1
+    row = rows[ 0 ]
+    row.class.should.equal @m_mc
+    row.c1.should.equal 100
+    row.c3.should.equal 40
   end    
     
   it 'provides multi-record access via #where( String )' do
@@ -200,6 +226,12 @@ describe 'A DBI::Model subclass' do
     post.should.not.be.nil
     post.class.should.equal @m_post
     post.text.should.equal 'Second post.'
+    
+    row = @m_mc.one_where( :c1 => 100, :c2 => nil )
+    row.should.not.be.nil
+    row.class.should.equal @m_mc
+    row.c1.should.equal 100
+    row.c3.should.equal 40
   end
   
   it 'provides single-record access via #one_where( String )' do
@@ -216,7 +248,6 @@ describe 'A DBI::Model subclass' do
     p = @m_post.one_where( "text = 'aoeu'" )
     p.should.be.nil
   end
-  
   
   it 'returns all table records via #all' do
     rows = @m_author.all
@@ -238,7 +269,7 @@ describe 'A DBI::Model subclass' do
     rows.should.be.empty
   end
   
-  it 'returns any single record from #one' do
+  it 'returns a random single record from #one' do
     one = @m_author.one
     one.should.not.be.nil
     one.class.should.equal @m_author
@@ -326,6 +357,14 @@ describe 'A DBI::Model subclass' do
     a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author1'
     @m_author.count.should.equal n
+    
+    n = @m_mc.count
+    row = @m_mc.find_or_create( :c1 => 100, :c2 => nil )
+    row.should.not.be.nil
+    row.class.should.equal @m_mc
+    row.c1.should.equal 100
+    row.c3.should.equal 40
+    @m_mc.count.should.equal n
   end
   
   it 'creates a record via #find_or_create( Hash )' do

@@ -5,7 +5,7 @@ $dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
 
 describe 'a DBI::Timestamp object' do
   before do
-    @ts = $dbh.sc "SELECT ts FROM many_col_table LIMIT 1"
+    @ts = $dbh.sc "SELECT ts FROM many_col_table WHERE ts IS NOT NULL LIMIT 1"
   end
   it 'acts like a Time object' do
     should.raise( NoMethodError ) do

@@ -12,17 +12,17 @@ describe 'Hash' do
     clause, values = h.to_clause( " AND " )
     where_clause, where_values = h.to_where_clause
     
-    s = "a = ? AND b = ? AND abc = ? AND xyz = ? AND the_nil IS NULL"
-    clause.length.should.equal s.length
-    where_clause.length.should.equal s.length
+    str = "a = ? AND b = ? AND abc = ? AND xyz = ? AND the_nil = ?"
+    where_str = "a = ? AND b = ? AND abc = ? AND xyz = ? AND the_nil IS ?"
+    clause.length.should.equal str.length
+    where_clause.length.should.equal where_str.length
     
     h.each_with_index do |key_value,index|
       key, value = key_value[ 0 ], key_value[ 1 ]
+      clause.should.match /#{key} = ?/
       if value.nil?
-        clause.should.match /#{key} IS NULL/
-        where_clause.should.match /#{key} IS NULL/
+        where_clause.should.match /#{key} IS ?/
       else
-        clause.should.match /#{key} = ?/
         where_clause.should.match /#{key} = ?/
       end
       values[ index ].should.equal value

@@ -57,4 +57,6 @@ INSERT INTO authors_fans ( author_id, fan_id ) VALUES ( 2, 3 );
 INSERT INTO authors_fans ( author_id, fan_id ) VALUES ( 2, 4 );
 
 
+INSERT INTO many_col_table ( c1,c2,c3 ) VALUES ( 100, 50, 20 );
+INSERT INTO many_col_table ( c1,c3 ) VALUES ( 100, 40 );
 INSERT INTO many_col_table ( ts ) VALUES ( NOW() );
