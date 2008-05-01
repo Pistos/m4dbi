@@ -771,7 +771,6 @@ describe 'DBI::Collection' do
   before do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
-    @m_fan = Class.new( DBI::Model( :fans ) )
     
     DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id

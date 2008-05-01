@@ -3,7 +3,11 @@ class Hash
     # The clause items and the values have to be in the same order.
     keys_ = keys
     clause = keys_.map { |field|
-      "#{field} = ?"
+      if self[ field ].nil?
+        "#{field} IS NULL"
+      else
+        "#{field} = ?"
+      end
     }.join( join_string )
     values_ = keys_.map { |key|
       self[ key ]
