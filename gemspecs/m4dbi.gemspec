@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
     s.files = [
         'HIM',
         'READHIM',
-        #'CHANGELOG',
+        'CHANGELOG',
         *( Dir[ 'lib/**/*.rb', 'spec/**/*.rb' ] )
     ]
     s.extra_rdoc_files = [
