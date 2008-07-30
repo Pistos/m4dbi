@@ -213,6 +213,20 @@ describe 'A DBI::Model subclass' do
     p.text.should.equal 'Second post.'
   end
   
+  it 'provides multi-record access via #where( String, param, param... )' do
+    posts = @m_post.where( "id < ?", 3 )
+    posts.should.not.be.nil
+    posts.should.not.be.empty
+    posts.size.should.equal 2
+    posts[ 0 ].class.should.equal @m_post
+      
+    sorted_posts = posts.sort { |p1,p2|
+      p2._id <=> p1._id
+    }
+    p = sorted_posts.first
+    p.text.should.equal 'Second post.'
+  end
+  
   it 'returns an empty array from #where when no records are found' do
     a = @m_author.where( :id => 999 )
     a.should.be.empty
@@ -236,6 +250,13 @@ describe 'A DBI::Model subclass' do
   
   it 'provides single-record access via #one_where( String )' do
     post = @m_post.one_where( "text LIKE '%Third%'" )
+    post.should.not.be.nil
+    post.class.should.equal @m_post
+    post.id.should.equal 3
+  end
+  
+  it 'provides single-record access via #one_where( String, param, param... )' do
+    post = @m_post.one_where( "text LIKE ?", '%Third%' )
     post.should.not.be.nil
     post.class.should.equal @m_post
     post.id.should.equal 3
