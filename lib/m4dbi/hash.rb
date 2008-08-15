@@ -13,13 +13,14 @@ class Hash
     values_ = keys_.map { |key|
       self[ key ]
     }
+    values_.compact!
     [ clause, values_ ]
   end
   
   def to_where_clause
     to_clause( " AND " ) { |field|
       if self[ field ].nil?
-        "#{field} IS ?"
+        "#{field} IS NULL"
       else
         "#{field} = ?"
       end
