@@ -33,6 +33,11 @@ task 'spec' do
   exec "bacon #{root}/spec/*.rb"
 end
 
+desc 'Run all specs against repo version of DBI'
+task 'spec-dev' do
+  exec "bacon -I/misc/git/ruby-dbi/lib #{root}/spec/*.rb"
+end
+
 desc 'Build nightly gem'
 task 'nightly' do
   output = `gem build #{root}/gemspecs/m4dbi-nightly.gemspec`
