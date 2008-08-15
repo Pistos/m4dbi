@@ -1,7 +1,10 @@
 class Hash
+  COMPACT_NILS = true
+  DONT_COMPACT_NILS = false
+  
   # Takes an optional block to provide a single "field = ?" type subclause
   # for each key-value pair.
-  def to_clause( join_string )
+  def to_clause( join_string, compact_nils = DONT_COMPACT_NILS )
     # The clause items and the values have to be in the same order.
     keys_ = keys
     if block_given?
@@ -13,12 +16,14 @@ class Hash
     values_ = keys_.map { |key|
       self[ key ]
     }
-    values_.compact!
+    if compact_nils
+      values_.compact!
+    end
     [ clause, values_ ]
   end
   
   def to_where_clause
-    to_clause( " AND " ) { |field|
+    to_clause( " AND ", COMPACT_NILS ) { |field|
       if self[ field ].nil?
         "#{field} IS NULL"
       else

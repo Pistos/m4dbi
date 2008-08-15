@@ -5,30 +5,28 @@ describe 'Hash' do
     h = {
       :a => 2,
       :b => 'foo',
+      :the_nil => nil,
       :abc => Time.now,
       :xyz => 9.02,
-      :the_nil => nil,
     }
     clause, values = h.to_clause( " AND " )
     where_clause, where_values = h.to_where_clause
     
-    str = "a = ? AND b = ? AND abc = ? AND xyz = ? AND the_nil = ?"
-    where_str = "a = ? AND b = ? AND abc = ? AND xyz = ? AND the_nil IS ?"
+    str = "a = ? AND b = ? AND the_nil = ? AND abc = ? AND xyz = ?"
+    where_str = "a = ? AND b = ? AND the_nil IS NULL AND abc = ? AND xyz = ?"
     clause.length.should.equal str.length
     where_clause.length.should.equal where_str.length
     
-    h.each_with_index do |key_value,index|
-      key, value = key_value[ 0 ], key_value[ 1 ]
+    h.each_key do |key|
       clause.should.match /#{key} = ?/
-      if value.nil?
-        where_clause.should.match /#{key} IS ?/
+      if h[ key ].nil?
+        where_clause.should.match /#{key} IS NULL/
       else
         where_clause.should.match /#{key} = ?/
       end
-      values[ index ].should.equal value
-      where_values[ index ].should.equal value
     end
-    values.size.should.equal h.keys.size
-    where_values.size.should.equal h.keys.size
+    
+    values.should.equal h.values
+    where_values.should.equal h.values.compact
   end
 end
