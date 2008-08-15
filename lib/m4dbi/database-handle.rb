@@ -24,9 +24,9 @@ module DBI
     attr_reader :transactions
     
     alias old_initialize initialize
-    def initialize( handle )
+    def initialize( *args )
       DBI::DatabaseHandle.last_handle = self
-      handle = old_initialize( handle )
+      handle = old_initialize( *args )
       @mutex = Mutex.new
       @transactions = Array.new
       
