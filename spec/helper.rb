@@ -13,3 +13,4 @@ $LOAD_PATH.unshift(
 require 'm4dbi'
 
 puts "DBI version: #{DBI::VERSION}"
+puts "M4DBI version: #{M4DBI_VERSION}"

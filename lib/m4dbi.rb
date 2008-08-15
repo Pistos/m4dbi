@@ -1,5 +1,7 @@
 require 'rubygems'
 
+M4DBI_VERSION = '0.6.0'
+
 require 'm4dbi/traits'
 require 'm4dbi/hash'
 require 'm4dbi/array'
