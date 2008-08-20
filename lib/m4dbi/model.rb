@@ -204,9 +204,14 @@ module DBI
       )
     end
     
-    def self.update_one( pk_array, set_hash )
+    def self.update_one( pk_value_or_array, set_hash )
       set_clause, set_params = set_hash.to_set_clause
-      params = set_params + pk_array
+      case pk_value_or_array
+        when Array
+          params = set_params + pk_value_or_array
+        else
+          params = set_params + [ pk_value_or_array ]
+      end
       dbh.do(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *params
