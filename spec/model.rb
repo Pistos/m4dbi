@@ -43,6 +43,7 @@ describe 'A DBI::Model subclass' do
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_empty = Class.new( DBI::Model( :empty_table ) )
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
+    @m_mcpk = Class.new( DBI::Model( :mcpk, [ :kc1, :kc2 ] ) )
     class Author < DBI::Model( :authors ); end
   end
   
@@ -135,6 +136,16 @@ describe 'A DBI::Model subclass' do
     o.should.not.be.nil
     o.class.should.equal @m_author
     o.name.should.equal 'author2'
+    
+    o = @m_mcpk[ [ 2, 2 ] ]
+    o.should.not.be.nil
+    o.class.should.equal @m_mcpk
+    o.val.should.equal 'two two'
+    
+    o = @m_mcpk[ { :kc1 => 5, :kc2 => 6 } ]
+    o.should.not.be.nil
+    o.class.should.equal @m_mcpk
+    o.val.should.equal 'five six'
   end
   
   it 'provides hash-like single-record access via #[ field_hash ]' do
@@ -488,15 +499,25 @@ describe 'A DBI::Model subclass' do
   end
   
   it 'provides a means to update records referred to by primary key value' do
-    new_text = 'This is some new text.'
+    new_text = 'Some new text.'
     
     p2 = @m_post[ 2 ]
     p2.text.should.not.equal new_text
-    
     @m_post.update_one( 2, { :text => new_text } )
-    
     p2_ = @m_post[ 2 ]
     p2_.text.should.equal new_text
+    
+    row = @m_mcpk[ [ 1, 1 ] ]
+    row.val.should.not.equal new_text
+    @m_mcpk.update_one( [ 1, 1 ], { :val => new_text } )
+    row = @m_mcpk[ [ 1, 1 ] ]
+    row.val.should.equal new_text
+    
+    row = @m_mcpk[ [ 3, 4 ] ]
+    row.val.should.not.equal new_text
+    @m_mcpk.update_one( [ 3, 4 ], { :val => new_text } )
+    row = @m_mcpk[ [ 4, 3 ] ]
+    row.val.should.equal new_text
     
     reset_data
   end
@@ -623,6 +644,7 @@ describe 'A found DBI::Model subclass instance' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
+    @m_mcpk = Class.new( DBI::Model( :mcpk, [ :kc1, :kc2 ] ) )
   end
   
   it 'provides access to primary key value' do
@@ -631,6 +653,12 @@ describe 'A found DBI::Model subclass instance' do
     
     p = @m_post[ 3 ]
     p.pk.should.equal 3
+    
+    r = @m_mcpk[ [ 1, 1 ] ]
+    r.pk.should.equal 'one one'
+    
+    r = @m_mcpk[ { :kc1 => 3, :kc2 => 4 } ]
+    r.pk.should.equal 'three four'
   end
   
   it 'provides read access to fields via identically-named readers' do

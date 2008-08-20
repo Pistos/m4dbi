@@ -33,3 +33,10 @@ CREATE TABLE many_col_table (
     c5 INTEGER,
     ts TIMESTAMP
 );
+
+CREATE TABLE mcpk (
+    kc1 INTEGER NOT NULL,
+    kc2 INTEGER NOT NULL,
+    val VARCHAR( 20 ) NOT NULL,
+    PRIMARY KEY( kc1, kc2 )
+);
