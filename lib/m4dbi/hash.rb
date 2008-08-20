@@ -36,6 +36,9 @@ class Hash
     to_clause( ", " )
   end
   
+  if method_defined? :slice
+    warn "Hash#slice already defined; redefining."
+  end
   def slice( *desired_keys )
     Hash[
       select { |key,value|
