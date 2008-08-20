@@ -516,7 +516,7 @@ describe 'A DBI::Model subclass' do
     row = @m_mcpk[ [ 3, 4 ] ]
     row.val.should.not.equal new_text
     @m_mcpk.update_one( [ 3, 4 ], { :val => new_text } )
-    row = @m_mcpk[ [ 4, 3 ] ]
+    row = @m_mcpk[ [ 3, 4 ] ]
     row.val.should.equal new_text
     
     reset_data
