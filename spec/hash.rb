@@ -38,6 +38,9 @@ describe 'Hash' do
     h.slice( :a, :b, :f ).should.equal(
       { :a => 1, :b => 2, :f => 6 }
     )
+    h.slice( :c, :e, :q ).should.equal(
+      { :c => 3, :e => 5 }
+    )
     h.slice.should.equal Hash.new
     h.slice( :g, :h ).should.equal Hash.new
   end
