@@ -281,11 +281,19 @@ module DBI
     end
     
     def pk
-      @row[ self.class.pk ]
+      pk_columns.map { |col|
+        @row[ col ]
+      }
     end
     
-    def pk_column
+    def pk_columns
       self.class.pk
+    end
+    
+    def pk_clause
+      pk_columns.map { |col|
+        "#{col} = ?"
+      }
     end
     
     def ==( other )
@@ -332,9 +340,9 @@ module DBI
   
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
-  # You can specify the primary key column like so:
-  #   class Author < DBI::Model( :authors, 'id' ); end
-  def self.Model( table, pk_ = 'id' )
+  # You can specify the primary key column(s) using an array, like so:
+  #   class Author < DBI::Model( :authors, [ 'auth_num' ] ); end
+  def self.Model( table, pk_ = [ 'id' ] )
     h = DBI::DatabaseHandle.last_handle
     if h.nil? or not h.connected?
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
@@ -358,6 +366,7 @@ module DBI
       } )
       
       if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
+        # TODO: This is broken for non-SERIAL or multi-column primary keys
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
         end
@@ -375,7 +384,7 @@ module DBI
         # Column writers
         class_def( "#{colname}=".to_sym ) do |new_value|
           num_changed = dbh.do(
-            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_column} = ?",
+            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
             pk
           )
