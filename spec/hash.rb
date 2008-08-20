@@ -29,4 +29,14 @@ describe 'Hash' do
     values.should.equal h.values
     where_values.should.equal h.values.compact
   end
+  
+  it 'offers a means to get subhashes via #slice' do
+    h = { :a => 1, :b => 2, :c => 3, :d => 4, :e => 5, :f => 6 }
+    h.slice( :b, :c ).should.equal(
+      { :b => 2, :c => 3 }
+    )
+    h.slice( :a, :b, :f ).should.equal(
+      { :a => 1, :b => 2, :f => 6 }
+    )
+  end
 end

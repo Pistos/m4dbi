@@ -35,4 +35,12 @@ class Hash
   def to_set_clause
     to_clause( ", " )
   end
+  
+  def slice( *desired_keys )
+    Hash[
+      select { |key,value|
+        desired_keys.include? key
+      }
+    ]
+  end
 end
