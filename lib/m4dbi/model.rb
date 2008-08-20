@@ -11,21 +11,27 @@ module DBI
     
     extend Enumerable
     
-    def self.[]( hash_or_pk_value )
-      case hash_or_pk_value
+    def self.[]( hash_or_pk_array )
+      case hash_or_pk_array
         when Hash
-          clause, values = hash_or_pk_value.to_where_clause
-          row = dbh.select_one(
-            "SELECT * FROM #{table} WHERE #{clause}",
-            *values
-          )
-        else
-          row = dbh.select_one(
-            "SELECT * FROM #{table} WHERE #{pk} = ?",
-            hash_or_pk_value
-          )
+          clause, values = hash_or_pk_array.to_where_clause
+        when Array
+          clause = pk.map { |col|
+            "#{col} = ?"
+          }.join( ' AND ' )
+          values = hash_or_pk_array
+        else # single value
+          clause = pk.map { |col|
+            "#{col} = ?"
+          }.join( ' AND ' )
+          values = [ hash_or_pk_array ]
       end
       
+      row = dbh.select_one(
+        "SELECT * FROM #{table} WHERE #{clause}",
+        *values
+      )
+          
       if row
         self.new( row )
       end
@@ -115,9 +121,16 @@ module DBI
           *values
         )
         if num_inserted > 0
-          pk_value = hash[ self.pk.to_sym ] || hash[ self.pk.to_s ]
-          if pk_value
-            rec = self.one_where( self.pk => pk_value )
+          pk_hash = hash.slice( *(
+            self.pk.map { |pk_col| pk_col.to_sym }
+          ) )
+          if pk_hash.empty?
+            pk_hash = hash.slice( *(
+              self.pk.map { |pk_col| pk_col.to_s }
+            ) )
+          end
+          if not pk_hash.empty?
+            rec = self.one_where( pk_hash )
           else
             begin
               rec = last_record( dbh_ )
@@ -293,7 +306,7 @@ module DBI
     def pk_clause
       pk_columns.map { |col|
         "#{col} = ?"
-      }
+      }.join( ' AND ' )
     end
     
     def ==( other )
@@ -386,7 +399,7 @@ module DBI
           num_changed = dbh.do(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
-            pk
+            *pk
           )
           if num_changed > 0
             @row[ colname ] = new_value
