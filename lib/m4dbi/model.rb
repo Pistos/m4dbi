@@ -16,14 +16,10 @@ module DBI
         when Hash
           clause, values = hash_or_pk_array.to_where_clause
         when Array
-          clause = pk.map { |col|
-            "#{col} = ?"
-          }.join( ' AND ' )
+          clause = pk_clause
           values = hash_or_pk_array
         else # single value
-          clause = pk.map { |col|
-            "#{col} = ?"
-          }.join( ' AND ' )
+          clause = pk_clause
           values = [ hash_or_pk_array ]
       end
       
@@ -35,6 +31,12 @@ module DBI
       if row
         self.new( row )
       end
+    end
+    
+    def self.pk_clause
+      pk.map { |col|
+        "#{col} = ?"
+      }.join( ' AND ' )
     end
     
     def self.from_rows( rows )
@@ -202,11 +204,11 @@ module DBI
       )
     end
     
-    def self.update_one( pk_value, set_hash )
+    def self.update_one( pk_array, set_hash )
       set_clause, set_params = set_hash.to_set_clause
-      params = set_params + [ pk_value ]
+      params = set_params + pk_array
       dbh.do(
-        "UPDATE #{table} SET #{set_clause} WHERE #{pk} = ?",
+        "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *params
       )
     end
