@@ -512,16 +512,16 @@ describe 'A DBI::Model subclass' do
     p2_ = @m_post[ 2 ]
     p2_.text.should.equal new_text
     
-    row = @m_mcpk[ [ 1, 1 ] ]
+    row = @m_mcpk[ 1, 1 ]
     row.val.should.not.equal new_text
     @m_mcpk.update_one( [ 1, 1 ], { :val => new_text } )
-    row = @m_mcpk[ [ 1, 1 ] ]
+    row = @m_mcpk[ 1, 1 ]
     row.val.should.equal new_text
     
-    row = @m_mcpk[ [ 3, 4 ] ]
+    row = @m_mcpk[ 3, 4 ]
     row.val.should.not.equal new_text
     @m_mcpk.update_one( [ 3, 4 ], { :val => new_text } )
-    row = @m_mcpk[ [ 3, 4 ] ]
+    row = @m_mcpk[ 3, 4 ]
     row.val.should.equal new_text
     
     reset_data
@@ -659,7 +659,7 @@ describe 'A found DBI::Model subclass instance' do
     p = @m_post[ 3 ]
     p.pk.should.equal 3
     
-    r = @m_mcpk[ [ 1, 1 ] ]
+    r = @m_mcpk[ 1, 1 ]
     r.pk.should.equal [ 1, 1 ]
     
     r = @m_mcpk[ { :kc1 => 3, :kc2 => 4 } ]
