@@ -15,12 +15,9 @@ module DBI
       case hash_or_pk_array
         when Hash
           clause, values = hash_or_pk_array.to_where_clause
-        when Array
-          clause = pk_clause
-          values = hash_or_pk_array
         else # single value
           clause = pk_clause
-          values = [ hash_or_pk_array ]
+          values = Array( hash_or_pk_array )
       end
       
       row = dbh.select_one(
@@ -206,12 +203,7 @@ module DBI
     
     def self.update_one( pk_value_or_array, set_hash )
       set_clause, set_params = set_hash.to_set_clause
-      case pk_value_or_array
-        when Array
-          params = set_params + pk_value_or_array
-        else
-          params = set_params + [ pk_value_or_array ]
-      end
+      params = set_params + Array( pk_value_or_array )
       dbh.do(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *params
