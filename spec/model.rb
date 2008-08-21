@@ -655,10 +655,10 @@ describe 'A found DBI::Model subclass instance' do
     p.pk.should.equal 3
     
     r = @m_mcpk[ [ 1, 1 ] ]
-    r.pk.should.equal 'one one'
+    r.pk.should.equal [ 1, 1 ]
     
     r = @m_mcpk[ { :kc1 => 3, :kc2 => 4 } ]
-    r.pk.should.equal 'three four'
+    r.pk.should.equal [ 3, 4 ]
   end
   
   it 'provides read access to fields via identically-named readers' do
