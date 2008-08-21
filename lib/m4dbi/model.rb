@@ -292,14 +292,21 @@ module DBI
       end
     end
     
+    # Returns a single value for single-column primary keys,
+    # returns an Array for multi-column primary keys.
     def pk
       if pk_columns.size == 1
         @row[ pk_columns[ 0 ] ]
       else
-        pk_columns.map { |col|
-          @row[ col ]
-        }
+        pk_values
       end
+    end
+    
+    # Always returns an Array of values, even for single-column primary keys.
+    def pk_values
+      pk_columns.map { |col|
+        @row[ col ]
+      }
     end
     
     def pk_columns
@@ -342,8 +349,8 @@ module DBI
     # Returns true iff the record and only the record was successfully deleted.
     def delete
       num_deleted = dbh.do(
-        "DELETE FROM #{table} WHERE #{pk_column} = ?",
-        pk
+        "DELETE FROM #{table} WHERE #{pk_clause}",
+        *pk_values
       )
       num_deleted == 1
     end
@@ -402,7 +409,7 @@ module DBI
           num_changed = dbh.do(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
-            *pk
+            *pk_values
           )
           if num_changed > 0
             @row[ colname ] = new_value
