@@ -293,9 +293,13 @@ module DBI
     end
     
     def pk
-      pk_columns.map { |col|
-        @row[ col ]
-      }
+      if pk_columns.size == 1
+        @row[ pk_columns[ 0 ] ]
+      else
+        pk_columns.map { |col|
+          @row[ col ]
+        }
+      end
     end
     
     def pk_columns
