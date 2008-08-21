@@ -11,13 +11,18 @@ module DBI
     
     extend Enumerable
     
-    def self.[]( hash_or_pk_array )
-      case hash_or_pk_array
-        when Hash
-          clause, values = hash_or_pk_array.to_where_clause
-        else # single value
-          clause = pk_clause
-          values = Array( hash_or_pk_array )
+    def self.[]( first_arg, *args )
+      if args.size == 0
+        case first_arg
+          when Hash
+            clause, values = first_arg.to_where_clause
+          else # single value
+            clause = pk_clause
+            values = Array( first_arg )
+        end
+      else
+        clause = pk_clause
+        values = [ first_arg ] + args
       end
       
       row = dbh.select_one(

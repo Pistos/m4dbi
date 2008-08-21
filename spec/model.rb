@@ -142,6 +142,11 @@ describe 'A DBI::Model subclass' do
     o.class.should.equal @m_mcpk
     o.val.should.equal 'two two'
     
+    o = @m_mcpk[ 1, 1 ]
+    o.should.not.be.nil
+    o.class.should.equal @m_mcpk
+    o.val.should.equal 'one one'
+    
     o = @m_mcpk[ { :kc1 => 5, :kc2 => 6 } ]
     o.should.not.be.nil
     o.class.should.equal @m_mcpk
