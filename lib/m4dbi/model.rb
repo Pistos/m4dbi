@@ -328,7 +328,7 @@ module DBI
       set_clause, set_params = hash.to_set_clause
       set_params << pk
       num_updated = dbh.do(
-        "UPDATE #{table} SET #{set_clause} WHERE #{pk_column} = ?",
+        "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *set_params
       )
       if num_updated > 0
