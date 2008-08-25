@@ -1,7 +1,7 @@
 require 'spec/helper'
 
-$dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
-# See test-schema.sql and test-data.sql
+connect_to_spec_database
+reset_data
 
 describe 'DBI::DatabaseHandle#select_column' do
   
@@ -95,6 +95,8 @@ describe 'DBI::DatabaseHandle#one_transaction' do
     
     value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
     value.should.equal( 11 + 1 + 1 )
+    
+    reset_data
   end
   
 end

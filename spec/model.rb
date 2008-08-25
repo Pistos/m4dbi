@@ -1,14 +1,5 @@
 require 'spec/helper'
 
-# See test-schema.sql and test-data.sql
-
-def reset_data( dbh = $dbh, datafile = "test-data.sql" )
-  dir = File.dirname( __FILE__ )
-  File.read( "#{dir}/#{datafile}" ).split( /;/ ).each do |command|
-    dbh.do( command )
-  end
-end
-
 describe 'DBI::Model' do
   it 'raises an exception when trying to define a model before connecting to a database' do
     dbh = DBI::DatabaseHandle.last_handle
