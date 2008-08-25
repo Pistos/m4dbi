@@ -12,7 +12,7 @@ describe 'DBI::Model' do
   end
 end
 
-connect_to_spec_database
+$dbh = connect_to_spec_database
 reset_data
 
 class ManyCol < DBI::Model( :many_col_table )
@@ -70,7 +70,7 @@ describe 'A DBI::Model subclass' do
       
       class Author < DBI::Model( :authors ); end
         
-      dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+      dbh = connect_to_spec_database
       new_handle = DBI::DatabaseHandle.last_handle
       new_handle.should.equal dbh
       new_handle.should.not.equal original_handle
@@ -85,7 +85,7 @@ describe 'A DBI::Model subclass' do
       a1.should.not.be.nil
       a1.name.should.equal 'author1'
       
-      dbh = DBI.connect( "DBI:Pg:m4dbi2", "m4dbi", "m4dbi" )
+      dbh = connect_to_spec_database( 'm4dbi2' )
       reset_data( dbh, "test-data2.sql" )
       
       @m_author2 = Class.new( DBI::Model( :authors ) )
@@ -101,7 +101,7 @@ describe 'A DBI::Model subclass' do
     ensure
       # Clean up handles for later specs
       dbh.disconnect if dbh and dbh.connected?
-      DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+      connect_to_spec_database
     end
   end
   

@@ -1,6 +1,6 @@
 require 'spec/helper'
 
-connect_to_spec_database
+$dbh = connect_to_spec_database
 
 describe 'a DBI::Timestamp object' do
   before do

@@ -1,6 +1,6 @@
 require 'spec/helper'
 
-connect_to_spec_database
+$dbh = connect_to_spec_database
 reset_data
 
 describe 'DBI::DatabaseHandle#select_column' do
