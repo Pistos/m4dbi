@@ -95,7 +95,7 @@ module DBI
     end
     
     def self.count
-      dbh.select_column( "SELECT COUNT(*) FROM #{table}" )
+      dbh.select_column( "SELECT COUNT(*) FROM #{table}" ).to_i
     end
     
     def self.create( hash = {} )
