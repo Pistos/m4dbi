@@ -399,6 +399,10 @@ module DBI
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
         end
+      elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h.handle
+        meta_def( "last_record".to_sym ) do |dbh_|
+          self.s1 "SELECT * FROM #{table} WHERE #{pk} = LAST_INSERT_ID();" 
+        end
       # TODO: more DBDs
       end
       
