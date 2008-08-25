@@ -12,7 +12,7 @@ describe 'DBI::Model' do
   end
 end
 
-$dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
+connect_to_spec_database
 reset_data
 
 class ManyCol < DBI::Model( :many_col_table )

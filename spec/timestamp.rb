@@ -1,7 +1,6 @@
 require 'spec/helper'
 
-$dbh = DBI.connect( "DBI:Pg:m4dbi", "m4dbi", "m4dbi" )
-# See test-schema.sql and test-data.sql
+connect_to_spec_database
 
 describe 'a DBI::Timestamp object' do
   before do
