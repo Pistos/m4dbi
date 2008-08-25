@@ -67,6 +67,8 @@ module DBI
       row = select_one( statement, *bindvars )
       if row
         row[ 0 ]
+      else
+        raise DBI::DataError.new( "Query returned no rows." )
       end
     end
     

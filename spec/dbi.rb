@@ -11,6 +11,15 @@ describe 'DBI::DatabaseHandle#select_column' do
     )
     name.class.should.not.equal Array
     name.should.equal 'author1'
+    
+    null = $dbh.select_column(
+      "SELECT c4 FROM many_col_table WHERE c3 = 40"
+    )
+    null.should.be.nil
+    
+    should.raise( DBI::DataError ) do
+      $dbh.select_column( "SELECT name FROM authors WHERE FALSE" )
+    end
   end
   
   it 'selects one column of first row' do
@@ -26,7 +35,6 @@ describe 'DBI::DatabaseHandle#select_column' do
     )
     name.should.equal 'author3'
   end
-  
 end
 
 describe 'DBI::DatabaseHandle#one_transaction' do
