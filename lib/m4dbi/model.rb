@@ -403,7 +403,7 @@ module DBI
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk} = LAST_INSERT_ID();" 
         end
-      elsif defined?( DBI::DBD::Sqlite3::Database ) and DBI::DBD::Sqlite3::Database === h.handle
+      elsif defined?( DBI::DBD::SQLite3::Database ) and DBI::DBD::SQLite3::Database === h.handle
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk} = last_insert_rowid();" 
         end
