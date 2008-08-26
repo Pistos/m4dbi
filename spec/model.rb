@@ -760,18 +760,6 @@ describe 'A found DBI::Model subclass instance' do
     end
   end
   
-  it 'allows a field to be incremented' do
-    mc = ManyCol.create( :c1 => 50 )
-    should.not.raise do
-      mc.inc
-    end
-  end
-  it 'allows a field to be decremented' do
-    mc = ManyCol.create( :c1 => 50 )
-    should.not.raise do
-      mc.dec
-    end
-  end
 end
 
 describe 'DBI::Model (relationships)' do
