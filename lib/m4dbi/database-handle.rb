@@ -20,6 +20,14 @@ module DBI
     end
   end; end
   
+  module DBD; module Mysql
+    module DatabaseNameAccessor
+      def dbname
+        select_column( "SELECT DATABASE()" )
+      end
+    end
+  end; end
+  
   class DatabaseHandle
     attr_reader :transactions
     
@@ -34,6 +42,8 @@ module DBI
       if defined?( DBI::DBD::Pg::Database ) and ( DBI::DBD::Pg::Database === @handle )
         @handle.extend DBI::DBD::Pg::ConnectionDatabaseNameAccessor
         extend DBI::DBD::Pg::DatabaseNameAccessor
+      elsif defined?( DBI::DBD::Mysql::Database ) and ( DBI::DBD::Mysql::Database === @handle )
+        extend DBI::DBD::Mysql::DatabaseNameAccessor
       end
       # TODO: more DBDs
       

@@ -378,9 +378,9 @@ module DBI
     end
     
     model_key =
-      if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
+      # DBD-dependent.  Not all DBDs have dbname implemented by M4DBI.
+      if h.respond_to? :dbname
         "#{h.dbname}::#{table}"
-      # TODO: more DBDs
       else
         table
       end
