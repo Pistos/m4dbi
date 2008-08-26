@@ -60,7 +60,7 @@ INSERT INTO authors_fans ( author_id, fan_id ) VALUES ( 2, 4 );
 
 INSERT INTO many_col_table ( c1,c2,c3 ) VALUES ( 100, 50, 20 );
 INSERT INTO many_col_table ( c1,c3 ) VALUES ( 100, 40 );
-INSERT INTO many_col_table ( ts ) VALUES ( NOW() );
+INSERT INTO many_col_table ( ts ) VALUES ( CURRENT_TIMESTAMP );
 
 INSERT INTO mcpk ( kc1, kc2, val ) VALUES ( 1, 1, 'one one' );
 INSERT INTO mcpk ( kc1, kc2, val ) VALUES ( 2, 2, 'two two' );
