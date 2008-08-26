@@ -16,7 +16,7 @@ puts "DBI version: #{DBI::VERSION}"
 puts "M4DBI version: #{M4DBI_VERSION}"
 
 # See test-schema*.sql and test-data.sql
-def connect_to_spec_database( database = 'm4dbi' )
+def connect_to_spec_database( database = ( ENV[ 'M4DBI_DATABASE' ] || 'm4dbi' ) )
   driver = ENV[ 'M4DBI_DRIVER' ] || "DBI:Pg"
   puts "Using DBI driver: '#{driver}'"
   DBI.connect( "#{driver}:#{database}", "m4dbi", "m4dbi" )

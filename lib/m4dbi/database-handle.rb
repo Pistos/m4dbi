@@ -28,6 +28,14 @@ module DBI
     end
   end; end
   
+  module DBD; module SQLite3
+    module DatabaseNameAccessor
+      def dbname
+        select_one( "PRAGMA database_list" )[ 2 ]
+      end
+    end
+  end; end
+  
   class DatabaseHandle
     attr_reader :transactions
     
@@ -44,6 +52,8 @@ module DBI
         extend DBI::DBD::Pg::DatabaseNameAccessor
       elsif defined?( DBI::DBD::Mysql::Database ) and ( DBI::DBD::Mysql::Database === @handle )
         extend DBI::DBD::Mysql::DatabaseNameAccessor
+      elsif defined?( DBI::DBD::SQLite3::Database ) and ( DBI::DBD::SQLite3::Database === @handle )
+        extend DBI::DBD::SQLite3::DatabaseNameAccessor
       end
       # TODO: more DBDs
       
