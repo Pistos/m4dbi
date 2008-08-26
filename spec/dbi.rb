@@ -18,7 +18,7 @@ describe 'DBI::DatabaseHandle#select_column' do
     null.should.be.nil
     
     should.raise( DBI::DataError ) do
-      $dbh.select_column( "SELECT name FROM authors WHERE FALSE" )
+      $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
     end
   end
   

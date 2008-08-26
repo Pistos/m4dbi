@@ -442,7 +442,7 @@ describe 'A DBI::Model subclass' do
     posts[ 1 ].text.should.equal 'Third post.'
     posts[ 1 ].class.should.equal @m_post
     
-    no_posts = @m_post.s( "SELECT * FROM posts WHERE FALSE" )
+    no_posts = @m_post.s( "SELECT * FROM posts WHERE 1+1 = 3" )
     no_posts.should.not.be.nil
     no_posts.should.be.empty
   end
@@ -471,7 +471,7 @@ describe 'A DBI::Model subclass' do
     post.author_id.should.equal 1
     post.text.should.equal 'Third post.'
     
-    no_post = @m_post.s1( "SELECT * FROM posts WHERE FALSE" )
+    no_post = @m_post.s1( "SELECT * FROM posts WHERE 1+1 = 3" )
     no_post.should.be.nil
   end
   
