@@ -3,6 +3,7 @@
 - Compatibility with DBI 0.4.0 ensured.
 - Support for multi-column primary keys added.
 - MySQL support improved and spec'ed.
+- SQLite support improved and spec'ed.
 
 ## 0.5.5
 
