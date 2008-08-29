@@ -376,6 +376,9 @@ module DBI
     if h.nil? or not h.connected?
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
+    if not pk_.respond_to? :each
+      raise DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
+    end
     
     model_key =
       # DBD-dependent.  Not all DBDs have dbname implemented by M4DBI.
