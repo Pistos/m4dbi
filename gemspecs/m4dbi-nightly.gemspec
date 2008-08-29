@@ -21,11 +21,12 @@ spec = Gem::Specification.new do |s|
     s.files = [
         'HIM',
         'READHIM',
-        #'CHANGELOG',
+        'CHANGELOG',
+        'LICENCE',
         *( Dir[ 'lib/**/*.rb', 'spec/**/*.rb' ] )
     ]
     s.extra_rdoc_files = [
-      'HIM', 'READHIM',# 'CHANGELOG'
+      'HIM', 'READHIM', 'CHANGELOG', 'LICENCE',
     ]
     s.test_files = Dir.glob( 'spec/*.rb' )
 end

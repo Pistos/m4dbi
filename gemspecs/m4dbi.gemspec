@@ -4,7 +4,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
     s.name = 'm4dbi'
-    s.version = '0.5.5'
+    s.version = '0.6.0'
     s.summary = 'Models (and More) for DBI'
     s.description = 'M4DBI provides models, associations and some convenient extensions to Ruby DBI.'
     s.homepage = 'http://purepistos.net/m4dbi'
@@ -21,10 +21,11 @@ spec = Gem::Specification.new do |s|
         'HIM',
         'READHIM',
         'CHANGELOG',
+        'LICENCE',
         *( Dir[ 'lib/**/*.rb', 'spec/**/*.rb' ] )
     ]
     s.extra_rdoc_files = [
-      'HIM', 'READHIM', 'CHANGELOG'
+      'HIM', 'READHIM', 'CHANGELOG', 'LICENCE',
     ]
     s.test_files = Dir.glob( 'spec/*.rb' )
 end
