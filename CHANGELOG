@@ -4,6 +4,7 @@
 - Support for multi-column primary keys added.
 - MySQL support improved and spec'ed.
 - SQLite support improved and spec'ed.
+- MIT licence adopted.
 
 ## 0.5.5
 
