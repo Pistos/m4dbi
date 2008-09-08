@@ -142,6 +142,11 @@ describe 'A DBI::Model subclass' do
     o.should.not.be.nil
     o.class.should.equal @m_mcpk
     o.val.should.equal 'five six'
+    
+    should.not.raise( DBI::Error ) do
+      o = @m_author[ nil ]
+      o.should.be.nil
+    end
   end
   
   it 'provides hash-like single-record access via #[ field_hash ]' do

@@ -16,6 +16,9 @@ module DBI
         case first_arg
           when Hash
             clause, values = first_arg.to_where_clause
+          when NilClass
+            clause = pk_clause
+            values = [ first_arg ]
           else # single value
             clause = pk_clause
             values = Array( first_arg )
