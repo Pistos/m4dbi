@@ -21,17 +21,17 @@ M4DBI is a Ruby library that provides ORM modelling to the Ruby DBI package
   
 ==== Repository
 
-To use the repository version, you need Subversion (http://subversion.tigris.org).
-Chances are, there is a Subversion package for your Linux/UNIX flavour.
+To use the repository version, you need git ( http://git.or.cz ).
+Chances are, there is a git package for your Linux/UNIX flavour.
 
   cd /where/you/want/m4dbi
-  svn co http://rome.purepistos.net/svn/m4dbi
+  git clone git://github.com/Pistos/m4dbi.git
   
 Change the following to whatever the equivalent paths are for your system:
 
   cd /usr/lib/ruby/site_ruby/1.8
-  ln -s /path/to/checked/out/m4dbi/trunk/lib/m4dbi
-  ln -s /path/to/checked/out/m4dbi/trunk/lib/m4dbi.rb
+  ln -s /path/to/cloned/m4dbi/lib/m4dbi
+  ln -s /path/to/cloned/m4dbi/lib/m4dbi.rb
 
 === Usage
 
@@ -40,7 +40,7 @@ generated from the spec files under the spec/ dir.
 
 === Source Code
 
-Browse source at http://rome.purepistos.net/issues/m4dbi/browser/trunk .
+Browse source at http://github.com/Pistos/m4dbi/tree/master .
 See coverage at http://rome.purepistos.net/m4dbi/rcov .
 Very limited rdocs at http://rome.purepistos.net/m4dbi/rdoc .
 
