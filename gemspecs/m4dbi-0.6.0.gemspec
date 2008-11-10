@@ -9,7 +9,7 @@ spec = Gem::Specification.new do |s|
     s.description = 'M4DBI provides models, associations and some convenient extensions to Ruby DBI.'
     s.homepage = 'http://purepistos.net/m4dbi'
     s.add_dependency( 'metaid' )
-    s.requirements << 'dbi'
+    s.add_dependency( 'dbi' )
     s.requirements << 'bacon (optional)'
     
     s.authors = [ 'Pistos' ]
