@@ -8,6 +8,7 @@ spec = Gem::Specification.new do |s|
     s.summary = 'Models (and More) for DBI'
     s.description = 'M4DBI provides models, associations and some convenient extensions to Ruby DBI.'
     s.homepage = 'http://purepistos.net/m4dbi'
+    s.rubyforge_project = 'm4dbi'
     s.add_dependency( 'metaid' )
     s.add_dependency( 'dbi' )
     s.requirements << 'bacon (optional)'
