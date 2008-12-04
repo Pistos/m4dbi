@@ -34,6 +34,12 @@ CREATE TABLE many_col_table (
     ts TIMESTAMP
 );
 
+CREATE TABLE non_id_pk (
+    str VARCHAR( 128 ) NOT NULL PRIMARY KEY,
+    c1 INTEGER,
+    c2 INTEGER
+);
+
 CREATE TABLE mcpk (
     kc1 INTEGER NOT NULL,
     kc2 INTEGER NOT NULL,

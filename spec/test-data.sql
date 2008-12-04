@@ -3,6 +3,7 @@ DELETE FROM authors_fans;
 DELETE FROM fans;
 DELETE FROM authors;
 DELETE FROM many_col_table;
+DELETE FROM non_id_pk;
 DELETE FROM mcpk;
 
 INSERT INTO authors (id, name) VALUES ( 1, 'author1' );
@@ -61,6 +62,10 @@ INSERT INTO authors_fans ( author_id, fan_id ) VALUES ( 2, 4 );
 INSERT INTO many_col_table ( c1,c2,c3 ) VALUES ( 100, 50, 20 );
 INSERT INTO many_col_table ( c1,c3 ) VALUES ( 100, 40 );
 INSERT INTO many_col_table ( ts ) VALUES ( CURRENT_TIMESTAMP );
+
+INSERT INTO non_id_pk ( str, c1, c2 ) VALUES ( 'one', 1, 2 );
+INSERT INTO non_id_pk ( str, c1, c2 ) VALUES ( 'two', 2, 4 );
+INSERT INTO non_id_pk ( str, c1, c2 ) VALUES ( 'three', 3, 6 );
 
 INSERT INTO mcpk ( kc1, kc2, val ) VALUES ( 1, 1, 'one one' );
 INSERT INTO mcpk ( kc1, kc2, val ) VALUES ( 2, 2, 'two two' );
