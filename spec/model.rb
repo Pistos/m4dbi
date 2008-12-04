@@ -658,6 +658,7 @@ describe 'A found DBI::Model subclass instance' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
+    @m_nipk = Class.new( DBI::Model( :non_id_pk, [ :str ] ) )
     @m_mcpk = Class.new( DBI::Model( :mcpk, [ :kc1, :kc2 ] ) )
   end
 
@@ -767,6 +768,12 @@ describe 'A found DBI::Model subclass instance' do
     successfully_deleted = p.delete
     successfully_deleted.should.be.true
     @m_post[ 3 ].should.be.nil
+
+    o = @m_nipk[ 'one' ]
+    o.should.not.be.nil
+    successfully_deleted = o.delete
+    successfully_deleted.should.be.true
+    @m_nipk[ 'one' ].should.be.nil
 
     reset_data
   end
