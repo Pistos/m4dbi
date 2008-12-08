@@ -86,7 +86,7 @@ describe 'A DBI::Model subclass' do
       a1.should.not.be.nil
       a1.name.should.equal 'author1'
 
-      dbh = connect_to_spec_database( 'm4dbi2' )
+      dbh = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
       reset_data( dbh, "test-data2.sql" )
 
       @m_author2 = Class.new( DBI::Model( :authors ) )

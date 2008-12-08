@@ -6,11 +6,11 @@ module DBI
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
     ancestral_trait_class_reader :dbh, :table, :pk, :columns
-    
+
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
-    
+
     extend Enumerable
-    
+
     def self.[]( first_arg, *args )
       if args.size == 0
         case first_arg
@@ -27,27 +27,27 @@ module DBI
         clause = pk_clause
         values = [ first_arg ] + args
       end
-      
+
       row = dbh.select_one(
         "SELECT * FROM #{table} WHERE #{clause}",
         *values
       )
-          
+
       if row
         self.new( row )
       end
     end
-    
+
     def self.pk_clause
       pk.map { |col|
         "#{col} = ?"
       }.join( ' AND ' )
     end
-    
+
     def self.from_rows( rows )
       rows.map { |r| self.new( r ) }
     end
-    
+
     def self.where( conditions, *args )
       case conditions
         when String
@@ -57,12 +57,12 @@ module DBI
           cond, params = conditions.to_where_clause
           sql = "SELECT * FROM #{table} WHERE #{cond}"
       end
-      
+
       self.from_rows(
         dbh.select_all( sql, *params )
       )
     end
-    
+
     def self.one_where( conditions, *args )
       case conditions
         when String
@@ -72,35 +72,35 @@ module DBI
           cond, params = conditions.to_where_clause
           sql = "SELECT * FROM #{table} WHERE #{cond} LIMIT 1"
       end
-      
+
       row = dbh.select_one( sql, *params )
       if row
         self.new( row )
       end
     end
-    
+
     def self.all
       self.from_rows(
         dbh.select_all( "SELECT * FROM #{table}" )
       )
     end
-    
+
     # TODO: Perhaps we'll use cursors for Model#each.
     def self.each( &block )
       self.all.each( &block )
     end
-    
+
     def self.one
       row = dbh.select_one( "SELECT * FROM #{table} LIMIT 1" )
       if row
         self.new( row )
       end
     end
-    
+
     def self.count
       dbh.select_column( "SELECT COUNT(*) FROM #{table}" ).to_i
     end
-    
+
     def self.create( hash = {} )
       if block_given?
         row = DBI::Row.new(
@@ -115,13 +115,13 @@ module DBI
           end
         end
       end
-      
+
       keys = hash.keys
       cols = keys.join( ',' )
       values = keys.map { |key| hash[ key ] }
       value_placeholders = values.map { |v| '?' }.join( ',' )
       rec = nil
-      
+
       dbh.one_transaction do |dbh_|
         num_inserted = dbh_.do(
           "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
@@ -148,10 +148,10 @@ module DBI
           end
         end
       end
-      
+
       rec
     end
-    
+
     def self.find_or_create( hash = nil )
       item = nil
       error = nil
@@ -170,37 +170,37 @@ module DBI
         raise error
       end
     end
-    
+
     def self.select_all( *args )
       self.from_rows(
         dbh.select_all( *args )
       )
     end
-    
+
     def self.select_one( *args )
       row = dbh.select_one( *args )
       if row
         self.new( row )
       end
     end
-    
+
     class << self
       alias s select_all
       alias s1 select_one
     end
-    
+
     def self.update( where_hash_or_clause, set_hash )
       where_clause = nil
       set_clause = nil
       where_params = nil
-      
+
       if where_hash_or_clause.respond_to? :keys
         where_clause, where_params = where_hash_or_clause.to_where_clause
       else
         where_clause = where_hash_or_clause
         where_params = []
       end
-      
+
       set_clause, set_params = set_hash.to_set_clause
       params = set_params + where_params
       dbh.do(
@@ -208,7 +208,7 @@ module DBI
         *params
       )
     end
-    
+
     def self.update_one( *args )
       set_clause, set_params = args[ -1 ].to_set_clause
       pk_values = args[ 0..-2 ]
@@ -218,7 +218,7 @@ module DBI
         *params
       )
     end
-    
+
     # Example:
     #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
     #   her_posts = some_author.posts
@@ -234,7 +234,7 @@ module DBI
         send( "#{the_one_fk}=".to_sym, new_one.pk )
       end
     end
-    
+
     # Example:
     #   DBI::Model.many_to_many(
     #     @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
@@ -258,7 +258,7 @@ module DBI
           pk
         )
       end
-      
+
       model2.class_def( m1_as.to_sym ) do
         model1.select_all(
           %{
@@ -276,9 +276,9 @@ module DBI
         )
       end
     end
-    
+
     # ------------------- :nodoc:
-    
+
     def initialize( row )
       if not row.respond_to?( "[]".to_sym ) or not row.respond_to?( "[]=".to_sym )
         raise DBI::Error.new( "Attempted to instantiate DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
@@ -288,7 +288,7 @@ module DBI
       end
       @row = row
     end
-    
+
     def method_missing( method, *args )
       begin
         @row.send( method, *args )
@@ -300,7 +300,7 @@ module DBI
         )
       end
     end
-    
+
     # Returns a single value for single-column primary keys,
     # returns an Array for multi-column primary keys.
     def pk
@@ -310,36 +310,36 @@ module DBI
         pk_values
       end
     end
-    
+
     # Always returns an Array of values, even for single-column primary keys.
     def pk_values
       pk_columns.map { |col|
         @row[ col ]
       }
     end
-    
+
     def pk_columns
       self.class.pk
     end
-    
+
     def pk_clause
       pk_columns.map { |col|
         "#{col} = ?"
       }.join( ' AND ' )
     end
-    
+
     def ==( other )
       other and ( pk == other.pk )
     end
-    
+
     def hash
       "#{self.class.hash}#{pk}".to_i
     end
-    
+
     def eql?( other )
       hash == other.hash
     end
-    
+
     def set( hash )
       set_clause, set_params = hash.to_set_clause
       set_params << pk
@@ -354,7 +354,7 @@ module DBI
       end
       num_updated
     end
-    
+
     # Returns true iff the record and only the record was successfully deleted.
     def delete
       num_deleted = dbh.do(
@@ -363,13 +363,13 @@ module DBI
       )
       num_deleted == 1
     end
-    
+
     # save does nothing.  It exists to provide compatibility with other ORMs.
     def save
       nil
     end
   end
-  
+
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
   # You can specify the primary key column(s) using an array, like so:
@@ -382,7 +382,7 @@ module DBI
     if not pk_.respond_to? :each
       raise DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
     end
-    
+
     model_key =
       # DBD-dependent.  Not all DBDs have dbname implemented by M4DBI.
       if h.respond_to? :dbname
@@ -390,7 +390,7 @@ module DBI
       else
         table
       end
-    
+
     @models ||= Hash.new
     @models[ model_key ] ||= Class.new( DBI::Model ) do |klass|
       klass.trait( {
@@ -399,31 +399,31 @@ module DBI
         :pk => pk_,
         :columns => h.columns( table.to_s ),
       } )
-      
+
       if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
         # TODO: This is broken for non-SERIAL or multi-column primary keys
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );" 
+          self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );"
         end
       elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h.handle
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = LAST_INSERT_ID();" 
+          self.s1 "SELECT * FROM #{table} WHERE #{pk} = LAST_INSERT_ID();"
         end
       elsif defined?( DBI::DBD::SQLite3::Database ) and DBI::DBD::SQLite3::Database === h.handle
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = last_insert_rowid();" 
+          self.s1 "SELECT * FROM #{table} WHERE #{pk} = last_insert_rowid();"
         end
       # TODO: more DBDs
       end
-      
+
       klass.trait[ :columns ].each do |col|
         colname = col[ 'name' ]
-        
+
         # Column readers
         class_def( colname.to_sym ) do
           @row[ colname ]
         end
-        
+
         # Column writers
         class_def( "#{colname}=".to_sym ) do |new_value|
           num_changed = dbh.do(
@@ -438,5 +438,5 @@ module DBI
       end
     end
   end
-  
+
 end
