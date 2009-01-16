@@ -25,7 +25,7 @@ end
 
 desc 'Run coverage examiner (rcov)'
 task 'rcov' do
-   exec( "rcov -o /var/www/localhost/htdocs/m4dbi/rcov spec/*.rb" )
+   exec( "rcov -o /var/www/localhost/htdocs/m4dbi/rcov -x '.gems' spec/*.rb" )
 end
 
 desc 'Run all specs'
