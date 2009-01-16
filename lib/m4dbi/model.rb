@@ -220,7 +220,7 @@ module DBI
     end
 
     # Example:
-    #   DBI::Model.one_to_many( Author, :posts, Post, :author, :author_id )
+    #   DBI::Model.one_to_many( Author, Post, :posts, :author, :author_id )
     #   her_posts = some_author.posts
     #   the_author = some_post.author
     def self.one_to_many( the_one, the_many, many_as, one_as, the_one_fk )
