@@ -1,7 +1,7 @@
 class Hash
   COMPACT_NILS = true
   DONT_COMPACT_NILS = false
-  
+
   # Takes an optional block to provide a single "field = ?" type subclause
   # for each key-value pair.
   def to_clause( join_string, compact_nils = DONT_COMPACT_NILS )
@@ -21,7 +21,7 @@ class Hash
     end
     [ clause, values_ ]
   end
-  
+
   def to_where_clause
     to_clause( " AND ", COMPACT_NILS ) { |field|
       if self[ field ].nil?
@@ -31,19 +31,21 @@ class Hash
       end
     }
   end
-  
+
   def to_set_clause
     to_clause( ", " )
   end
-  
+
   if method_defined? :slice
     warn "Hash#slice already defined; redefining."
   end
   def slice( *desired_keys )
     Hash[
-      select { |key,value|
-        desired_keys.include? key
-      }
+      *(
+        select { |key,value|
+          desired_keys.include? key
+        }.flatten
+      )
     ]
   end
 end
