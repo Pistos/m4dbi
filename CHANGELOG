@@ -1,3 +1,8 @@
+## 0.6.1
+
+- Fixed major Hash#slice bug that only surfaced in Ruby 1.8.6 and earier.
+- Minor rdoc and spec additions or adjustments.
+
 ## 0.6.0
 
 - Compatibility with DBI 0.4.0 ensured.
