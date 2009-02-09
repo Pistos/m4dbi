@@ -154,7 +154,7 @@ module DBI
 
     def self.find_or_create( hash = nil )
       item = nil
-      error = nil
+      error = DBI::Error.new( "Failed to find_or_create( #{hash.inspect} )" )
       item = self.one_where( hash )
       if item.nil?
         item =
