@@ -348,6 +348,22 @@ describe 'A DBI::Model subclass' do
     a_.should.equal a
     a_.name.should.equal 'author9'
 
+    # No value given for auto-incrementing primary key
+    a = @m_author.create(
+      :name => 'author10'
+    )
+    a.should.not.be.nil
+    a.class.should.equal @m_author
+    a.id.should.not.equal 9
+    a.should.respond_to :name
+    a.should.not.respond_to :no_column_by_this_name
+    a.name.should.equal 'author10'
+
+    a_ = @m_author[ a.id ]
+    a_.should.not.be.nil
+    a_.should.equal a
+    a_.name.should.equal 'author10'
+
     reset_data
   end
 
