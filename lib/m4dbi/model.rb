@@ -400,18 +400,26 @@ module DBI
         :columns => h.columns( table.to_s ),
       } )
 
+      meta_def( 'pk_str'.to_sym ) do
+        if pk.size == 1
+          pk[ 0 ].to_s
+        else
+          pk.to_s
+        end
+      end
+
       if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
         # TODO: This is broken for non-SERIAL or multi-column primary keys
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = currval( '#{table}_#{pk}_seq' );"
+          self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = currval( '#{table}_#{pk_str}_seq' );"
         end
       elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h.handle
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = LAST_INSERT_ID();"
+          self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = LAST_INSERT_ID();"
         end
       elsif defined?( DBI::DBD::SQLite3::Database ) and DBI::DBD::SQLite3::Database === h.handle
         meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk} = last_insert_rowid();"
+          self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = last_insert_rowid();"
         end
       # TODO: more DBDs
       end
