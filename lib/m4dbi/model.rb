@@ -374,11 +374,12 @@ module DBI
   #   class Post < DBI::Model( :posts ); end
   # You can specify the primary key column(s) using an array, like so:
   #   class Author < DBI::Model( :authors, [ 'auth_num' ] ); end
-  def self.Model( table, pk_ = [ 'id' ] )
-    h = DBI::DatabaseHandle.last_handle
+  def self.Model( table, options = Hash.new )
+    h = options[ :dbh ] || DBI::DatabaseHandle.last_handle
     if h.nil? or not h.connected?
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
+    pk_ = options[ :pk ] || [ 'id' ]
     if not pk_.respond_to? :each
       raise DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
     end

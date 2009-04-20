@@ -34,8 +34,8 @@ describe 'A DBI::Model subclass' do
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_empty = Class.new( DBI::Model( :empty_table ) )
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
-    @m_nipk = Class.new( DBI::Model( :non_id_pk, [ :str ] ) )
-    @m_mcpk = Class.new( DBI::Model( :mcpk, [ :kc1, :kc2 ] ) )
+    @m_nipk = Class.new( DBI::Model( :non_id_pk, :pk => [ :str ] ) )
+    @m_mcpk = Class.new( DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
     class Author < DBI::Model( :authors ); end
   end
 
@@ -90,6 +90,7 @@ describe 'A DBI::Model subclass' do
       reset_data( dbh, "test-data2.sql" )
 
       @m_author2 = Class.new( DBI::Model( :authors ) )
+      @m_author2.dbh.should.equal dbh
 
       @m_author2[ 1 ].should.be.nil
       a11 = @m_author2[ 11 ]
@@ -101,7 +102,34 @@ describe 'A DBI::Model subclass' do
       a2.name.should.equal 'author2'
     ensure
       # Clean up handles for later specs
-      dbh.disconnect if dbh and dbh.connected?
+      # puts dbh.object_id
+      # dbh.disconnect if dbh and dbh.connected?
+      connect_to_spec_database
+    end
+  end
+
+  it 'can use a specific database handle' do
+    begin
+      dbh1 = connect_to_spec_database
+      dbh1.should.equal DBI::DatabaseHandle.last_handle
+      dbh2 = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
+      dbh2.should.equal DBI::DatabaseHandle.last_handle
+      reset_data( dbh2, "test-data2.sql" )
+
+      dbh1.should.not.equal dbh2
+
+      class Author1 < DBI::Model( :authors, :dbh => dbh1 ); end
+      class Author2 < DBI::Model( :authors, :dbh => dbh2 ); end
+
+      a1 = Author1[ 1 ]
+      a1.should.not.be.nil
+      a1.name.should.equal 'author1'
+
+      a11 = Author2[ 11 ]
+      a11.should.not.be.nil
+      a11.name.should.equal 'author11'
+    ensure
+      # Clean up handles for later specs
       connect_to_spec_database
     end
   end
@@ -674,8 +702,8 @@ describe 'A found DBI::Model subclass instance' do
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
-    @m_nipk = Class.new( DBI::Model( :non_id_pk, [ :str ] ) )
-    @m_mcpk = Class.new( DBI::Model( :mcpk, [ :kc1, :kc2 ] ) )
+    @m_nipk = Class.new( DBI::Model( :non_id_pk, :pk => [ :str ] ) )
+    @m_mcpk = Class.new( DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
   end
 
   it 'provides access to primary key value' do
