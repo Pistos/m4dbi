@@ -103,15 +103,13 @@ module DBI
 
     def self.create( hash = {} )
       if block_given?
-        row = DBI::Row.new(
-          columns.collect { |c| c[ 'name' ] },
-          [ M4DBI_UNASSIGNED ] * columns.size
-        )
+        struct = Struct.new( *( columns.collect { |c| c[ 'name' ].to_sym } ) )
+        row = struct.new( *( [ M4DBI_UNASSIGNED ] * columns.size ) )
         yield row
-        hash = row.to_h
-        hash.to_a.each do |key,value|
-          if value == M4DBI_UNASSIGNED
-            hash.delete( key )
+        hash = {}
+        row.members.each do |k|
+          if row[ k ] != M4DBI_UNASSIGNED
+            hash[ k ] = row[ k ]
           end
         end
       end
