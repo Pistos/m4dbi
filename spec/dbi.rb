@@ -54,11 +54,11 @@ describe 'DBI::DatabaseHandle#one_transaction' do
     thread1 = Thread.new do
       value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
       value.should.equal 10
-      sleep 2 # seconds
+      sleep 1 # seconds
       $dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
     end
 
-    sleep 1
+    sleep 0.5
 
     thread2 = Thread.new do
       value = $dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
@@ -79,10 +79,12 @@ describe 'DBI::DatabaseHandle#one_transaction' do
     thread1 = Thread.new do
       $dbh.one_transaction do |dbh|
         value = dbh.sc "SELECT c1 FROM many_col_table WHERE id = 1;"
-        sleep 2 # seconds
+        sleep 1 # seconds
         dbh.u "UPDATE many_col_table SET c1 = ?", ( value + 1 )
       end
     end
+
+    sleep 0.5
 
     thread2 = Thread.new do
       $dbh.one_transaction do |dbh|
