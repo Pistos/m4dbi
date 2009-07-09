@@ -385,8 +385,8 @@ module DBI
 
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
-  # You can specify the primary key column(s) using an array, like so:
-  #   class Author < DBI::Model( :authors, [ 'auth_num' ] ); end
+  # You can specify the primary key column(s) using an option, like so:
+  #   class Author < DBI::Model( :authors, pk: [ 'auth_num' ] ); end
   def self.Model( table, options = Hash.new )
     h = options[ :dbh ] || DBI::DatabaseHandle.last_handle
     if h.nil? or not h.connected?
