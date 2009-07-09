@@ -293,8 +293,21 @@ module DBI
       begin
         @row.send( method, *args )
       rescue NoMethodError => e
+        if e.backtrace.grep /method_missing/
+          # Prevent infinite recursion
+          self_str = 'model object'
+        elsif self.respond_to? :to_s
+          self_str = self.to_s
+        elsif self.respond_to? :inspect
+          self_str = self.inspect
+        elsif self.respond_to? :class
+          self_str = "#{self.class} object"
+        else
+          self_str = "instance of unknown model"
+        end
+
         raise NoMethodError.new(
-          "undefined method '#{method}' for #{self}",
+          "undefined method '#{method}' for #{self_str}",
           method,
           args
         )
