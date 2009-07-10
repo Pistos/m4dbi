@@ -9,7 +9,7 @@ module DBI
           field = convert_alternate_fieldname( field )
         end
         if @column_names.include?( field )
-          self[ field ] = *args
+          self[ field ] = args[ 0 ]
         else
           super
         end
@@ -27,7 +27,7 @@ module DBI
         end
       end
     end
-    
+
     def convert_alternate_fieldname( field )
       field.gsub( /(^_)|(_$)/ , '' )
     end

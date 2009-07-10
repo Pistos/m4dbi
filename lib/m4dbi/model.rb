@@ -103,15 +103,13 @@ module DBI
 
     def self.create( hash = {} )
       if block_given?
-        row = DBI::Row.new(
-          columns.collect { |c| c[ 'name' ] },
-          [ M4DBI_UNASSIGNED ] * columns.size
-        )
+        struct = Struct.new( *( columns.collect { |c| c[ 'name' ].to_sym } ) )
+        row = struct.new( *( [ M4DBI_UNASSIGNED ] * columns.size ) )
         yield row
-        hash = row.to_h
-        hash.to_a.each do |key,value|
-          if value == M4DBI_UNASSIGNED
-            hash.delete( key )
+        hash = {}
+        row.members.each do |k|
+          if row[ k ] != M4DBI_UNASSIGNED
+            hash[ k ] = row[ k ]
           end
         end
       end
@@ -293,8 +291,21 @@ module DBI
       begin
         @row.send( method, *args )
       rescue NoMethodError => e
+        if e.backtrace.grep /method_missing/
+          # Prevent infinite recursion
+          self_str = 'model object'
+        elsif self.respond_to? :to_s
+          self_str = self.to_s
+        elsif self.respond_to? :inspect
+          self_str = self.inspect
+        elsif self.respond_to? :class
+          self_str = "#{self.class} object"
+        else
+          self_str = "instance of unknown model"
+        end
+
         raise NoMethodError.new(
-          "undefined method '#{method}' for #{self}",
+          "undefined method '#{method}' for #{self_str}",
           method,
           args
         )
@@ -372,8 +383,8 @@ module DBI
 
   # Define a new DBI::Model like this:
   #   class Post < DBI::Model( :posts ); end
-  # You can specify the primary key column(s) using an array, like so:
-  #   class Author < DBI::Model( :authors, [ 'auth_num' ] ); end
+  # You can specify the primary key column(s) using an option, like so:
+  #   class Author < DBI::Model( :authors, pk: [ 'auth_num' ] ); end
   def self.Model( table, options = Hash.new )
     h = options[ :dbh ] || DBI::DatabaseHandle.last_handle
     if h.nil? or not h.connected?
