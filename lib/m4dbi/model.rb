@@ -160,7 +160,7 @@ module DBI
         item =
           begin
             self.create( hash )
-          rescue => error
+          rescue Exception => error
             self.one_where( hash )
           end
       end
