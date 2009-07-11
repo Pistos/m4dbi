@@ -2,7 +2,7 @@ require 'spec/helper'
 
 describe 'DBI::Model' do
   it 'raises an exception when trying to define a model before connecting to a database' do
-    dbh = DBI::DatabaseHandle.last_handle
+    dbh = DBI.last_connection
     if dbh and dbh.respond_to? :disconnect
       dbh.disconnect
     end
@@ -67,12 +67,12 @@ describe 'A DBI::Model subclass' do
     # If you try to subclass a class a second time with a different parent class,
     # Ruby raises an exception.
     should.not.raise do
-      original_handle = DBI::DatabaseHandle.last_handle
+      original_handle = DBI.last_connection
 
       class Author < DBI::Model( :authors ); end
 
       dbh = connect_to_spec_database
-      new_handle = DBI::DatabaseHandle.last_handle
+      new_handle = DBI.last_connection
       new_handle.should.equal dbh
       new_handle.should.not.equal original_handle
 
@@ -111,9 +111,9 @@ describe 'A DBI::Model subclass' do
   it 'can use a specific database handle' do
     begin
       dbh1 = connect_to_spec_database
-      dbh1.should.equal DBI::DatabaseHandle.last_handle
+      dbh1.should.equal DBI.last_connection
       dbh2 = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
-      dbh2.should.equal DBI::DatabaseHandle.last_handle
+      dbh2.should.equal DBI.last_connection
       reset_data( dbh2, "test-data2.sql" )
 
       dbh1.should.not.equal dbh2

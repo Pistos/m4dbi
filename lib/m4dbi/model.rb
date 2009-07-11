@@ -386,7 +386,7 @@ module DBI
   # You can specify the primary key column(s) using an option, like so:
   #   class Author < DBI::Model( :authors, pk: [ 'auth_num' ] ); end
   def self.Model( table, options = Hash.new )
-    h = options[ :dbh ] || DBI::DatabaseHandle.last_handle
+    h = options[ :dbh ] || DBI.last_connection
     if h.nil? or not h.connected?
       raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end

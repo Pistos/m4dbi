@@ -8,12 +8,9 @@ module DBI
 
     alias old_initialize initialize
     def initialize( *args )
-      DBI::DatabaseHandle.last_handle = self
-      handle = old_initialize( *args )
       @mutex = Mutex.new
       @transactions = Array.new
-
-      handle
+      old_initialize( *args )
     end
 
     # Atomically disable autocommit, do transaction, and reenable.
@@ -54,16 +51,6 @@ module DBI
     alias u do
     alias i do
     alias d do
-
-    class << self
-      def last_handle
-        @handle# ||= create_handle
-      end
-
-      def last_handle=( handle )
-        @handle = handle
-      end
-    end
 
   end
 end
