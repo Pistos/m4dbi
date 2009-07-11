@@ -20,6 +20,12 @@ describe 'DBI::DatabaseHandle#select_column' do
     should.raise( DBI::DataError ) do
       $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
     end
+
+    begin
+      $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
+    rescue DBI::DataError => e
+      e.message.should.match /SELECT name FROM authors WHERE 1\+1 = 3/
+    end
   end
 
   it 'selects one column of first row' do
