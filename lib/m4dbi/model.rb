@@ -396,9 +396,8 @@ module DBI
     end
 
     model_key =
-      # DBD-dependent.  Not all DBDs have dbname implemented by M4DBI.
-      if h.respond_to? :dbname
-        "#{h.dbname}::#{table}"
+      if h.respond_to? :database_name
+        "#{h.database_name}::#{table}"
       else
         table
       end
