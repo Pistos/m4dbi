@@ -21,8 +21,8 @@ module DBI
     def one_transaction
       @mutex.synchronize do
         # Keep track of transactions for debugging purposes
-        transaction = { :time => ::Time.now, :stack => caller }
-        @transactions << transaction
+        trans = { :time => ::Time.now, :stack => caller }
+        @transactions << trans
 
         auto_commit = self[ 'AutoCommit' ]
         self[ 'AutoCommit' ] = false
@@ -31,7 +31,7 @@ module DBI
         end
         self[ 'AutoCommit' ] = auto_commit
 
-        @transactions.delete transaction
+        @transactions.delete trans
         result
       end
     end
