@@ -19,6 +19,7 @@ module DBI
     # since we need to thread protect the AutoCommit property of the
     # database handle.
     def one_transaction
+      exception = nil
       @mutex.synchronize do
         # Keep track of transactions for debugging purposes
         trans = { :time => ::Time.now, :stack => caller }
@@ -26,13 +27,21 @@ module DBI
 
         auto_commit = self[ 'AutoCommit' ]
         self[ 'AutoCommit' ] = false
-        result = transaction do
-          yield self
+        result = nil
+        begin
+          result = transaction do
+            yield self
+          end
+        rescue Exception => e
+          exception = e
         end
         self[ 'AutoCommit' ] = auto_commit
 
         @transactions.delete trans
         result
+      end
+      if exception
+        raise exception
       end
     end
 
