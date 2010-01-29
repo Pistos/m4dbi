@@ -46,3 +46,10 @@ CREATE TABLE mcpk (
     val VARCHAR( 20 ) NOT NULL,
     PRIMARY KEY( kc1, kc2 )
 );
+
+CREATE TABLE conflicting_cols (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    c1 INTEGER,
+    class VARCHAR( 32 ),
+    dup INTEGER
+);
