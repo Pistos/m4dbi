@@ -726,8 +726,8 @@ describe 'A created DBI::Model subclass instance' do
     mc.class.should.equal @m_conflict
     mc.class_.should.equal 'Mammalia'
     mc.dup.should.equal mc
-    should.raise do
-      mc.tap.should.not.equal 'foobar'
+    should.raise LocalJumpError do
+      mc.tap
     end
     mc.tap_.should.equal 'foobar'
   end
