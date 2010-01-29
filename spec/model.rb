@@ -709,7 +709,7 @@ describe 'A created DBI::Model subclass instance' do
       :c1 => 123,
       :class => 'Mammalia',
       :dup => false,
-      :tap => 'foobar',
+      :tap => 'foobar'
     )
     mc.should.not.be.nil
     should.not.raise do
