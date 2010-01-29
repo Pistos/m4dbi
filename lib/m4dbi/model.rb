@@ -436,6 +436,7 @@ module DBI
       end
 
       klass.trait[ :columns ].each do |col|
+
         colname = col[ 'name' ]
 
         # Column readers
@@ -444,6 +445,7 @@ module DBI
         end
 
         # Column writers
+
         class_def( "#{colname}=".to_sym ) do |new_value|
           num_changed = dbh.do(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
@@ -454,6 +456,18 @@ module DBI
             @row[ colname ] = new_value
           end
         end
+
+        class_def( '[]='.to_sym ) do |colname, new_value|
+          num_changed = dbh.do(
+            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
+            new_value,
+            *pk_values
+          )
+          if num_changed > 0
+            @row[ colname ] = new_value
+          end
+        end
+
       end
     end
   end
