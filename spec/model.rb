@@ -723,7 +723,7 @@ describe 'A created DBI::Model subclass instance' do
     end
     mc.id.should.not.be.nil
     mc.c1.should.equal 123
-    mc.class.should.equal DBI::Model
+    mc.class.should.equal @m_conflict
     mc.class_.should.equal 'Mammalia'
     mc.dup.should.equal mc
     should.raise do
