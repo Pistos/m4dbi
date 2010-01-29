@@ -17,7 +17,7 @@ module DBI
         field = method.to_s
         # We shouldn't use by_field directly and test for nil,
         # because nil may be a valid value for the column.
-        if not @column_names.include?( field )
+        if ! @column_names.include?( field )
           field = convert_alternate_fieldname( field )
         end
         if @column_names.include?( field )
