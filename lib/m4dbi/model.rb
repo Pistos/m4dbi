@@ -438,15 +438,19 @@ module DBI
       klass.trait[ :columns ].each do |col|
 
         colname = col[ 'name' ]
+        method = colname.to_sym
+        while klass.method_defined? method
+          method = "#{method}_".to_sym
+        end
 
         # Column readers
-        class_def( colname.to_sym ) do
+        class_def( method ) do
           @row[ colname ]
         end
 
         # Column writers
 
-        class_def( "#{colname}=".to_sym ) do |new_value|
+        class_def( "#{method}=".to_sym ) do |new_value|
           num_changed = dbh.do(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
