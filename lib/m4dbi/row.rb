@@ -5,7 +5,7 @@ module DBI
     def method_missing( method, *args )
       if method.to_s =~ /^(.+)=$/
         field = $1
-        if not @column_names.include?( field )
+        if ! @column_names.include?( field )
           field = convert_alternate_fieldname( field )
         end
         if @column_names.include?( field )
