@@ -708,8 +708,7 @@ describe 'A created DBI::Model subclass instance' do
     mc = @m_conflict.create(
       :c1 => 123,
       :class => 'Mammalia',
-      :dup => false,
-      :tap => 'foobar'
+      :dup => false
     )
     mc.should.not.be.nil
     should.not.raise do
@@ -718,18 +717,12 @@ describe 'A created DBI::Model subclass instance' do
       mc.class_
       mc.dup
       mc.dup_
-      mc.tap { |m| m.inspect }
-      mc.tap_
     end
     mc.id_.should.not.be.nil
     mc.c1.should.equal 123
     mc.class.should.equal @m_conflict
     mc.class_.should.equal 'Mammalia'
     mc.dup.should.equal mc
-    should.raise LocalJumpError do
-      mc.tap
-    end
-    mc.tap_.should.equal 'foobar'
   end
 
   it 'maintains Hash key equality across different fetches' do

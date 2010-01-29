@@ -52,5 +52,4 @@ CREATE TABLE conflicting_cols (
     , c1 INTEGER
     , class VARCHAR( 32 )
     , dup BOOLEAN
-    , tap VARCHAR( 32 )
 );
