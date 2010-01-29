@@ -46,3 +46,11 @@ CREATE TABLE mcpk (
     val VARCHAR( 20 ) NOT NULL,
     PRIMARY KEY( kc1, kc2 )
 );
+
+CREATE TABLE conflicting_cols (
+      id SERIAL PRIMARY KEY
+    , c1 INTEGER
+    , class VARCHAR( 32 )
+    , dup BOOLEAN
+    , tap VARCHAR( 32 )
+);

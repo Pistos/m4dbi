@@ -624,6 +624,7 @@ describe 'A created DBI::Model subclass instance' do
     @m_mc = Class.new( DBI::Model( :many_col_table ) )
     @m_author = Class.new( DBI::Model( :authors ) )
     @m_post = Class.new( DBI::Model( :posts ) )
+    @m_conflict = Class.new( DBI::Model( :conflicting_cols ) )
   end
 
   it 'provides read access to fields via identically-named readers' do
@@ -701,6 +702,34 @@ describe 'A created DBI::Model subclass instance' do
     mc_[ 'c2' ].should.equal 20
     mc_[ 'c3' ].should.equal 30
     mc_[ 'c4' ].should.equal 40
+  end
+
+  it 'provides alternative accessors for columns that collide with Object methods' do
+    mc = @m_conflict.create(
+      :c1 => 123,
+      :class => 'Mammalia',
+      :dup => false,
+      :tap => 'foobar',
+    )
+    mc.should.not.be.nil
+    should.not.raise do
+      mc.id
+      mc.class
+      mc.class_
+      mc.dup
+      mc.dup_
+      mc.tap { |m| m.inspect }
+      mc.tap_
+    end
+    mc.id.should.not.be.nil
+    mc.c1.should.equal 123
+    mc.class.should.equal DBI::Model
+    mc.class_.should.equal 'Mammalia'
+    mc.dup.should.equal mc
+    should.raise do
+      mc.tap.should.not.equal 'foobar'
+    end
+    mc.tap_.should.equal 'foobar'
   end
 
   it 'maintains Hash key equality across different fetches' do
