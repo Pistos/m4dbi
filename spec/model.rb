@@ -731,9 +731,11 @@ describe 'A created DBI::Model subclass instance' do
     h[ a ] = 123
     a_ = @m_author[ 1 ]
     h[ a_].should.equal 123
+    a.should.equal a_
 
     a2 = @m_author[ 2 ]
     h[ a2 ].should.be.nil
+    a2.should.not.equal a
 
     h[ a2 ] = 456
     h[ a ].should.equal 123
@@ -741,6 +743,7 @@ describe 'A created DBI::Model subclass instance' do
 
     a2_ = @m_author[ 2 ]
     h[ a2_ ].should.equal 456
+    a2.should.equal a2_
   end
 
   it 'maintains Hash key distinction for different Model subclasses' do
