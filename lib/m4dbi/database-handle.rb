@@ -4,46 +4,6 @@ require 'thread'
 module DBI
 
   class DatabaseHandle
-    attr_reader :transactions
-
-    alias old_initialize initialize
-    def initialize( *args )
-      @mutex = Mutex.new
-      @transactions = Array.new
-      old_initialize( *args )
-    end
-
-    # Atomically disable autocommit, do transaction, and reenable.
-    # Used for a single transaction when autocommit is normally left on.
-    # Only one thread can execute one_transaction at a time,
-    # since we need to thread protect the AutoCommit property of the
-    # database handle.
-    def one_transaction
-      exception = nil
-      @mutex.synchronize do
-        # Keep track of transactions for debugging purposes
-        trans = { :time => ::Time.now, :stack => caller }
-        @transactions << trans
-
-        auto_commit = self[ 'AutoCommit' ]
-        self[ 'AutoCommit' ] = false
-        result = nil
-        begin
-          result = transaction do
-            yield self
-          end
-        rescue Exception => e
-          exception = e
-        end
-        self[ 'AutoCommit' ] = auto_commit
-
-        @transactions.delete trans
-        result
-      end
-      if exception
-        raise exception
-      end
-    end
 
     def select_column( statement, *bindvars )
       row = select_one( statement, *bindvars )
