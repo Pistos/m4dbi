@@ -1,6 +1,6 @@
 require 'rubygems'
 
-M4DBI_VERSION = '0.6.3'
+M4DBI_VERSION = '0.7.0'
 
 __DIR__ = File.expand_path( File.dirname( __FILE__ ) )
 
