@@ -1,6 +1,3 @@
-require 'dbi'
-require 'metaid'
-
 module DBI
   class Model
     #attr_reader :row

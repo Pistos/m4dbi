@@ -1,5 +1,3 @@
-require 'dbi'
-
 module DBI
   class Row
     def method_missing( method, *args )
