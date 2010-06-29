@@ -11,7 +11,7 @@ module M4DBI
     end
 
     def select( sql, *bindvars )
-      execute( sql, *bindvars ).fetch( :all, RDBI::Result::Driver::HashPipe )
+      execute( sql, *bindvars ).fetch( :all, RDBI::Result::Driver::Struct )
     end
 
     def select_one( sql, *bindvars )
