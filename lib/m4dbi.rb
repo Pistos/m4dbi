@@ -1,4 +1,7 @@
 require 'rubygems'
+require 'rdbi'
+require 'metaid'
+require 'thread'
 
 M4DBI_VERSION = '0.7.0'
 
