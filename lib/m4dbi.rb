@@ -15,3 +15,9 @@ require "#{__DIR__}/m4dbi/row"
 require "#{__DIR__}/m4dbi/timestamp"
 require "#{__DIR__}/m4dbi/model"
 require "#{__DIR__}/m4dbi/collection"
+
+module M4DBI
+  def self.connect( *args )
+    M4DBI::Database.new( RDBI.connect( *args ) )
+  end
+end
