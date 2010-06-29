@@ -3,7 +3,7 @@ require 'spec/helper'
 $dbh = connect_to_spec_database
 reset_data
 
-describe 'DBI::DatabaseHandle#select_column' do
+describe 'M4DBI::Database#select_column' do
 
   it 'selects one column' do
     name = $dbh.select_column(
@@ -17,13 +17,13 @@ describe 'DBI::DatabaseHandle#select_column' do
     )
     null.should.be.nil
 
-    should.raise( DBI::DataError ) do
+    should.raise( RDBI::Error ) do
       $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
     end
 
     begin
       $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
-    rescue DBI::DataError => e
+    rescue RDBI::Error => e
       e.message.should.match /SELECT name FROM authors WHERE 1\+1 = 3/
     end
   end
@@ -51,8 +51,6 @@ describe 'DBI::Row accessors' do
     )
     row.should.not.equal nil
 
-    row._id.should.be.same_as row[ 'id' ]
-    row.id_.should.be.same_as row[ 'id' ]
     row.author_id.should.be.same_as row[ 'author_id' ]
     row.text.should.be.same_as row[ 'text' ]
 
@@ -65,10 +63,10 @@ describe 'DBI::Row accessors' do
     )
     row.should.not.equal nil
 
-    old_id = row._id
+    old_id = row.id
     row.id = old_id + 1
-    row._id.should.not.equal old_id
-    row._id.should.equal( old_id + 1 )
+    row.id.should.not.equal old_id
+    row.id.should.equal( old_id + 1 )
 
     old_text = row.text
     new_text = 'This is the new post text.'
