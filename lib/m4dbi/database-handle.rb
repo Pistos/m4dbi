@@ -11,17 +11,17 @@ module M4DBI
     end
 
     def select( sql, *bindvars )
-      execute( sql, *bindvars ).fetch( :all )
+      execute( sql, *bindvars ).fetch( :all, RDBI::Result::Driver::HashPipe )
     end
 
     def select_one( sql, *bindvars )
       select( sql, *bindvars )[ 0 ]
     end
 
-    def select_column( statement, *bindvars )
-      row = select_one( statement, *bindvars )
-      if row
-        row[ 0 ]
+    def select_column( sql, *bindvars )
+      rows = execute( sql, *bindvars ).fetch( 1, RDBI::Result::Driver::Array )
+      if rows.any?
+        rows[ 0 ][ 0 ]
       else
         raise RDBI::Error.new( "Query returned no rows.  SQL: #{last_query}" )
       end
