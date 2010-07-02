@@ -18,7 +18,11 @@ require "#{__DIR__}/m4dbi/model"
 require "#{__DIR__}/m4dbi/collection"
 
 module M4DBI
+  ancestral_trait_class_reader :last_dbh
+
   def self.connect( *args )
-    M4DBI::Database.new( RDBI.connect( *args ) )
+    dbh = M4DBI::Database.new( RDBI.connect( *args ) )
+    trait :last_dbh => dbh
+    dbh
   end
 end

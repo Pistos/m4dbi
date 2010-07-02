@@ -3,6 +3,12 @@ require 'spec/helper'
 $dbh = connect_to_spec_database
 reset_data
 
+describe 'M4DBI.last_dbh' do
+  it 'provides the last database handle connected to' do
+    M4DBI.last_dbh.should.equal $dbh
+  end
+end
+
 describe 'M4DBI::Database#select_column' do
 
   it 'selects one column' do
