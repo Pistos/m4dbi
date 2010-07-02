@@ -1,4 +1,4 @@
-module DBI
+module M4DBI
   class Collection
     def initialize( the_one, the_many_model, the_one_fk )
       @the_one = the_one

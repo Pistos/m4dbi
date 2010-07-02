@@ -1,13 +1,13 @@
 require 'spec/helper'
 
-describe 'DBI::Model' do
+describe 'M4DBI::Model' do
   it 'raises an exception when trying to define a model before connecting to a database' do
     dbh = DBI.last_connection
     if dbh and dbh.respond_to? :disconnect
       dbh.disconnect
     end
-    should.raise do
-      @m_author = Class.new( DBI::Model( :authors ) )
+    should.raise( M4DBI::Error ) do
+      @m_author = Class.new( M4DBI::Model( :authors ) )
     end
   end
 end
@@ -15,7 +15,7 @@ end
 $dbh = connect_to_spec_database
 reset_data
 
-class ManyCol < DBI::Model( :many_col_table )
+class ManyCol < M4DBI::Model( :many_col_table )
   def inc
     self.c1 = c1 + 10
   end
@@ -25,18 +25,18 @@ class ManyCol < DBI::Model( :many_col_table )
   end
 end
 
-describe 'A DBI::Model subclass' do
+describe 'A M4DBI::Model subclass' do
   before do
-    # Here we subclass DBI::Model.
+    # Here we subclass M4DBI::Model.
     # This is nearly equivalent to the typical "ChildClassName < ParentClassName"
     # syntax, but allows us to refer to the class in our specs.
-    @m_author = Class.new( DBI::Model( :authors ) )
-    @m_post = Class.new( DBI::Model( :posts ) )
-    @m_empty = Class.new( DBI::Model( :empty_table ) )
-    @m_mc = Class.new( DBI::Model( :many_col_table ) )
-    @m_nipk = Class.new( DBI::Model( :non_id_pk, :pk => [ :str ] ) )
-    @m_mcpk = Class.new( DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
-    class Author < DBI::Model( :authors ); end
+    @m_author = Class.new( M4DBI::Model( :authors ) )
+    @m_post = Class.new( M4DBI::Model( :posts ) )
+    @m_empty = Class.new( M4DBI::Model( :empty_table ) )
+    @m_mc = Class.new( M4DBI::Model( :many_col_table ) )
+    @m_nipk = Class.new( M4DBI::Model( :non_id_pk, :pk => [ :str ] ) )
+    @m_mcpk = Class.new( M4DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
+    class Author < M4DBI::Model( :authors ); end
   end
 
   it 'can be defined' do
@@ -46,16 +46,16 @@ describe 'A DBI::Model subclass' do
 
   it 'maintains identity across different inheritances' do
     should.not.raise do
-      class Author < DBI::Model( :authors ); end
-      class Author < DBI::Model( :authors ); end
+      class Author < M4DBI::Model( :authors ); end
+      class Author < M4DBI::Model( :authors ); end
     end
   end
 
   it 'maintains member methods across redefinitions' do
-    class Author < DBI::Model( :authors )
+    class Author < M4DBI::Model( :authors )
       def method1; 1; end
     end
-    class Author < DBI::Model( :authors )
+    class Author < M4DBI::Model( :authors )
       def method2; 2; end
     end
     a = Author[ 3 ]
@@ -69,14 +69,14 @@ describe 'A DBI::Model subclass' do
     should.not.raise do
       original_handle = DBI.last_connection
 
-      class Author < DBI::Model( :authors ); end
+      class Author < M4DBI::Model( :authors ); end
 
       dbh = connect_to_spec_database
       new_handle = DBI.last_connection
       new_handle.should.equal dbh
       new_handle.should.not.equal original_handle
 
-      class Author < DBI::Model( :authors ); end
+      class Author < M4DBI::Model( :authors ); end
     end
   end
 
@@ -89,7 +89,7 @@ describe 'A DBI::Model subclass' do
       dbh = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
       reset_data( dbh, "test-data2.sql" )
 
-      @m_author2 = Class.new( DBI::Model( :authors ) )
+      @m_author2 = Class.new( M4DBI::Model( :authors ) )
       @m_author2.dbh.should.equal dbh
 
       @m_author2[ 1 ].should.be.nil
@@ -118,8 +118,8 @@ describe 'A DBI::Model subclass' do
 
       dbh1.should.not.equal dbh2
 
-      class Author1 < DBI::Model( :authors, :dbh => dbh1 ); end
-      class Author2 < DBI::Model( :authors, :dbh => dbh2 ); end
+      class Author1 < M4DBI::Model( :authors, :dbh => dbh1 ); end
+      class Author2 < M4DBI::Model( :authors, :dbh => dbh2 ); end
 
       a1 = Author1[ 1 ]
       a1.should.not.be.nil
@@ -135,13 +135,13 @@ describe 'A DBI::Model subclass' do
   end
 
   it 'raises an exception when creating with invalid arguments' do
-    should.raise( DBI::Error ) do
+    should.raise( M4DBI::Error ) do
       @m_author.new nil
     end
-    should.raise( DBI::Error ) do
+    should.raise( M4DBI::Error ) do
       @m_author.new 2
     end
-    should.raise( DBI::Error ) do
+    should.raise( M4DBI::Error ) do
       @m_author.new Object.new
     end
   end
@@ -619,12 +619,12 @@ describe 'A DBI::Model subclass' do
   end
 end
 
-describe 'A created DBI::Model subclass instance' do
+describe 'A created M4DBI::Model subclass instance' do
   before do
-    @m_mc = Class.new( DBI::Model( :many_col_table ) )
-    @m_author = Class.new( DBI::Model( :authors ) )
-    @m_post = Class.new( DBI::Model( :posts ) )
-    @m_conflict = Class.new( DBI::Model( :conflicting_cols ) )
+    @m_mc = Class.new( M4DBI::Model( :many_col_table ) )
+    @m_author = Class.new( M4DBI::Model( :authors ) )
+    @m_post = Class.new( M4DBI::Model( :posts ) )
+    @m_conflict = Class.new( M4DBI::Model( :conflicting_cols ) )
   end
 
   it 'provides read access to fields via identically-named readers' do
@@ -759,13 +759,13 @@ describe 'A created DBI::Model subclass instance' do
   end
 end
 
-describe 'A found DBI::Model subclass instance' do
+describe 'A found M4DBI::Model subclass instance' do
   before do
-    @m_author = Class.new( DBI::Model( :authors ) )
-    @m_post = Class.new( DBI::Model( :posts ) )
-    @m_mc = Class.new( DBI::Model( :many_col_table ) )
-    @m_nipk = Class.new( DBI::Model( :non_id_pk, :pk => [ :str ] ) )
-    @m_mcpk = Class.new( DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
+    @m_author = Class.new( M4DBI::Model( :authors ) )
+    @m_post = Class.new( M4DBI::Model( :posts ) )
+    @m_mc = Class.new( M4DBI::Model( :many_col_table ) )
+    @m_nipk = Class.new( M4DBI::Model( :non_id_pk, :pk => [ :str ] ) )
+    @m_mcpk = Class.new( M4DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
   end
 
   it 'provides access to primary key value' do
@@ -893,15 +893,15 @@ describe 'A found DBI::Model subclass instance' do
 
 end
 
-describe 'DBI::Model (relationships)' do
+describe 'M4DBI::Model (relationships)' do
   before do
-    @m_author = Class.new( DBI::Model( :authors ) )
-    @m_post = Class.new( DBI::Model( :posts ) )
-    @m_fan = Class.new( DBI::Model( :fans ) )
+    @m_author = Class.new( M4DBI::Model( :authors ) )
+    @m_post = Class.new( M4DBI::Model( :posts ) )
+    @m_fan = Class.new( M4DBI::Model( :fans ) )
   end
 
   it 'facilitates relating one to many, providing read access' do
-    DBI::Model.one_to_many( @m_author, @m_post, :posts, :author, :author_id )
+    M4DBI::Model.one_to_many( @m_author, @m_post, :posts, :author, :author_id )
     a = @m_author[ 1 ]
     a.posts.should.not.be.empty
     p = @m_post[ 3 ]
@@ -910,7 +910,7 @@ describe 'DBI::Model (relationships)' do
   end
 
   it 'facilitates relating one to many, allowing one of the many to set its one' do
-    DBI::Model.one_to_many(
+    M4DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
     p = @m_post[ 3 ]
@@ -924,7 +924,7 @@ describe 'DBI::Model (relationships)' do
   end
 
   it 'facilitates relating many to many, providing read access' do
-    DBI::Model.many_to_many(
+    M4DBI::Model.many_to_many(
       @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
     )
     a1 = @m_author[ 1 ]
@@ -970,12 +970,12 @@ describe 'DBI::Model (relationships)' do
   end
 end
 
-describe 'DBI::Collection' do
+describe 'M4DBI::Collection' do
   before do
-    @m_author = Class.new( DBI::Model( :authors ) )
-    @m_post = Class.new( DBI::Model( :posts ) )
+    @m_author = Class.new( M4DBI::Model( :authors ) )
+    @m_post = Class.new( M4DBI::Model( :posts ) )
 
-    DBI::Model.one_to_many(
+    M4DBI::Model.one_to_many(
       @m_author, @m_post, :posts, :author, :author_id
     )
   end

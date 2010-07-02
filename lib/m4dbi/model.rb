@@ -1,4 +1,4 @@
-module DBI
+module M4DBI
   class Model
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
@@ -149,7 +149,7 @@ module DBI
 
     def self.find_or_create( hash = nil )
       item = nil
-      error = DBI::Error.new( "Failed to find_or_create( #{hash.inspect} )" )
+      error = M4DBI::Error.new( "Failed to find_or_create( #{hash.inspect} )" )
       item = self.one_where( hash )
       if item.nil?
         item =
@@ -215,12 +215,12 @@ module DBI
     end
 
     # Example:
-    #   DBI::Model.one_to_many( Author, Post, :posts, :author, :author_id )
+    #   M4DBI::Model.one_to_many( Author, Post, :posts, :author, :author_id )
     #   her_posts = some_author.posts
     #   the_author = some_post.author
     def self.one_to_many( the_one, the_many, many_as, one_as, the_one_fk )
       the_one.class_def( many_as.to_sym ) do
-        DBI::Collection.new( self, the_many, the_one_fk )
+        M4DBI::Collection.new( self, the_many, the_one_fk )
       end
       the_many.class_def( one_as.to_sym ) do
         the_one[ @row[ the_one_fk ] ]
@@ -231,7 +231,7 @@ module DBI
     end
 
     # Example:
-    #   DBI::Model.many_to_many(
+    #   M4DBI::Model.many_to_many(
     #     @m_author, @m_fan, :authors_liked, :fans, :authors_fans, :author_id, :fan_id
     #   )
     #   her_fans = some_author.fans
@@ -276,10 +276,10 @@ module DBI
 
     def initialize( row )
       if not row.respond_to?( "[]".to_sym ) or not row.respond_to?( "[]=".to_sym )
-        raise DBI::Error.new( "Attempted to instantiate DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
+        raise M4DBI::Error.new( "Attempted to instantiate M4DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
       end
       if caller[ 1 ] !~ %r{/m4dbi/model\.rb:}
-        warn "Do not call DBI::Model#new directly; use DBI::Model#create instead."
+        warn "Do not call M4DBI::Model#new directly; use M4DBI::Model#create instead."
       end
       @row = row
     end
@@ -378,18 +378,18 @@ module DBI
     end
   end
 
-  # Define a new DBI::Model like this:
-  #   class Post < DBI::Model( :posts ); end
+  # Define a new M4DBI::Model like this:
+  #   class Post < M4DBI::Model( :posts ); end
   # You can specify the primary key column(s) using an option, like so:
-  #   class Author < DBI::Model( :authors, pk: [ 'auth_num' ] ); end
+  #   class Author < M4DBI::Model( :authors, pk: [ 'auth_num' ] ); end
   def self.Model( table, options = Hash.new )
-    h = options[ :dbh ] || DBI.last_connection
+    h = options[ :dbh ] || M4DBI.last_dbh
     if h.nil? or not h.connected?
-      raise DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
+      raise M4DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
     pk_ = options[ :pk ] || [ 'id' ]
     if not pk_.respond_to? :each
-      raise DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
+      raise M4DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
     end
 
     model_key =
@@ -400,7 +400,7 @@ module DBI
       end
 
     @models ||= Hash.new
-    @models[ model_key ] ||= Class.new( DBI::Model ) do |klass|
+    @models[ model_key ] ||= Class.new( M4DBI::Model ) do |klass|
       klass.trait( {
         :dbh => h,
         :table => table,
