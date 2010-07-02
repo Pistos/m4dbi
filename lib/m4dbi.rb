@@ -7,6 +7,7 @@ M4DBI_VERSION = '0.7.0'
 
 __DIR__ = File.expand_path( File.dirname( __FILE__ ) )
 
+require "#{__DIR__}/m4dbi/error"
 require "#{__DIR__}/m4dbi/traits"
 require "#{__DIR__}/m4dbi/hash"
 require "#{__DIR__}/m4dbi/array"
