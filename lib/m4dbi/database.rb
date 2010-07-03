@@ -46,6 +46,10 @@ module M4DBI
       @dbh.table_schema( *args )
     end
 
+    def database_name
+      @dbh.database_name
+    end
+
   end
 end
 
