@@ -384,7 +384,7 @@ module M4DBI
   #   class Author < M4DBI::Model( :authors, pk: [ 'auth_num' ] ); end
   def self.Model( table, options = Hash.new )
     h = options[ :dbh ] || M4DBI.last_dbh
-    if h.nil? or not h.connected?
+    if h.nil? || ! h.connected?
       raise M4DBI::Error.new( "Attempted to create a Model class without first connecting to a database." )
     end
     pk_ = options[ :pk ] || [ 'id' ]
