@@ -4,6 +4,7 @@ module M4DBI
 
     def initialize( rdbi_dbh )
       @dbh = rdbi_dbh
+      super
     end
 
     def execute( *args )
