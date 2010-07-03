@@ -29,7 +29,7 @@ end
 def reset_data( dbh = $dbh, datafile = "test-data.sql" )
   dir = File.dirname( __FILE__ )
   File.read( "#{dir}/#{datafile}" ).split( /;/ ).each do |command|
-    if not command.strip.empty?
+    if ! command.strip.empty?
       dbh.execute command
     end
   end
