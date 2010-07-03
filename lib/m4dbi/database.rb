@@ -1,10 +1,9 @@
 module M4DBI
 
-  class Database < RDBI::Database
+  class Database
 
     def initialize( rdbi_dbh )
       @dbh = rdbi_dbh
-      super
     end
 
     def execute( *args )
