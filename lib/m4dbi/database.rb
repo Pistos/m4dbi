@@ -38,6 +38,14 @@ module M4DBI
     alias delete execute
     alias d execute
 
+    def connected?
+      @dbh.connected?
+    end
+
+    def table_schema( *args )
+      @dbh.table_schema( *args )
+    end
+
   end
 end
 
