@@ -12,13 +12,12 @@ $LOAD_PATH.unshift(
 
 require 'm4dbi'
 
-# puts "RDBI version: #{RDBI::VERSION}"
 puts "M4DBI version: #{M4DBI_VERSION}"
 
 # See test-schema*.sql and test-data.sql
 def connect_to_spec_database( database = ( ENV[ 'M4DBI_DATABASE' ] || 'm4dbi' ) )
   driver = ENV[ 'M4DBI_DRIVER' ] || "PostgreSQL"
-  puts "Using RDBI driver: '#{driver}'"
+  # puts "\nUsing RDBI driver: '#{driver}'"
   case driver
   when 'PostgreSQL'
     require 'rdbi/driver/postgresql'

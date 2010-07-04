@@ -202,7 +202,7 @@ describe 'A M4DBI::Model subclass' do
     o.class.should.equal @m_mcpk
     o.val.should.equal 'five six'
 
-    should.not.raise( DBI::Error ) do
+    should.not.raise( RDBI::Error ) do
       o = @m_author[ nil ]
       o.should.be.nil
     end

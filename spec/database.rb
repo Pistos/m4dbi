@@ -49,7 +49,7 @@ describe 'M4DBI::Database#select_column' do
   end
 end
 
-describe 'DBI::Row accessors' do
+describe 'row accessors' do
 
   it 'provide read access via #fieldname' do
     row = $dbh.select_one(
