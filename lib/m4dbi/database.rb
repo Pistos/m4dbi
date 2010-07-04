@@ -53,6 +53,10 @@ module M4DBI
     def transaction( &block )
       @dbh.transaction &block
     end
+
+    def last_query
+      @dbh.last_query
+    end
   end
 end
 
