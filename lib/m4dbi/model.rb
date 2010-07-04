@@ -118,7 +118,7 @@ module M4DBI
       rec = nil
 
       dbh.one_transaction do |dbh_|
-        num_inserted = dbh_.do(
+        num_inserted = dbh_.execute(
           "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
           *values
         )
@@ -198,7 +198,7 @@ module M4DBI
 
       set_clause, set_params = set_hash.to_set_clause
       params = set_params + where_params
-      dbh.do(
+      dbh.execute(
         "UPDATE #{table} SET #{set_clause} WHERE #{where_clause}",
         *params
       )
@@ -208,7 +208,7 @@ module M4DBI
       set_clause, set_params = args[ -1 ].to_set_clause
       pk_values = args[ 0..-2 ]
       params = set_params + pk_values
-      dbh.do(
+      dbh.execute(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *params
       )
@@ -351,7 +351,7 @@ module M4DBI
     def set( hash )
       set_clause, set_params = hash.to_set_clause
       set_params << pk
-      num_updated = dbh.do(
+      num_updated = dbh.execute(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *set_params
       )
@@ -365,7 +365,7 @@ module M4DBI
 
     # Returns true iff the record and only the record was successfully deleted.
     def delete
-      num_deleted = dbh.do(
+      num_deleted = dbh.execute(
         "DELETE FROM #{table} WHERE #{pk_clause}",
         *pk_values
       )
@@ -449,7 +449,7 @@ module M4DBI
         # Column writers
 
         class_def( "#{method}=".to_sym ) do |new_value|
-          num_changed = dbh.do(
+          num_changed = dbh.execute(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
             *pk_values
@@ -460,7 +460,7 @@ module M4DBI
         end
 
         class_def( '[]='.to_sym ) do |colname, new_value|
-          num_changed = dbh.do(
+          num_changed = dbh.execute(
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
             *pk_values

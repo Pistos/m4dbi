@@ -25,7 +25,7 @@ module M4DBI
     def delete( arg )
       case arg
         when @the_many_model
-          result = @the_many_model.dbh.do(
+          result = @the_many_model.dbh.execute(
             %{
               DELETE FROM #{@the_many_model.table}
               WHERE
@@ -42,7 +42,7 @@ module M4DBI
           where_subclause = keys.map { |k|
             "#{k} = ?"
           }.join( " AND " )
-          @the_many_model.dbh.do(
+          @the_many_model.dbh.execute(
             %{
               DELETE FROM #{@the_many_model.table}
               WHERE
@@ -57,7 +57,7 @@ module M4DBI
 
     # Returns the number of records deleted
     def clear
-      @the_many_model.dbh.do(
+      @the_many_model.dbh.execute(
         %{
           DELETE FROM #{@the_many_model.table}
           WHERE #{@the_one_fk} = ?
