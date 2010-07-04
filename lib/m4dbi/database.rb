@@ -50,6 +50,9 @@ module M4DBI
       @dbh.database_name
     end
 
+    def transaction( &block )
+      @dbh.transaction &block
+    end
   end
 end
 

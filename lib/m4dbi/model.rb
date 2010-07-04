@@ -117,7 +117,7 @@ module M4DBI
       value_placeholders = values.map { |v| '?' }.join( ',' )
       rec = nil
 
-      dbh.one_transaction do |dbh_|
+      dbh.transaction do |dbh_|
         num_inserted = dbh_.execute(
           "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
           *values
