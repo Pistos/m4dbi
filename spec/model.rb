@@ -87,6 +87,10 @@ describe 'A M4DBI::Model subclass' do
       dbh = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
       @m_author2 = Class.new( M4DBI::Model( :authors ) )
       @m_author2.dbh.should.equal dbh
+
+      dbh2 = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
+      @m_author3 = Class.new( M4DBI::Model( :authors ) )
+      @m_author3.dbh.should.equal dbh2
     ensure
       # Clean up handles for later specs
       connect_to_spec_database
@@ -104,6 +108,7 @@ describe 'A M4DBI::Model subclass' do
 
       @m_author2 = Class.new( M4DBI::Model( :authors ) )
       @m_author2.dbh.should.equal dbh
+      @m_author2.dbh.should.not.equal @m_author.dbh
 
       @m_author2[ 1 ].should.be.nil
       a11 = @m_author2[ 11 ]
