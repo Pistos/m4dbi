@@ -25,7 +25,7 @@ module M4DBI
     def delete( arg )
       case arg
         when @the_many_model
-          result = @the_many_model.dbh.execute(
+          @the_many_model.dbh.execute(
             %{
               DELETE FROM #{@the_many_model.table}
               WHERE
@@ -34,8 +34,7 @@ module M4DBI
             },
             @the_one.pk,
             arg.pk
-          )
-          result > 0
+          ).affected_count > 0
         when Hash
           hash = arg
           keys = hash.keys
@@ -51,7 +50,7 @@ module M4DBI
             },
             @the_one.pk,
             *( keys.map { |k| hash[ k ] } )
-          )
+          ).affected_count
       end
     end
 
@@ -63,7 +62,7 @@ module M4DBI
           WHERE #{@the_one_fk} = ?
         },
         @the_one.pk
-      )
+      ).affected_count
     end
   end
 end
