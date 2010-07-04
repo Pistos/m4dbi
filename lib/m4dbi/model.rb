@@ -392,12 +392,7 @@ module M4DBI
       raise M4DBI::Error.new( "Primary key must be enumerable (was given #{pk_.inspect})" )
     end
 
-    model_key =
-      if h.respond_to? :database_name
-        "#{h.database_name}::#{table}"
-      else
-        table
-      end
+    model_key = "#{h.object_id}::#{table}"
 
     @models ||= Hash.new
     @models[ model_key ] ||= Class.new( M4DBI::Model ) do |klass|
