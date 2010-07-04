@@ -35,7 +35,7 @@ end
 
 desc 'Run all specs against repo version of DBI'
 task 'spec-dev' do
-  exec "bacon -I/misc/git/ruby-dbi/lib #{root}/spec/*.rb"
+  exec "bacon -I/misc/git/rdbi/lib -I/misc/git/rdbi-driver-postgresql/lib -I/misc/git/rdbi-driver-sqlite3/lib #{root}/spec/*.rb"
 end
 
 desc 'Build nightly gem'
