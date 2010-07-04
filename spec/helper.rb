@@ -18,9 +18,11 @@ puts "M4DBI version: #{M4DBI_VERSION}"
 def connect_to_spec_database( database = ( ENV[ 'M4DBI_DATABASE' ] || 'm4dbi' ) )
   driver = ENV[ 'M4DBI_DRIVER' ] || "PostgreSQL"
   # puts "\nUsing RDBI driver: '#{driver}'"
-  case driver
-  when 'PostgreSQL'
-    require 'rdbi/driver/postgresql'
+  case driver.downcase
+  when 'postgresql', 'sqlite3', 'mysql'
+    require "rdbi/driver/#{driver.downcase}"
+  else
+    raise "Unrecognized RDBI driver: #{driver}"
   end
   M4DBI.connect( driver, :database => database, :username => 'm4dbi' )
 end
