@@ -42,6 +42,10 @@ module M4DBI
       @dbh.connected?
     end
 
+    def disconnect
+      @dbh.disconnect
+    end
+
     def table_schema( *args )
       @dbh.table_schema( *args )
     end
