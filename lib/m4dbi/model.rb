@@ -121,7 +121,7 @@ module M4DBI
         num_inserted = dbh_.execute(
           "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
           *values
-        )
+        ).rows
         if num_inserted > 0
           pk_hash = hash.slice( *(
             self.pk.map { |pk_col| pk_col.to_sym }
@@ -354,7 +354,7 @@ module M4DBI
       num_updated = dbh.execute(
         "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
         *set_params
-      )
+      ).rows
       if num_updated > 0
         hash.each do |key,value|
           @row[ key ] = value
@@ -368,7 +368,7 @@ module M4DBI
       num_deleted = dbh.execute(
         "DELETE FROM #{table} WHERE #{pk_clause}",
         *pk_values
-      )
+      ).rows
       num_deleted == 1
     end
 
@@ -453,7 +453,7 @@ module M4DBI
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
             *pk_values
-          )
+          ).rows
           if num_changed > 0
             @row[ colname ] = new_value
           end
@@ -464,7 +464,7 @@ module M4DBI
             "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
             new_value,
             *pk_values
-          )
+          ).rows
           if num_changed > 0
             @row[ colname ] = new_value
           end
