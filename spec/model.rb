@@ -3,8 +3,13 @@ require 'spec/helper'
 describe 'M4DBI::Model' do
   it 'raises an exception when trying to define a model before connecting to a database' do
     dbh = M4DBI.last_dbh
-    if dbh and dbh.respond_to? :disconnect
+    if dbh && dbh.respond_to?( :disconnect )
       dbh.disconnect
+      dbh.should.not.be.connected
+    end
+    dbh = M4DBI.last_dbh
+    if dbh
+      dbh.should.not.be.connected
     end
     should.raise( M4DBI::Error ) do
       @m_author = Class.new( M4DBI::Model( :authors ) )
