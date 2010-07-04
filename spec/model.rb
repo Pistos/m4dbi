@@ -207,7 +207,7 @@ describe 'A M4DBI::Model subclass' do
     o = @m_author[ :name => 'author1' ]
     o.should.not.be.nil
     o.class.should.equal @m_author
-    o.id_.should.equal 1
+    o[ 'id' ].should.equal 1
 
     o = @m_post[ :author_id => 1 ]
     o.should.not.be.nil
@@ -318,14 +318,14 @@ describe 'A M4DBI::Model subclass' do
     post = @m_post.one_where( "text LIKE '%Third%'" )
     post.should.not.be.nil
     post.class.should.equal @m_post
-    post.id_.should.equal 3
+    post[ 'id' ].should.equal 3
   end
 
   it 'provides single-record access via #one_where( String, param, param... )' do
     post = @m_post.one_where( "text LIKE ?", '%Third%' )
     post.should.not.be.nil
     post.class.should.equal @m_post
-    post.id_.should.equal 3
+    post[ 'id' ].should.equal 3
   end
 
   it 'returns nil from #one_where when no record is found' do
@@ -342,10 +342,10 @@ describe 'A M4DBI::Model subclass' do
     rows.should.not.be.empty
     rows.size.should.equal 3
 
-    rows[ 0 ].id_.should.equal 1
+    rows[ 0 ][ 'id' ].should.equal 1
     rows[ 0 ].class.should.equal @m_author
     rows[ 0 ].name.should.equal 'author1'
-    rows[ 1 ].id_.should.equal 2
+    rows[ 1 ][ 'id' ].should.equal 2
     rows[ 1 ].class.should.equal @m_author
     rows[ 1 ].name.should.equal 'author2'
   end
@@ -379,7 +379,7 @@ describe 'A M4DBI::Model subclass' do
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id_.should.equal 9
+    a[ 'id' ].should.equal 9
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author9'
@@ -395,12 +395,12 @@ describe 'A M4DBI::Model subclass' do
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id_.should.not.equal 9
+    a[ 'id' ].should.not.equal 9
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author10'
 
-    a_ = @m_author[ a.id_ ]
+    a_ = @m_author[ a[ 'id' ] ]
     a_.should.not.be.nil
     a_.should.equal a
     a_.name.should.equal 'author10'
@@ -421,7 +421,7 @@ describe 'A M4DBI::Model subclass' do
     }
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id_.should.equal 9
+    a[ 'id' ].should.equal 9
     a.name.should.equal 'author9'
 
     a_ = @m_author[ 9 ]
@@ -437,7 +437,7 @@ describe 'A M4DBI::Model subclass' do
       }
     end
     m_ = @m_mc[ 1 ]
-    m_.id_.should.equal 1
+    m_[ 'id' ].should.equal 1
     m_.c1.should.be.nil
     m_.c2.should.equal 7
     m_.c3.should.equal 8
@@ -455,7 +455,7 @@ describe 'A M4DBI::Model subclass' do
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id_.should.equal 1
+    a[ 'id' ].should.equal 1
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author1'
@@ -478,7 +478,7 @@ describe 'A M4DBI::Model subclass' do
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a.id_.should.equal 9
+    a[ 'id' ].should.equal 9
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
     a.name.should.equal 'author9'
@@ -510,10 +510,10 @@ describe 'A M4DBI::Model subclass' do
     posts.should.not.be.empty
     posts.size.should.equal 2
 
-    posts[ 0 ].id_.should.equal 1
+    posts[ 0 ][ 'id' ].should.equal 1
     posts[ 0 ].text.should.equal 'First post.'
     posts[ 0 ].class.should.equal @m_post
-    posts[ 1 ].id_.should.equal 3
+    posts[ 1 ][ 'id' ].should.equal 3
     posts[ 1 ].text.should.equal 'Third post.'
     posts[ 1 ].class.should.equal @m_post
 
@@ -542,7 +542,7 @@ describe 'A M4DBI::Model subclass' do
     post.should.not.be.nil
     post.class.should.equal @m_post
 
-    post.id_.should.equal 3
+    post[ 'id' ].should.equal 3
     post.author_id.should.equal 1
     post.text.should.equal 'Third post.'
 
@@ -647,12 +647,12 @@ describe 'A created M4DBI::Model subclass instance' do
     )
     mc.should.not.be.nil
     should.not.raise do
-      mc.id_
+      mc[ 'id' ]
       mc.c1
       mc.c2
       mc.c5
     end
-    mc.id_.should.not.be.nil
+    mc[ 'id' ].should.not.be.nil
     mc.c3.should.equal 3
     mc.c4.should.equal 4
   end
@@ -669,11 +669,11 @@ describe 'A created M4DBI::Model subclass instance' do
     mc.c2.should.equal 20
     mc.c3.should.equal 30
     mc.c4.should.equal 40
-    id_ = mc.id_
+    id_ = mc[ 'id' ]
     id_.should.not.be.nil
 
     mc_ = @m_mc[ id_ ]
-    mc_.id_.should.equal id_
+    mc_[ 'id' ].should.equal id_
     mc_.c1.should.equal 10
     mc_.c2.should.equal 20
     mc_.c3.should.equal 30
@@ -725,13 +725,13 @@ describe 'A created M4DBI::Model subclass instance' do
     )
     mc.should.not.be.nil
     should.not.raise do
-      mc.id_
+      mc[ 'id' ]
       mc.class
       mc.class_
       mc.dup
       mc.dup_
     end
-    mc.id_.should.not.be.nil
+    mc[ 'id' ].should.not.be.nil
     mc.c1.should.equal 123
     mc.class.should.equal @m_conflict
     mc.class_.should.equal 'Mammalia'
@@ -799,7 +799,7 @@ describe 'A found M4DBI::Model subclass instance' do
     p = @m_post[ 2 ]
 
     should.not.raise( NoMethodError ) do
-      p.id_
+      p[ 'id' ]
       p.author_id
       p.text
     end
@@ -808,7 +808,7 @@ describe 'A found M4DBI::Model subclass instance' do
       p.foobar
     end
 
-    p.id_.should.equal 2
+    p[ 'id' ].should.equal 2
     p.author_id.should.equal 2
     p.text.should.equal 'Second post.'
   end
@@ -919,7 +919,7 @@ describe 'M4DBI::Model (relationships)' do
     a.posts.should.not.be.empty
     p = @m_post[ 3 ]
     p.author.should.not.be.nil
-    p.author.id_.should.equal 1
+    p.author[ 'id' ].should.equal 1
   end
 
   it 'facilitates relating one to many, allowing one of the many to set its one' do
@@ -928,10 +928,10 @@ describe 'M4DBI::Model (relationships)' do
     )
     p = @m_post[ 3 ]
     p.author.should.not.be.nil
-    p.author.id_.should.equal 1
+    p.author[ 'id' ].should.equal 1
     p.author = @m_author.create( :id => 4, :name => 'author4' )
     p_ = @m_post[ 3 ]
-    p_.author.id_.should.equal 4
+    p_.author[ 'id' ].should.equal 4
 
     reset_data
   end
