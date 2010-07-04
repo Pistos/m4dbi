@@ -86,7 +86,6 @@ describe 'A M4DBI::Model subclass' do
 
       dbh = connect_to_spec_database( ENV[ 'M4DBI_DATABASE2' ] || 'm4dbi2' )
       @m_author2 = Class.new( M4DBI::Model( :authors ) )
-      $stderr.puts "\n@m_author2.dbh: #{@m_author2.dbh.database_name}"
       @m_author2.dbh.should.equal dbh
     ensure
       # Clean up handles for later specs
