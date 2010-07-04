@@ -400,7 +400,7 @@ module M4DBI
         :dbh => h,
         :table => table,
         :pk => pk_,
-        :columns => h.columns( table.to_s ),
+        :columns => h.table_schema( table.to_sym ).columns,
       } )
 
       meta_def( 'pk_str'.to_sym ) do
@@ -411,20 +411,21 @@ module M4DBI
         end
       end
 
-      if defined?( DBI::DBD::Pg::Database ) and DBI::DBD::Pg::Database === h.handle
+      if defined?( RDBI::Driver::PostgreSQL ) and RDBI::Driver::PostgreSQL === h
         # TODO: This is broken for non-SERIAL or multi-column primary keys
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = currval( '#{table}_#{pk_str}_seq' );"
         end
-      elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h.handle
-        meta_def( "last_record".to_sym ) do |dbh_|
-          self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = LAST_INSERT_ID();"
-        end
-      elsif defined?( DBI::DBD::SQLite3::Database ) and DBI::DBD::SQLite3::Database === h.handle
+      # TODO: MySQL
+      # elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h
+        # meta_def( "last_record".to_sym ) do |dbh_|
+          # self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = LAST_INSERT_ID();"
+        # end
+      elsif defined?( RDBI::Driver::SQLite3 ) and RDBI::Driver::SQLite3 === h
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = last_insert_rowid();"
         end
-      # TODO: more DBDs
+      # TODO: more DB drivers
       end
 
       klass.trait[ :columns ].each do |col|
