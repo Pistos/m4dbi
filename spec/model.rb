@@ -416,7 +416,7 @@ describe 'A M4DBI::Model subclass' do
     end
 
     a = @m_author.create { |rec|
-      rec.id = 9
+      rec[ 'id' ] = 9
       rec.name = 'author9'
     }
     a.should.not.be.nil
@@ -431,7 +431,7 @@ describe 'A M4DBI::Model subclass' do
     m = nil
     should.not.raise do
       m = @m_mc.create { |rec|
-        rec.id = 1
+        rec[ 'id' ] = 1
         rec.c2 = 7
         rec.c3 = 8
       }
