@@ -241,7 +241,7 @@ describe 'A M4DBI::Model subclass' do
     posts[ 0 ].class.should.equal @m_post
 
     sorted_posts = posts.sort { |p1,p2|
-      p1._id <=> p2._id
+      p1[ 'id' ] <=> p2[ 'id' ]
     }
     p = sorted_posts.first
     p.text.should.equal 'First post.'
@@ -273,7 +273,7 @@ describe 'A M4DBI::Model subclass' do
     posts[ 0 ].class.should.equal @m_post
 
     sorted_posts = posts.sort { |p1,p2|
-      p2._id <=> p1._id
+      p2[ 'id' ] <=> p1[ 'id' ]
     }
     p = sorted_posts.first
     p.text.should.equal 'Second post.'
@@ -287,7 +287,7 @@ describe 'A M4DBI::Model subclass' do
     posts[ 0 ].class.should.equal @m_post
 
     sorted_posts = posts.sort { |p1,p2|
-      p2._id <=> p1._id
+      p2[ 'id' ] <=> p1[ 'id' ]
     }
     p = sorted_posts.first
     p.text.should.equal 'Second post.'
