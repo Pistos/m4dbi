@@ -57,6 +57,10 @@ module M4DBI
     def last_query
       @dbh.last_query
     end
+
+    def driver
+      @dbh.driver
+    end
   end
 end
 
