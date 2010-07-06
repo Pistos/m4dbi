@@ -69,10 +69,10 @@ describe 'row accessors' do
     )
     row.should.not.equal nil
 
-    old_id = row.id
-    row.id = old_id + 1
-    row.id.should.not.equal old_id
-    row.id.should.equal( old_id + 1 )
+    old_id = row[ :id ]
+    row[ :id ] = old_id + 1
+    row[ :id ].should.not.equal old_id
+    row[ :id ].should.equal( old_id + 1 )
 
     old_text = row.text
     new_text = 'This is the new post text.'
