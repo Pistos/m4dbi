@@ -1,4 +1,4 @@
-require 'spec/helper'
+require_relative 'helper'
 
 $dbh = connect_to_spec_database
 reset_data

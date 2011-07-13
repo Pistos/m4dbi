@@ -1,4 +1,4 @@
-require 'spec/helper'
+require_relative 'helper'
 
 describe 'M4DBI::Model' do
   it 'raises an exception when trying to define a model before connecting to a database' do

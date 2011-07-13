@@ -1,4 +1,4 @@
-require 'spec/helper'
+require_relative 'helper'
 
 describe 'Hash' do
   it 'is convertible to an SQL subclause and matching value Array' do
