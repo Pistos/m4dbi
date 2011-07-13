@@ -11,12 +11,12 @@ describe 'Hash' do
     }
     clause, values = h.to_clause( " AND " )
     where_clause, where_values = h.to_where_clause
-    
+
     str = "a = ? AND b = ? AND the_nil = ? AND abc = ? AND xyz = ?"
     where_str = "a = ? AND b = ? AND the_nil IS NULL AND abc = ? AND xyz = ?"
     clause.length.should.equal str.length
     where_clause.length.should.equal where_str.length
-    
+
     h.each_key do |key|
       clause.should.match /#{key} = ?/
       if h[ key ].nil?
@@ -25,11 +25,11 @@ describe 'Hash' do
         where_clause.should.match /#{key} = ?/
       end
     end
-    
+
     values.should.equal h.values
     where_values.should.equal h.values.compact
   end
-  
+
   it 'offers a means to get subhashes via #slice' do
     h = { :a => 1, :b => 2, :c => 3, :d => 4, :e => 5, :f => 6 }
     h.slice( :b, :c ).should.equal(
