@@ -379,20 +379,20 @@ describe 'A M4DBI::Model subclass' do
 
   it 'provides a means to create new records via #create( Hash )' do
     a = @m_author.create(
-      :id => 9,
-      :name => 'author9'
+      :id => 99,
+      :name => 'author99'
     )
     a.should.not.be.nil
     a.class.should.equal @m_author
-    a[ 'id' ].should.equal 9
+    a[ 'id' ].should.equal 99
     a.should.respond_to :name
     a.should.not.respond_to :no_column_by_this_name
-    a.name.should.equal 'author9'
+    a.name.should.equal 'author99'
 
-    a_ = @m_author[ 9 ]
+    a_ = @m_author[ 99 ]
     a_.should.not.be.nil
     a_.should.equal a
-    a_.name.should.equal 'author9'
+    a_.name.should.equal 'author99'
 
     # No value given for auto-incrementing primary key
     a = @m_author.create(
