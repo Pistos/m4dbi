@@ -421,11 +421,10 @@ module M4DBI
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = currval( '#{table}_#{pk_str}_seq' );"
         end
-      # TODO: MySQL
-      # elsif defined?( DBI::DBD::Mysql::Database ) and DBI::DBD::Mysql::Database === h
-        # meta_def( "last_record".to_sym ) do |dbh_|
-          # self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = LAST_INSERT_ID();"
-        # end
+      elsif defined?( RDBI::Driver::MySQL ) && RDBI::Driver::MySQL === h.driver
+        meta_def( "last_record".to_sym ) do |dbh_|
+          self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = LAST_INSERT_ID();"
+        end
       elsif defined?( RDBI::Driver::SQLite3 ) && RDBI::Driver::SQLite3 === h.driver
         meta_def( "last_record".to_sym ) do |dbh_|
           self.s1 "SELECT * FROM #{table} WHERE #{pk_str} = last_insert_rowid();"

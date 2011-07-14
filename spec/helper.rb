@@ -24,7 +24,14 @@ def connect_to_spec_database( database = ( ENV[ 'M4DBI_DATABASE' ] || 'm4dbi' ) 
   else
     raise "Unrecognized RDBI driver: #{driver}"
   end
-  M4DBI.connect( driver, :database => database, :username => 'm4dbi' )
+
+  M4DBI.connect(
+    driver,
+    :database => database,
+    :username => 'm4dbi',
+    :hostname => 'localhost',
+    :password => 'm4dbi'
+  )
 end
 
 def reset_data( dbh = $dbh, datafile = "test-data.sql" )
