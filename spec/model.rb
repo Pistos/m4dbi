@@ -378,6 +378,8 @@ describe 'A M4DBI::Model subclass' do
   end
 
   it 'provides a means to create new records via #create( Hash )' do
+    num_authors = @m_author.count
+
     a = @m_author.create(
       :id => 99,
       :name => 'author99'
@@ -394,10 +396,22 @@ describe 'A M4DBI::Model subclass' do
     a_.should.equal a
     a_.name.should.equal 'author99'
 
-    # No value given for auto-incrementing primary key
-    a = @m_author.create(
-      :name => 'author10'
-    )
+    # Insert without auto-incrementing primary key specified
+    # Try at least as many times as there were records in the DB,
+    # because the sequence used for the IDs is independent of
+    # the actual ID values in the DB for some RDBMSes.
+    num_authors.times do
+      begin
+        a = @m_author.create(
+          :name => 'author10'
+        )
+        break  # Stop on success
+      rescue Exception => e
+        if e.message !~ /duplicate/
+          raise e
+        end
+      end
+    end
     a.should.not.be.nil
     a.class.should.equal @m_author
     a[ 'id' ].should.not.be.nil
@@ -999,9 +1013,30 @@ describe 'M4DBI::Collection' do
   end
 
   it 'accepts additions' do
+    num_posts = @m_post.count
+
     a = @m_author[ 1 ]
     the_text = 'A new post.'
-    a.posts << { :text => the_text }
+
+    num_posts_of_author = a.posts.count
+
+    # Insert without auto-incrementing primary key specified
+    # Try at least as many times as there were records in the DB,
+    # because the sequence used for the IDs is independent of
+    # the actual ID values in the DB for some RDBMSes.
+    num_posts.times do
+      begin
+        a.posts << { :text => the_text }
+        break  # Stop on success
+      rescue Exception => e
+        if e.message !~ /duplicate/
+          raise e
+        end
+      end
+    end
+
+    a.posts.count.should.equal num_posts_of_author + 1
+
     p = a.posts.find { |p| p.text == the_text }
     p.should.not.be.nil
     p.author.should.equal a
