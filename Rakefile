@@ -32,12 +32,12 @@ namespace :db do
   namespace :mysql do
     desc 'Create MySQL test database, with schema'
     task :init do
-      exec "echo 'CREATE DATABASE m4dbi; CREATE DATABASE m4dbi2' | mysql -u root -p; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -p m4dbi; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -p m4dbi2"
+      exec "echo 'CREATE DATABASE m4dbi; CREATE DATABASE m4dbi2' | mysql -u root -p; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -pm4dbi m4dbi; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -pm4dbi m4dbi2"
     end
 
     desc 'Drop and recreate MySQL test database, with schema'
     task :reset do
-      exec "echo 'DROP DATABASE m4dbi; CREATE DATABASE m4dbi; DROP DATABASE m4dbi2; CREATE DATABASE m4dbi2;' | mysql -u root -p; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -p m4dbi; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -p m4dbi2"
+      exec "echo 'DROP DATABASE IF EXISTS m4dbi; CREATE DATABASE m4dbi; DROP DATABASE IF EXISTS m4dbi2; CREATE DATABASE m4dbi2;' | mysql -u root -p; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -pm4dbi m4dbi; cat #{$m4dbi_project_root}/spec/test-schema-mysql.sql | mysql -u m4dbi -pm4dbi m4dbi2"
     end
   end
 end
