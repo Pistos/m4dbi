@@ -8,8 +8,8 @@ $m4dbi_project_root = File.expand_path( File.dirname(__FILE__) )
 
 # ------------------
 
-def run_specs_against( driver, database = 'm4dbi' )
-  exec "M4DBI_DRIVER=#{driver} M4DBI_DATABASE=#{database} bacon #{$m4dbi_project_root}/spec/*.rb"
+def run_specs_against( driver, database = 'm4dbi', database2 = 'm4dbi2' )
+  exec "M4DBI_DRIVER=#{driver} M4DBI_DATABASE=#{database} M4DBI_DATABASE2=#{database2} bacon #{$m4dbi_project_root}/spec/*.rb"
 end
 
 namespace :db do
@@ -17,7 +17,8 @@ namespace :db do
     desc 'Drop and recreate SQLite3 test database, with schema'
     task :reset do
       db_file = "#{$m4dbi_project_root}/m4dbi.sqlite3"
-      exec "rm -f #{db_file}; cat #{$m4dbi_project_root}/spec/test-schema-sqlite.sql | sqlite3 #{db_file}"
+      db_file2 = "#{$m4dbi_project_root}/m4dbi2.sqlite3"
+      exec "rm -f #{db_file}; cat #{$m4dbi_project_root}/spec/test-schema-sqlite.sql | sqlite3 #{db_file}; rm -f #{db_file2}; cat #{$m4dbi_project_root}/spec/test-schema-sqlite.sql | sqlite3 #{db_file2}"
     end
   end
 
@@ -55,7 +56,7 @@ namespace :spec do
 
   desc 'Run specs against SQLite3 driver'
   task :sqlite3 do
-    run_specs_against 'SQLite3', 'm4dbi.sqlite3'
+    run_specs_against 'SQLite3', 'm4dbi.sqlite3', 'm4dbi2.sqlite3'
   end
 
   task :all => [ :pg, :mysql ]
