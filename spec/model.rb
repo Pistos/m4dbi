@@ -377,7 +377,7 @@ describe 'A M4DBI::Model subclass' do
     n.should.equal 3
   end
 
-  it 'provides a means to create new records via #create( Hash )' do
+  it 'provides a means to create a new record from a Hash' do
     num_authors = @m_author.count
 
     a = @m_author.create(
@@ -427,7 +427,7 @@ describe 'A M4DBI::Model subclass' do
     reset_data
   end
 
-  it 'provides a means to create new records via #create { |r| }' do
+  it 'provides a means to create a new record from a block' do
     should.raise( NoMethodError ) do
       @m_author.create { |rec|
         rec.no_such_column = 'foobar'
@@ -464,6 +464,20 @@ describe 'A M4DBI::Model subclass' do
     m_.c5.should.be.nil
 
     reset_data
+  end
+
+  it 'provides a means to create a new record from an empty Hash' do
+    @m = Class.new( M4DBI::Model( :has_all_defaults ) )
+    num_records = @m.count
+
+    r = @m.create
+    @m.count.should.equal num_records + 1
+    r.should.not.be.nil
+    r.class.should.equal @m
+    r[ 'id' ].should.not.be.nil
+    r.should.respond_to :time_created
+    r.should.not.respond_to :no_column_by_this_name
+    r.time_created.should.not.be.nil
   end
 
   it 'returns a record via #find_or_create( Hash )' do

@@ -53,3 +53,8 @@ CREATE TABLE conflicting_cols (
     class VARCHAR( 32 ),
     dup INTEGER
 );
+
+CREATE TABLE has_all_defaults (
+      id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    , time_created DATETIME NOT NULL DEFAULT NOW()
+);

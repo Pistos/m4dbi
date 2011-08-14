@@ -118,10 +118,12 @@ module M4DBI
       rec = nil
 
       dbh.transaction do |dbh_|
-        num_inserted = dbh_.execute(
-          "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )",
-          *values
-        ).affected_count
+        if keys.empty? && defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
+          sql = "INSERT INTO #{table} DEFAULT VALUES"
+        else
+          sql = "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )"
+        end
+        num_inserted = dbh_.execute( sql, *values ).affected_count
         if num_inserted > 0
           pk_hash = hash.slice( *(
             self.pk.map { |pk_col| pk_col.to_sym }

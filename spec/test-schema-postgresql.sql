@@ -53,3 +53,8 @@ CREATE TABLE conflicting_cols (
     , class VARCHAR( 32 )
     , dup BOOLEAN
 );
+
+CREATE TABLE has_all_defaults (
+      id SERIAL PRIMARY KEY
+    , time_created TIMESTAMP NOT NULL DEFAULT NOW()
+);
