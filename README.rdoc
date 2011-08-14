@@ -24,8 +24,7 @@ Chances are, there is a git package for your Linux/UNIX flavour.
 
 === Usage
 
-See http://rome.pist0s.ca/m4dbi/examples/ .  These are automatically
-generated from the spec files under the spec/ dir.
+See the spec/ dir.
 
 (Somewhat out of date -- 2011-08-14)
 
