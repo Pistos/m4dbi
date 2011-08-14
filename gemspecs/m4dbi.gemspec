@@ -1,4 +1,4 @@
-require_relative '../lib/m4dbi/version'
+require File.expand_path( '../../lib/m4dbi/version', __FILE__ )
 
 spec = Gem::Specification.new do |s|
     s.name = 'm4dbi'
