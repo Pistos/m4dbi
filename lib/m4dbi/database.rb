@@ -67,7 +67,3 @@ module M4DBI
     end
   end
 end
-
-
-
-
