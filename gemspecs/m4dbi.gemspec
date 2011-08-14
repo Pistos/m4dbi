@@ -1,6 +1,8 @@
+require_relative '../lib/m4dbi/version'
+
 spec = Gem::Specification.new do |s|
     s.name = 'm4dbi'
-    s.version = '0.7.2'
+    s.version = M4DBI::VERSION
     s.summary = 'Models (and More) for RDBI'
     s.description = 'M4DBI provides models, associations and some convenient extensions to RDBI.'
     s.homepage = 'https://github.com/Pistos/m4dbi'
