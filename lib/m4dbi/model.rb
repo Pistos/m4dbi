@@ -275,8 +275,8 @@ module M4DBI
     # ------------------- :nodoc:
 
     def initialize( row )
-      if not row.respond_to?( "[]".to_sym ) or not row.respond_to?( "[]=".to_sym )
-        raise M4DBI::Error.new( "Attempted to instantiate M4DBI::Model with an invalid argument (#{row.inspect}).  (Expecting DBI::Row.)" )
+      if ! row.respond_to?( "[]".to_sym ) || ! row.respond_to?( "[]=".to_sym )
+        raise M4DBI::Error.new( "Attempted to instantiate M4DBI::Model with an invalid argument (#{row.inspect}).  (Expecting something accessible [] and []= .)" )
       end
       if caller[ 1 ] !~ %r{/m4dbi/model\.rb:}
         warn "Do not call M4DBI::Model#new directly; use M4DBI::Model#create instead."
