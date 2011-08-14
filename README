@@ -1,1 +1,50 @@
-Don't read ME; read HIM!
+== M4DBI - Models (and more) For DBI
+
+http://purepistos.net/m4dbi
+
+M4DBI is a Ruby library that provides ORM modelling to the Ruby DBI package
+( http://ruby-dbi.rubyforge.org/ ).
+
+=== Dependencies
+
+  - dbi (of course) http://ruby-dbi.rubyforge.org/
+    - DBDs for your choice of DBs
+  - metaid (gem install metaid)
+  - bacon (optional, for running tests; gem install bacon)
+    
+=== Installation
+
+==== Nightly Gem
+
+  wget http://rome.purepistos.net/m4dbi/m4dbi-nightly.gem
+  gem install m4dbi-nightly.gem
+  
+==== Repository
+
+To use the repository version, you need git ( http://git.or.cz ).
+Chances are, there is a git package for your Linux/UNIX flavour.
+
+  cd /where/you/want/m4dbi
+  git clone git://github.com/Pistos/m4dbi.git
+  
+Change the following to whatever the equivalent paths are for your system:
+
+  cd /usr/lib/ruby/site_ruby/1.8
+  ln -s /path/to/cloned/m4dbi/lib/m4dbi
+  ln -s /path/to/cloned/m4dbi/lib/m4dbi.rb
+
+=== Usage
+
+See http://rome.purepistos.net/m4dbi/examples/ .  These are automatically
+generated from the spec files under the spec/ dir.
+
+=== Source Code
+
+Browse source at http://github.com/Pistos/m4dbi/tree/master .
+See coverage at http://rome.purepistos.net/m4dbi/rcov .
+Very limited rdocs at http://rome.purepistos.net/m4dbi/rdoc .
+
+=== Feedback and Support
+
+On IRC: irc.freenode.net ##mathetes or ##ramaze .
+Use http://mibbit.com if you don't have an IRC client.
