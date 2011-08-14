@@ -1,19 +1,15 @@
-#!/usr/bin/env ruby
-
-require 'rubygems'
-
 spec = Gem::Specification.new do |s|
     s.name = 'm4dbi'
-    s.version = '0.7.0'
-    s.summary = 'Models (and More) for DBI'
-    s.description = 'M4DBI provides models, associations and some convenient extensions to Ruby DBI.'
-    s.homepage = 'http://purepistos.net/m4dbi'
+    s.version = '0.7.2'
+    s.summary = 'Models (and More) for RDBI'
+    s.description = 'M4DBI provides models, associations and some convenient extensions to RDBI.'
+    s.homepage = 'https://github.com/Pistos/m4dbi'
     s.add_dependency( 'metaid' )
-    s.requirements << 'dbi'
+    s.add_dependency( 'rdbi' )
     s.requirements << 'bacon (optional)'
 
     s.authors = [ 'Pistos' ]
-    s.email = 'pistos at purepistos dot net'
+    s.email = 'm4dbi dot pistos at purepistos dot net'
 
     #s.platform = Gem::Platform::RUBY
 
@@ -27,8 +23,4 @@ spec = Gem::Specification.new do |s|
       'README', 'CHANGELOG', 'LICENCE',
     ]
     s.test_files = Dir.glob( 'spec/*.rb' )
-end
-
-if $PROGRAM_NAME == __FILE__
-    Gem::Builder.new( spec ).build
 end
