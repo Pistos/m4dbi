@@ -16,7 +16,7 @@ M4DBI is a Ruby library that provides ORM modelling to RDBI
 
 ==== Repository
 
-To use the repository version, you need git ( http://git.or.cz ).
+To use the repository version, you need git ( http://git-scm.com/ ).
 Chances are, there is a git package for your Linux/UNIX flavour.
 
   cd /where/you/want/m4dbi
