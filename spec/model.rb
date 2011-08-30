@@ -478,6 +478,7 @@ describe 'A M4DBI::Model subclass' do
     r.should.respond_to :time_created
     r.should.not.respond_to :no_column_by_this_name
     r.time_created.should.not.be.nil
+    r.time_created.should.be.kind_of DateTime
   end
 
   it 'returns a record via #find_or_create( Hash )' do

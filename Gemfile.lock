@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/RDBI/rdbi-driver-postgresql.git
-  revision: 216a0040f2dcac077b2905b7b32e7b5e283e279d
+  revision: a09269093e330958ec4e7b7864c7369dcf45d5d8
   specs:
     rdbi-driver-postgresql (0.9.1)
       epoxy (>= 0.3.1)
