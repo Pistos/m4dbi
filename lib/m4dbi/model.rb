@@ -2,7 +2,7 @@ module M4DBI
   class Model
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
-    ancestral_trait_class_reader :dbh, :table, :pk, :columns
+    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st
 
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
 
@@ -404,10 +404,11 @@ module M4DBI
     @models ||= Hash.new
     @models[ model_key ] ||= Class.new( M4DBI::Model ) do |klass|
       klass.trait( {
-        :dbh => h,
-        :table => table,
-        :pk => pk_,
+        :dbh     => h,
+        :table   => table,
+        :pk      => pk_,
         :columns => h.table_schema( table.to_sym ).columns,
+        :st      => Hash.new,
       } )
 
       meta_def( 'pk_str'.to_sym ) do

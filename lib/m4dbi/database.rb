@@ -6,6 +6,10 @@ module M4DBI
       @dbh = rdbi_dbh
     end
 
+    def prepare( *args )
+      Statement.new( @dbh.prepare(*args) )
+    end
+
     def execute( *args )
       @dbh.execute *args
     end
