@@ -175,14 +175,16 @@ module M4DBI
       end
     end
 
-    def self.select_all( *args )
+    def self.select_all( sql, *binds )
+      stm = prepare(sql)
       self.from_rows(
-        dbh.select_all( *args )
+        stm.select_all( *binds )
       )
     end
 
-    def self.select_one( *args )
-      row = dbh.select_one( *args )
+    def self.select_one( sql, *binds )
+      stm = prepare(sql)
+      row = stm.select_one( *binds )
       if row
         self.new( row )
       end
@@ -287,6 +289,11 @@ module M4DBI
         warn "Do not call M4DBI::Model#new directly; use M4DBI::Model#create instead."
       end
       @row = row
+      @st = Hash.new
+    end
+
+    def prepare( sql )
+      @st[sql] ||= dbh.prepare(sql)
     end
 
     def method_missing( method, *args )
@@ -356,10 +363,8 @@ module M4DBI
     def set( hash )
       set_clause, set_params = hash.to_set_clause
       set_params << pk
-      num_updated = dbh.execute(
-        "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
-        *set_params
-      ).affected_count
+      st = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
+      num_updated = st.execute( *set_params ).affected_count
       if num_updated > 0
         hash.each do |key,value|
           @row[ key ] = value
@@ -370,10 +375,8 @@ module M4DBI
 
     # Returns true iff the record and only the record was successfully deleted.
     def delete
-      num_deleted = dbh.execute(
-        "DELETE FROM #{table} WHERE #{pk_clause}",
-        *pk_values
-      ).affected_count
+      st = prepare("DELETE FROM #{table} WHERE #{pk_clause}")
+      num_deleted = st.execute( *pk_values ).affected_count
       num_deleted == 1
     end
 
@@ -454,8 +457,8 @@ module M4DBI
         # Column writers
 
         class_def( "#{method}=".to_sym ) do |new_value|
-          num_changed = dbh.execute(
-            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
+          stm = prepare("UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}")
+          num_changed = stm.execute(
             new_value,
             *pk_values
           ).affected_count
@@ -465,8 +468,8 @@ module M4DBI
         end
 
         class_def( '[]='.to_sym ) do |colname, new_value|
-          num_changed = dbh.execute(
-            "UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}",
+          stm = prepare("UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}")
+          num_changed = stm.execute(
             new_value,
             *pk_values
           ).affected_count
