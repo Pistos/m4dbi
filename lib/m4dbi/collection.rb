@@ -25,13 +25,15 @@ module M4DBI
     def delete( arg )
       case arg
         when @the_many_model
-          @the_many_model.dbh.execute(
+          stm = @the_many_model.dbh.prepare(
             %{
               DELETE FROM #{@the_many_model.table}
               WHERE
                 #{@the_one_fk} = ?
                 AND #{@the_many_model.pk_clause}
-            },
+            }
+          )
+          stm.execute(
             @the_one.pk,
             arg.pk
           ).affected_count > 0
@@ -41,13 +43,15 @@ module M4DBI
           where_subclause = keys.map { |k|
             "#{k} = ?"
           }.join( " AND " )
-          @the_many_model.dbh.execute(
+          stm = @the_many_model.dbh.prepare(
             %{
               DELETE FROM #{@the_many_model.table}
               WHERE
                 #{@the_one_fk} = ?
                 AND #{where_subclause}
-            },
+            }
+          )
+          stm.execute(
             @the_one.pk,
             *( keys.map { |k| hash[ k ] } )
           ).affected_count
@@ -56,13 +60,13 @@ module M4DBI
 
     # Returns the number of records deleted
     def clear
-      @the_many_model.dbh.execute(
+      stm = @the_many_model.dbh.prepare(
         %{
           DELETE FROM #{@the_many_model.table}
           WHERE #{@the_one_fk} = ?
-        },
-        @the_one.pk
-      ).affected_count
+        }
+      )
+      stm.execute( @the_one.pk ).affected_count
     end
   end
 end
