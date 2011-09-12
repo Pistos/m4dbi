@@ -13,7 +13,7 @@ module M4DBI
     end
 
     def select_one( *bindvars )
-      @st.select( *bindvars )[0]
+      select( *bindvars )[0]
     end
 
     def select_column( *bindvars )

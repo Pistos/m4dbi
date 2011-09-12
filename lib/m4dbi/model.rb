@@ -8,6 +8,10 @@ module M4DBI
 
     extend Enumerable
 
+    def self.prepare( sql )
+      st[sql] ||= dbh.prepare(sql)
+    end
+
     def self.[]( first_arg, *args )
       if args.size == 0
         case first_arg
@@ -25,10 +29,9 @@ module M4DBI
         values = [ first_arg ] + args
       end
 
-      row = dbh.select_one(
-        "SELECT * FROM #{table} WHERE #{clause}",
-        *values
-      )
+      sql = "SELECT * FROM #{table} WHERE #{clause}"
+      stm = prepare(sql)
+      row = stm.select_one(*values)
 
       if row
         self.new( row )
@@ -36,9 +39,9 @@ module M4DBI
     end
 
     def self.pk_clause
-      pk.map { |col|
-        "#{col} = ?"
-      }.join( ' AND ' )
+      pk.
+        map { |col| "#{col} = ?" }.
+        join( ' AND ' )
     end
 
     def self.from_rows( rows )
@@ -55,8 +58,9 @@ module M4DBI
           sql = "SELECT * FROM #{table} WHERE #{cond}"
       end
 
+      stm = prepare(sql)
       self.from_rows(
-        dbh.select_all( sql, *params )
+        stm.select_all(*params)
       )
     end
 
@@ -70,16 +74,16 @@ module M4DBI
           sql = "SELECT * FROM #{table} WHERE #{cond} LIMIT 1"
       end
 
-      row = dbh.select_one( sql, *params )
+      stm = prepare(sql)
+      row = stm.select_one( *params )
       if row
         self.new( row )
       end
     end
 
     def self.all
-      self.from_rows(
-        dbh.select_all( "SELECT * FROM #{table}" )
-      )
+      stm = prepare("SELECT * FROM #{table}")
+      self.from_rows( stm.select_all )
     end
 
     # TODO: Perhaps we'll use cursors for Model#each.
@@ -88,14 +92,16 @@ module M4DBI
     end
 
     def self.one
-      row = dbh.select_one( "SELECT * FROM #{table} LIMIT 1" )
+      stm = prepare("SELECT * FROM #{table} LIMIT 1")
+      row = stm.select_one
       if row
         self.new( row )
       end
     end
 
     def self.count
-      dbh.select_column( "SELECT COUNT(*) FROM #{table}" ).to_i
+      stm = prepare("SELECT COUNT(*) FROM #{table}")
+      stm.select_column.to_i
     end
 
     def self.create( hash = {} )
@@ -123,7 +129,8 @@ module M4DBI
         else
           sql = "INSERT INTO #{table} ( #{cols} ) VALUES ( #{value_placeholders} )"
         end
-        num_inserted = dbh_.execute( sql, *values ).affected_count
+        stm = prepare(sql)
+        num_inserted = stm.execute(*values).affected_count
         if num_inserted > 0
           pk_hash = hash.slice( *(
             self.pk.map { |pk_col| pk_col.to_sym }
@@ -133,7 +140,7 @@ module M4DBI
               self.pk.map { |pk_col| pk_col.to_s }
             ) )
           end
-          if not pk_hash.empty?
+          if ! pk_hash.empty?
             rec = self.one_where( pk_hash )
           else
             begin
@@ -200,20 +207,16 @@ module M4DBI
 
       set_clause, set_params = set_hash.to_set_clause
       params = set_params + where_params
-      dbh.execute(
-        "UPDATE #{table} SET #{set_clause} WHERE #{where_clause}",
-        *params
-      )
+      stm = prepare("UPDATE #{table} SET #{set_clause} WHERE #{where_clause}")
+      stm.execute( *params )
     end
 
     def self.update_one( *args )
       set_clause, set_params = args[ -1 ].to_set_clause
       pk_values = args[ 0..-2 ]
       params = set_params + pk_values
-      dbh.execute(
-        "UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}",
-        *params
-      )
+      stm = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
+      stm.execute( *params )
     end
 
     # Example:
@@ -408,7 +411,7 @@ module M4DBI
         :table   => table,
         :pk      => pk_,
         :columns => h.table_schema( table.to_sym ).columns,
-        :st      => Hash.new,
+        :st      => Hash.new,  # prepared statements for all queries
       } )
 
       meta_def( 'pk_str'.to_sym ) do
