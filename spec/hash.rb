@@ -1,4 +1,4 @@
-require_relative 'helper'
+require File.join(File.dirname(__FILE__), 'helper')
 
 describe 'Hash' do
   it 'is convertible to an SQL subclause and matching value Array' do

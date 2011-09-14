@@ -1,4 +1,4 @@
-require_relative 'helper'
+require File.join(File.dirname(__FILE__), 'helper')
 
 $dbh = connect_to_spec_database
 reset_data
