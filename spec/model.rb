@@ -377,6 +377,12 @@ describe 'A M4DBI::Model subclass' do
     n.should.equal 3
   end
 
+  it 'can be instantiated with no argument' do
+    lambda {
+      @m_empty.new
+    }.should.not.raise(Exception)
+  end
+
   it 'provides a means to create a new record from a Hash' do
     num_authors = @m_author.count
 
