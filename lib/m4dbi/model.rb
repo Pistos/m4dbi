@@ -384,6 +384,9 @@ module M4DBI
     def save
       nil
     end
+    def save!
+      nil
+    end
   end
 
   # Define a new M4DBI::Model like this:

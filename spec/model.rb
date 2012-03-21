@@ -944,6 +944,13 @@ describe 'A found M4DBI::Model subclass instance' do
     end
   end
 
+  it 'does nothing on #save!' do
+    p = @m_post[ 1 ]
+    should.not.raise do
+      p.save!
+    end
+  end
+
 end
 
 describe 'M4DBI::Model (relationships)' do
