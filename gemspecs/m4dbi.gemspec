@@ -16,13 +16,13 @@ spec = Gem::Specification.new do |s|
     #s.platform = Gem::Platform::RUBY
 
     s.files = [
-        # 'README.rdoc',
-        # 'CHANGELOG',
-        # 'LICENCE',
+        'README.rdoc',
+        'CHANGELOG',
+        'LICENCE',
         *( Dir[ 'lib/**/*.rb', 'spec/**/*.rb' ] )
     ]
-    # s.extra_rdoc_files = [
-      # 'README.rdoc', 'CHANGELOG', 'LICENCE',
-    # ]
+    s.extra_rdoc_files = [
+      'README.rdoc', 'CHANGELOG', 'LICENCE',
+    ]
     s.test_files = Dir.glob( 'spec/*.rb' )
 end
