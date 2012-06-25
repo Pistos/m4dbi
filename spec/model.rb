@@ -670,6 +670,19 @@ describe 'A M4DBI::Model subclass' do
 
     reset_data
   end
+
+  it 'after creation, executes code provided in an after_create hook' do
+    class Author < M4DBI::Model( :authors )
+      after_create do |author|
+        $test = 2
+        author.name = 'different name'
+      end
+    end
+    $test.should.not.equal 2
+    a = Author.create(name: 'theauthor')
+    $test.should.equal 2
+    a.name.should.equal 'different name'
+  end
 end
 
 describe 'A created M4DBI::Model subclass instance' do
@@ -950,7 +963,6 @@ describe 'A found M4DBI::Model subclass instance' do
       p.save!
     end
   end
-
 end
 
 describe 'M4DBI::Model (relationships)' do

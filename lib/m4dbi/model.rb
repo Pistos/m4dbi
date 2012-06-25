@@ -2,7 +2,7 @@ module M4DBI
   class Model
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
-    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st
+    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st, :callbacks
 
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
 
@@ -142,9 +142,15 @@ module M4DBI
           end
           if ! pk_hash.empty?
             rec = self.one_where( pk_hash )
+            callbacks[:after_create].each do |block|
+              block.yield rec
+            end
           else
             begin
               rec = last_record( dbh_ )
+              callbacks[:after_create].each do |block|
+                block.yield rec
+              end
             rescue NoMethodError => e
               # ignore
               #puts "not implemented: #{e.message}"
@@ -219,6 +225,10 @@ module M4DBI
       params = set_params + pk_values
       stm = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
       stm.execute( *params )
+    end
+
+    def self.after_create(&block)
+      callbacks[:after_create] << block
     end
 
     # Example:
@@ -413,11 +423,14 @@ module M4DBI
     @models ||= Hash.new
     @models[ model_key ] ||= Class.new( M4DBI::Model ) do |klass|
       klass.trait( {
-        :dbh     => h,
-        :table   => table,
-        :pk      => pk_,
-        :columns => h.table_schema( table.to_sym ).columns,
-        :st      => Hash.new,  # prepared statements for all queries
+        :dbh       => h,
+        :table     => table,
+        :pk        => pk_,
+        :columns   => h.table_schema( table.to_sym ).columns,
+        :st        => Hash.new,  # prepared statements for all queries
+        :callbacks => {
+          after_create: []
+        }
       } )
 
       meta_def( 'pk_str'.to_sym ) do
