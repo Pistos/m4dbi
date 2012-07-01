@@ -239,12 +239,24 @@ module M4DBI
       hooks[:after_create] << block
     end
 
+    def self.remove_after_create_hooks
+      hooks[:after_create].clear
+    end
+
     def self.after_update(&block)
       hooks[:after_update] << block
     end
 
+    def self.remove_after_update_hooks
+      hooks[:after_update].clear
+    end
+
     def self.after_delete(&block)
       hooks[:after_delete] << block
+    end
+
+    def self.remove_after_delete_hooks
+      hooks[:after_delete].clear
     end
 
     # Example:

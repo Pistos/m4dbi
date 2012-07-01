@@ -41,7 +41,11 @@ describe 'A M4DBI::Model subclass' do
     @m_mc = Class.new( M4DBI::Model( :many_col_table ) )
     @m_nipk = Class.new( M4DBI::Model( :non_id_pk, :pk => [ :str ] ) )
     @m_mcpk = Class.new( M4DBI::Model( :mcpk, :pk => [ :kc1, :kc2 ] ) )
-    class Author < M4DBI::Model( :authors ); end
+    class Author < M4DBI::Model( :authors )
+      remove_after_create_hooks
+      remove_after_update_hooks
+      remove_after_delete_hooks
+    end
   end
 
   it 'can be defined' do
@@ -683,6 +687,20 @@ describe 'A M4DBI::Model subclass' do
     $test.should.equal 2
     a.name.should.equal 'different name'
   end
+
+  it 'provides a means to remove all after_create hooks' do
+    class Author < M4DBI::Model( :authors )
+      after_create do |author|
+        $test = 'remove after_create'
+      end
+    end
+    class Author < M4DBI::Model( :authors )
+      remove_after_create_hooks
+    end
+    $test.should.not.equal 'remove after_create'
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 'remove after_create'
+  end
 end
 
 describe 'A created M4DBI::Model subclass instance' do
@@ -845,6 +863,36 @@ describe 'A created M4DBI::Model subclass instance' do
     a.name = 'foobar'
     $test.should.equal 3
     a.name.should.equal 'different name'
+  end
+
+  it 'provides a means to remove all after_update hooks' do
+    class Author < M4DBI::Model( :authors )
+      after_update do |author|
+        $test = 'remove after_update'
+      end
+    end
+    class Author < M4DBI::Model( :authors )
+      remove_after_update_hooks
+    end
+    $test.should.not.equal 'remove after_update'
+    a = Author.create(name: 'theauthor')
+    a.name = 'another author'
+    $test.should.not.equal 'remove after_update'
+  end
+
+  it 'provides a means to remove all after_delete hooks' do
+    class Author < M4DBI::Model( :authors )
+      after_delete do |author|
+        $test = 'remove after_update'
+      end
+    end
+    class Author < M4DBI::Model( :authors )
+      remove_after_delete_hooks
+    end
+    $test.should.not.equal 'remove after_delete'
+    a = Author.create(name: 'theauthor')
+    a.delete
+    $test.should.not.equal 'remove after_delete'
   end
 end
 
