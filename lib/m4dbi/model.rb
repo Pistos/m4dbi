@@ -243,6 +243,10 @@ module M4DBI
       callbacks[:after_update] << block
     end
 
+    def self.after_delete(&block)
+      callbacks[:after_delete] << block
+    end
+
     # Example:
     #   M4DBI::Model.one_to_many( Author, Post, :posts, :author, :author_id )
     #   her_posts = some_author.posts
@@ -406,7 +410,18 @@ module M4DBI
     def delete
       st = prepare("DELETE FROM #{table} WHERE #{pk_clause}")
       num_deleted = st.execute( *pk_values ).affected_count
-      num_deleted == 1
+      if num_deleted != 1
+        false
+      else
+        if self.class.callbacks[:active]
+          self.class.callbacks[:after_delete].each do |block|
+            self.class.callbacks[:active] = false
+            block.yield self
+            self.class.callbacks[:active] = true
+          end
+        end
+        true
+      end
     end
 
     # save does nothing.  It exists to provide compatibility with other ORMs.
@@ -450,6 +465,7 @@ module M4DBI
         :callbacks => {
           after_create: [],
           after_update: [],
+          after_delete: [],
           active: true,
         },
       } )

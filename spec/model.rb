@@ -973,6 +973,19 @@ describe 'A found M4DBI::Model subclass instance' do
     reset_data
   end
 
+  it 'after deletion, executes code provided in an after_delete hook' do
+    class Author < M4DBI::Model( :authors )
+      after_delete do |author|
+        $test = 4
+      end
+    end
+    $test.should.not.equal 4
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 4
+    a.delete
+    $test.should.equal 4
+  end
+
   it 'does nothing on #save' do
     p = @m_post[ 1 ]
     should.not.raise do
