@@ -2,7 +2,7 @@ module M4DBI
   class Model
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
-    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st, :callbacks
+    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st, :hooks
 
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
 
@@ -142,21 +142,21 @@ module M4DBI
           end
           if ! pk_hash.empty?
             rec = self.one_where( pk_hash )
-            if callbacks[:active]
-              callbacks[:after_create].each do |block|
-                callbacks[:active] = false
+            if hooks[:active]
+              hooks[:after_create].each do |block|
+                hooks[:active] = false
                 block.yield rec
-                callbacks[:active] = true
+                hooks[:active] = true
               end
             end
           else
             begin
               rec = last_record( dbh_ )
-              if callbacks[:active]
-                callbacks[:after_create].each do |block|
-                  callbacks[:active] = false
+              if hooks[:active]
+                hooks[:after_create].each do |block|
+                  hooks[:active] = false
                   block.yield rec
-                  callbacks[:active] = true
+                  hooks[:active] = true
                 end
               end
             rescue NoMethodError => e
@@ -236,15 +236,15 @@ module M4DBI
     end
 
     def self.after_create(&block)
-      callbacks[:after_create] << block
+      hooks[:after_create] << block
     end
 
     def self.after_update(&block)
-      callbacks[:after_update] << block
+      hooks[:after_update] << block
     end
 
     def self.after_delete(&block)
-      callbacks[:after_delete] << block
+      hooks[:after_delete] << block
     end
 
     # Example:
@@ -395,11 +395,11 @@ module M4DBI
         hash.each do |key,value|
           @row[ key ] = value
         end
-        if self.class.callbacks[:active]
-          self.class.callbacks[:after_update].each do |block|
-            self.class.callbacks[:active] = false
+        if self.class.hooks[:active]
+          self.class.hooks[:after_update].each do |block|
+            self.class.hooks[:active] = false
             block.yield self
-            self.class.callbacks[:active] = true
+            self.class.hooks[:active] = true
           end
         end
       end
@@ -413,11 +413,11 @@ module M4DBI
       if num_deleted != 1
         false
       else
-        if self.class.callbacks[:active]
-          self.class.callbacks[:after_delete].each do |block|
-            self.class.callbacks[:active] = false
+        if self.class.hooks[:active]
+          self.class.hooks[:after_delete].each do |block|
+            self.class.hooks[:active] = false
             block.yield self
-            self.class.callbacks[:active] = true
+            self.class.hooks[:active] = true
           end
         end
         true
@@ -462,7 +462,7 @@ module M4DBI
         :pk        => pk_,
         :columns   => h.table_schema( table.to_sym ).columns,
         :st        => Hash.new,  # prepared statements for all queries
-        :callbacks => {
+        :hooks => {
           after_create: [],
           after_update: [],
           after_delete: [],
@@ -518,11 +518,11 @@ module M4DBI
           if num_changed > 0
             @row[ colname ] = new_value
           end
-          if self.class.callbacks[:active]
-            self.class.callbacks[:after_update].each do |block|
-              self.class.callbacks[:active] = false
+          if self.class.hooks[:active]
+            self.class.hooks[:after_update].each do |block|
+              self.class.hooks[:active] = false
               block.yield self
-              self.class.callbacks[:active] = true
+              self.class.hooks[:active] = true
             end
           end
           new_value
