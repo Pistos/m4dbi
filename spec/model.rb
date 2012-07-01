@@ -880,6 +880,21 @@ describe 'A created M4DBI::Model subclass instance' do
     $test.should.not.equal 'remove after_update'
   end
 
+  it 'provides a means to remove all before_delete hooks' do
+    class Author < M4DBI::Model( :authors )
+      before_delete do |author|
+        $test = 'remove before_update'
+      end
+    end
+    class Author < M4DBI::Model( :authors )
+      remove_before_delete_hooks
+    end
+    $test.should.not.equal 'remove before_delete'
+    a = Author.create(name: 'theauthor')
+    a.delete
+    $test.should.not.equal 'remove before_delete'
+  end
+
   it 'provides a means to remove all after_delete hooks' do
     class Author < M4DBI::Model( :authors )
       after_delete do |author|
@@ -1019,6 +1034,19 @@ describe 'A found M4DBI::Model subclass instance' do
     @m_nipk[ 'one' ].should.be.nil
 
     reset_data
+  end
+
+  it 'before deletion, executes code provided in an before_delete hook' do
+    class Author < M4DBI::Model( :authors )
+      before_delete do |author|
+        $test = author.name
+      end
+    end
+    $test.should.not.equal 'theauthor'
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 'theauthor'
+    a.delete
+    $test.should.equal 'theauthor'
   end
 
   it 'after deletion, executes code provided in an after_delete hook' do

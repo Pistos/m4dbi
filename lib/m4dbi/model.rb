@@ -251,8 +251,16 @@ module M4DBI
       hooks[:after_update].clear
     end
 
+    def self.before_delete(&block)
+      hooks[:before_delete] << block
+    end
+
     def self.after_delete(&block)
       hooks[:after_delete] << block
+    end
+
+    def self.remove_before_delete_hooks
+      hooks[:before_delete].clear
     end
 
     def self.remove_after_delete_hooks
@@ -420,6 +428,14 @@ module M4DBI
 
     # Returns true iff the record and only the record was successfully deleted.
     def delete
+      if self.class.hooks[:active]
+        self.class.hooks[:before_delete].each do |block|
+          self.class.hooks[:active] = false
+          block.yield self
+          self.class.hooks[:active] = true
+        end
+      end
+
       st = prepare("DELETE FROM #{table} WHERE #{pk_clause}")
       num_deleted = st.execute( *pk_values ).affected_count
       if num_deleted != 1
@@ -477,6 +493,7 @@ module M4DBI
         :hooks => {
           after_create: [],
           after_update: [],
+          before_delete: [],
           after_delete: [],
           active: true,
         },
