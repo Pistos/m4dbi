@@ -823,6 +823,29 @@ describe 'A created M4DBI::Model subclass instance' do
     a_ = @m_author[ 1 ]
     h[ a_ ].should.equal 123
   end
+
+  it 'after setting data, executes code provided in an after_update hook' do
+    class Author < M4DBI::Model( :authors )
+      after_update do |author|
+        $test = 3
+        author.name = 'different name'
+      end
+    end
+
+    $test.should.not.equal 3
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 3
+    a.set  name: 'foobar'
+    $test.should.equal 3
+    a.name.should.equal 'different name'
+
+    $test = nil
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 3
+    a.name = 'foobar'
+    $test.should.equal 3
+    a.name.should.equal 'different name'
+  end
 end
 
 describe 'A found M4DBI::Model subclass instance' do

@@ -142,14 +142,22 @@ module M4DBI
           end
           if ! pk_hash.empty?
             rec = self.one_where( pk_hash )
-            callbacks[:after_create].each do |block|
-              block.yield rec
+            if callbacks[:active]
+              callbacks[:after_create].each do |block|
+                callbacks[:active] = false
+                block.yield rec
+                callbacks[:active] = true
+              end
             end
           else
             begin
               rec = last_record( dbh_ )
-              callbacks[:after_create].each do |block|
-                block.yield rec
+              if callbacks[:active]
+                callbacks[:after_create].each do |block|
+                  callbacks[:active] = false
+                  block.yield rec
+                  callbacks[:active] = true
+                end
               end
             rescue NoMethodError => e
               # ignore
@@ -229,6 +237,10 @@ module M4DBI
 
     def self.after_create(&block)
       callbacks[:after_create] << block
+    end
+
+    def self.after_update(&block)
+      callbacks[:after_update] << block
     end
 
     # Example:
@@ -379,6 +391,13 @@ module M4DBI
         hash.each do |key,value|
           @row[ key ] = value
         end
+        if self.class.callbacks[:active]
+          self.class.callbacks[:after_update].each do |block|
+            self.class.callbacks[:active] = false
+            block.yield self
+            self.class.callbacks[:active] = true
+          end
+        end
       end
       num_updated
     end
@@ -429,8 +448,10 @@ module M4DBI
         :columns   => h.table_schema( table.to_sym ).columns,
         :st        => Hash.new,  # prepared statements for all queries
         :callbacks => {
-          after_create: []
-        }
+          after_create: [],
+          after_update: [],
+          active: true,
+        },
       } )
 
       meta_def( 'pk_str'.to_sym ) do
@@ -481,6 +502,14 @@ module M4DBI
           if num_changed > 0
             @row[ colname ] = new_value
           end
+          if self.class.callbacks[:active]
+            self.class.callbacks[:after_update].each do |block|
+              self.class.callbacks[:active] = false
+              block.yield self
+              self.class.callbacks[:active] = true
+            end
+          end
+          new_value
         end
 
         class_def( '[]='.to_sym ) do |colname, new_value|
