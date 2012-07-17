@@ -686,6 +686,16 @@ describe 'A M4DBI::Model subclass' do
     a = Author.create(name: 'theauthor')
     $test.should.equal 2
     a.name.should.equal 'different name'
+
+    class Post < M4DBI::Model( :posts ); end
+    class Author < M4DBI::Model( :authors )
+      after_create do |author|
+        Post.create(author_id: author.id, text: 'foobar')
+      end
+    end
+    n = Post.count
+    a = Author.create(name: 'theauthor')
+    Post.count.should == n+1
   end
 
   it 'provides a means to remove all after_create hooks' do

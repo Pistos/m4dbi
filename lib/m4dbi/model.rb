@@ -122,6 +122,7 @@ module M4DBI
       values = keys.map { |key| hash[ key ] }
       value_placeholders = values.map { |v| '?' }.join( ',' )
       rec = nil
+      num_inserted = 0
 
       dbh.transaction do |dbh_|
         if keys.empty? && defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
@@ -142,28 +143,22 @@ module M4DBI
           end
           if ! pk_hash.empty?
             rec = self.one_where( pk_hash )
-            if hooks[:active]
-              hooks[:after_create].each do |block|
-                hooks[:active] = false
-                block.yield rec
-                hooks[:active] = true
-              end
-            end
           else
             begin
               rec = last_record( dbh_ )
-              if hooks[:active]
-                hooks[:after_create].each do |block|
-                  hooks[:active] = false
-                  block.yield rec
-                  hooks[:active] = true
-                end
-              end
             rescue NoMethodError => e
               # ignore
               #puts "not implemented: #{e.message}"
             end
           end
+        end
+      end
+
+      if hooks[:active] && num_inserted > 0
+        hooks[:after_create].each do |block|
+          hooks[:active] = false
+          block.yield rec
+          hooks[:active] = true
         end
       end
 
