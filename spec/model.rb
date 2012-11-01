@@ -908,7 +908,7 @@ describe 'A created M4DBI::Model subclass instance' do
   it 'provides a means to remove all after_delete hooks' do
     class Author < M4DBI::Model( :authors )
       after_delete do |author|
-        $test = 'remove after_update'
+        $test = 'remove after_delete'
       end
     end
     class Author < M4DBI::Model( :authors )
