@@ -21,7 +21,7 @@ module M4DBI
       if rows.any?
         rows[0][0]
       else
-        raise RDBI::Error.new( "Query returned no rows.  SQL: #{@dbh.last_query}" )
+        raise RDBI::Error.new( "Query returned no rows." )
       end
     end
 
