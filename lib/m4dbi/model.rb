@@ -466,6 +466,15 @@ module M4DBI
     def save!
       nil
     end
+
+    def to_h
+      h = Hash.new
+      self.class.columns.each do |col|
+        col_name = col['name'].to_s
+        h[col_name] = @row[col_name]
+      end
+      h
+    end
   end
 
   # Define a new M4DBI::Model like this:

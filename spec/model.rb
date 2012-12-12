@@ -1085,6 +1085,19 @@ describe 'A found M4DBI::Model subclass instance' do
       p.save!
     end
   end
+
+  it 'provides a Hash representation' do
+    record = @m_mc.create( id: 12, c1: 50, c2: 44  )
+    record.to_h.should.equal( {
+      'id' => 12,
+      'c1' => 50,
+      'c2' => 44,
+      'c3' => nil,
+      'c4' => nil,
+      'c5' => nil,
+      'ts' => nil,
+    } )
+  end
 end
 
 describe 'M4DBI::Model (relationships)' do
