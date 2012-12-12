@@ -854,7 +854,7 @@ describe 'A created M4DBI::Model subclass instance' do
 
   it 'after setting data, executes code provided in an after_update hook' do
     class Author < M4DBI::Model( :authors )
-      after_update do |author|
+      after_update do |author_before, author|
         $test = 3
         author.name = 'different name'
       end
@@ -875,9 +875,25 @@ describe 'A created M4DBI::Model subclass instance' do
     a.name.should.equal 'different name'
   end
 
+  it 'after setting data, passes a Hash representing the previous state to after_update blocks' do
+    class Author < M4DBI::Model( :authors )
+      after_update do |author_before, author|
+        $test = author_before['name']
+        author.name = 'different name'
+      end
+    end
+
+    $test.should.not.equal 'theauthor'
+    a = Author.create(name: 'theauthor')
+    $test.should.not.equal 'theauthor'
+    a.name = 'foobar'
+    $test.should.equal 'theauthor'
+    a.name.should.equal 'different name'
+  end
+
   it 'provides a means to remove all after_update hooks' do
     class Author < M4DBI::Model( :authors )
-      after_update do |author|
+      after_update do |_, _|
         $test = 'remove after_update'
       end
     end
@@ -1047,12 +1063,13 @@ describe 'A found M4DBI::Model subclass instance' do
   end
 
   it 'before deletion, executes code provided in an before_delete hook' do
+    $test = 'something'
     class Author < M4DBI::Model( :authors )
       before_delete do |author|
         $test = author.name
       end
     end
-    $test.should.not.equal 'theauthor'
+    $test.should.equal 'something'
     a = Author.create(name: 'theauthor')
     $test.should.not.equal 'theauthor'
     a.delete

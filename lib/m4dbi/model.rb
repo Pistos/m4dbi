@@ -416,6 +416,7 @@ module M4DBI
     def set( hash )
       set_clause, set_params = hash.to_set_clause
       set_params << pk
+      state_before = self.to_h
       st = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
       num_updated = st.execute( *set_params ).affected_count
       if num_updated > 0
@@ -425,7 +426,7 @@ module M4DBI
         if self.class.hooks[:active]
           self.class.hooks[:after_update].each do |block|
             self.class.hooks[:active] = false
-            block.yield self
+            block.yield state_before, self
             self.class.hooks[:active] = true
           end
         end
@@ -555,6 +556,7 @@ module M4DBI
         # Column writers
 
         class_def( "#{method}=".to_sym ) do |new_value|
+          state_before = self.to_h
           stm = prepare("UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}")
           num_changed = stm.execute(
             new_value,
@@ -566,7 +568,7 @@ module M4DBI
           if self.class.hooks[:active]
             self.class.hooks[:after_update].each do |block|
               self.class.hooks[:active] = false
-              block.yield self
+              block.yield state_before, self
               self.class.hooks[:active] = true
             end
           end
