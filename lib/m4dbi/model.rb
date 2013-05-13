@@ -41,11 +41,12 @@ module M4DBI
     # Acts like self.[] (read only), except it keeps a cache of the fetch
     # results in memory for the lifetime of the thread.  Useful for applications
     # like web apps which create a new thread for each HTTP request.
-    def self.cached_fetch( *args )
+    # @param [String] cache_id A unique key identifying the cache to use.
+    def self.cached_fetch( cache_id, *args )
       if args.size > 1
         self[*args]
       else
-        cache = Thread.current["m4dbi_cache_#{self.table}"] ||= Hash.new
+        cache = Thread.current["m4dbi_cache_#{cache_id}_#{self.table}"] ||= Hash.new
         cache[*args] ||= self[*args]
       end
     end
