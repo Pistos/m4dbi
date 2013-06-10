@@ -11,21 +11,28 @@ module M4DBI
     end
 
     def execute( *args )
-      @dbh.execute *args
+      result = @dbh.execute(*args)
+      result.finish
+      result
     end
 
     def select( sql, *bindvars )
-      execute( sql, *bindvars ).fetch( :all, RDBI::Result::Driver::Struct )
+      result = @dbh.execute( sql, *bindvars )
+      rows = result.fetch( :all, RDBI::Result::Driver::Struct )
+      result.finish
+      rows
     end
 
     def select_one( sql, *bindvars )
-      select( sql, *bindvars )[ 0 ]
+      select( sql, *bindvars )[0]
     end
 
     def select_column( sql, *bindvars )
-      rows = execute( sql, *bindvars ).fetch( 1, RDBI::Result::Driver::Array )
+      result = @dbh.execute( sql, *bindvars )
+      rows = result.fetch( 1, RDBI::Result::Driver::Array )
+      result.finish
       if rows.any?
-        rows[ 0 ][ 0 ]
+        rows[0][0]
       else
         raise RDBI::Error.new( "Query returned no rows.  SQL: #{@dbh.last_query}" )
       end
