@@ -12,14 +12,18 @@ module M4DBI
 
     def execute( *args )
       result = @dbh.execute(*args)
-      result.finish
+      if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === @dbh.driver
+        result.finish
+      end
       result
     end
 
     def select( sql, *bindvars )
       result = @dbh.execute( sql, *bindvars )
       rows = result.fetch( :all, RDBI::Result::Driver::Struct )
-      result.finish
+      if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === @dbh.driver
+        result.finish
+      end
       rows
     end
 
@@ -30,7 +34,9 @@ module M4DBI
     def select_column( sql, *bindvars )
       result = @dbh.execute( sql, *bindvars )
       rows = result.fetch( 1, RDBI::Result::Driver::Array )
-      result.finish
+      if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === @dbh.driver
+        result.finish
+      end
       if rows.any?
         rows[0][0]
       else
