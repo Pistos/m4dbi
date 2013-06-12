@@ -559,10 +559,14 @@ module M4DBI
         class_def( "#{method}=".to_sym ) do |new_value|
           state_before = self.to_h
           stm = prepare("UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}")
-          num_changed = stm.execute(
+          execution = stm.execute(
             new_value,
             *pk_values
-          ).affected_count
+          )
+          num_changed = execution.affected_count
+          if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === h.driver
+            stm.finish
+          end
           if num_changed > 0
             @row[ colname ] = new_value
           end

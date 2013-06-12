@@ -8,6 +8,10 @@ module M4DBI
       @st.execute *args
     end
 
+    def finish
+      @st.finish
+    end
+
     def select( *bindvars )
       @st.execute( *bindvars ).fetch( :all, RDBI::Result::Driver::Struct )
     end
