@@ -435,8 +435,7 @@ module M4DBI
       set_params << pk
       state_before = self.to_h
       st = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
-      execution = st.execute( *set_params )
-      num_updated = execution.affected_count
+      num_updated = st.execute( *set_params ).affected_count
       if num_updated > 0
         hash.each do |key,value|
           @row[ key ] = value
@@ -576,11 +575,10 @@ module M4DBI
         class_def( "#{method}=".to_sym ) do |new_value|
           state_before = self.to_h
           stm = prepare("UPDATE #{table} SET #{colname} = ? WHERE #{pk_clause}")
-          execution = stm.execute(
+          num_changed = stm.execute(
             new_value,
             *pk_values
-          )
-          num_changed = execution.affected_count
+          ).affected_count
           if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === h.driver
             stm.finish
           end
