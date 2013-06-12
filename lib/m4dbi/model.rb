@@ -154,6 +154,7 @@ module M4DBI
         end
         stm = prepare(sql)
         num_inserted = stm.execute(*values).affected_count
+        stm.finish
         if num_inserted > 0
           pk_hash = hash.slice( *(
             self.pk.map { |pk_col| pk_col.to_sym }
