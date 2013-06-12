@@ -432,7 +432,7 @@ module M4DBI
           end
         end
       end
-      execution.finish  if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
+      st.finish  if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
       num_updated
     end
 
