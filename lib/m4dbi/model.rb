@@ -464,6 +464,7 @@ module M4DBI
 
       st = prepare("DELETE FROM #{table} WHERE #{pk_clause}")
       num_deleted = st.execute( *pk_values ).affected_count
+      st.finish
       if num_deleted != 1
         false
       else
