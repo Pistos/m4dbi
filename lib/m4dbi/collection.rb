@@ -33,10 +33,12 @@ module M4DBI
                 AND #{@the_many_model.pk_clause}
             }
           )
-          stm.execute(
+          success = stm.execute(
             @the_one.pk,
             arg.pk
           ).affected_count > 0
+          stm.finish
+          success
         when Hash
           hash = arg
           keys = hash.keys
@@ -51,14 +53,16 @@ module M4DBI
                 AND #{where_subclause}
             }
           )
-          stm.execute(
+          num_deleted = stm.execute(
             @the_one.pk,
             *( keys.map { |k| hash[ k ] } )
           ).affected_count
+          stm.finish
+          num_deleted
       end
     end
 
-    # Returns the number of records deleted
+    # @return the number of records deleted
     def clear
       stm = @the_many_model.dbh.prepare(
         %{
@@ -66,7 +70,9 @@ module M4DBI
           WHERE #{@the_one_fk} = ?
         }
       )
-      stm.execute( @the_one.pk ).affected_count
+      num_deleted = stm.execute( @the_one.pk ).affected_count
+      stm.finish
+      num_deleted
     end
   end
 end
