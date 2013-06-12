@@ -245,7 +245,9 @@ module M4DBI
       set_clause, set_params = set_hash.to_set_clause
       params = set_params + where_params
       stm = prepare("UPDATE #{table} SET #{set_clause} WHERE #{where_clause}")
-      stm.execute( *params )
+      result = stm.execute( *params )
+      stm.finish
+      result
     end
 
     def self.update_one( *args )
@@ -253,7 +255,9 @@ module M4DBI
       pk_values = args[ 0..-2 ]
       params = set_params + pk_values
       stm = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
-      stm.execute( *params )
+      result = stm.execute( *params )
+      stm.finish
+      result
     end
 
     def self.after_create(&block)
