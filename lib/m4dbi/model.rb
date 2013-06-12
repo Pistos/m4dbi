@@ -209,14 +209,17 @@ module M4DBI
 
     def self.select_all( sql, *binds )
       stm = prepare(sql)
-      self.from_rows(
+      records = self.from_rows(
         stm.select_all( *binds )
       )
+      stm.finish
+      records
     end
 
     def self.select_one( sql, *binds )
       stm = prepare(sql)
       row = stm.select_one( *binds )
+      stm.finish
       if row
         self.new( row )
       end
