@@ -2,14 +2,14 @@ module M4DBI
   class Model
     #attr_reader :row
     ancestral_trait_reader :dbh, :table
-    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :st, :hooks
+    ancestral_trait_class_reader :dbh, :table, :pk, :columns, :hooks
 
     M4DBI_UNASSIGNED = '__m4dbi_unassigned__'
 
     extend Enumerable
 
     def self.prepare( sql )
-      st[sql] ||= dbh.prepare(sql)
+      dbh.prepare(sql)
     end
 
     def self.[]( first_arg, *args )
@@ -343,11 +343,10 @@ module M4DBI
         # warn "Do not call M4DBI::Model#new directly; use M4DBI::Model#create instead."
       # end
       @row = row
-      @st = Hash.new
     end
 
     def prepare( sql )
-      @st[sql] ||= dbh.prepare(sql)
+      dbh.prepare(sql)
     end
 
     def method_missing( method, *args )
@@ -509,7 +508,6 @@ module M4DBI
         :table     => table,
         :pk        => pk_,
         :columns   => h.table_schema( table.to_sym ).columns,
-        :st        => Hash.new,  # prepared statements for all queries
         :hooks => {
           after_create: [],
           after_update: [],
