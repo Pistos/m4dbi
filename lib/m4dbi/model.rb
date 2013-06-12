@@ -32,6 +32,7 @@ module M4DBI
       sql = "SELECT * FROM #{table} WHERE #{clause}"
       stm = prepare(sql)
       row = stm.select_one(*values)
+      stm.finish
 
       if row
         self.new( row )
@@ -72,9 +73,11 @@ module M4DBI
       end
 
       stm = prepare(sql)
-      self.from_rows(
+      rows = self.from_rows(
         stm.select_all(*params)
       )
+      stm.finish
+      rows
     end
 
     def self.one_where( conditions, *args )
@@ -89,6 +92,7 @@ module M4DBI
 
       stm = prepare(sql)
       row = stm.select_one( *params )
+      stm.finish
       if row
         self.new( row )
       end
@@ -96,7 +100,9 @@ module M4DBI
 
     def self.all
       stm = prepare("SELECT * FROM #{table}")
-      self.from_rows( stm.select_all )
+      records = self.from_rows( stm.select_all )
+      stm.finish
+      records
     end
 
     # TODO: Perhaps we'll use cursors for Model#each.
@@ -107,6 +113,7 @@ module M4DBI
     def self.one
       stm = prepare("SELECT * FROM #{table} LIMIT 1")
       row = stm.select_one
+      stm.finish
       if row
         self.new( row )
       end
@@ -114,7 +121,9 @@ module M4DBI
 
     def self.count
       stm = prepare("SELECT COUNT(*) FROM #{table}")
-      stm.select_column.to_i
+      retval = stm.select_column.to_i
+      stm.finish
+      retval
     end
 
     def self.create( hash = {} )
