@@ -419,7 +419,8 @@ module M4DBI
       set_params << pk
       state_before = self.to_h
       st = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
-      num_updated = st.execute( *set_params ).affected_count
+      execution = st.execute( *set_params )
+      num_updated = execution.affected_count
       if num_updated > 0
         hash.each do |key,value|
           @row[ key ] = value
@@ -432,6 +433,7 @@ module M4DBI
           end
         end
       end
+      execution.finish
       num_updated
     end
 
