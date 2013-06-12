@@ -436,6 +436,7 @@ module M4DBI
       state_before = self.to_h
       st = prepare("UPDATE #{table} SET #{set_clause} WHERE #{pk_clause}")
       num_updated = st.execute( *set_params ).affected_count
+      st.finish  if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
       if num_updated > 0
         hash.each do |key,value|
           @row[ key ] = value
@@ -448,7 +449,6 @@ module M4DBI
           end
         end
       end
-      st.finish  if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === dbh.driver
       num_updated
     end
 
