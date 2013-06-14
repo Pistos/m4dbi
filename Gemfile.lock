@@ -7,20 +7,9 @@ GIT
       rdbi
 
 GIT
-  remote: git://github.com/RDBI/rdbi-driver-postgresql.git
-  revision: 907b681bc8a5c055f761bb0afd90a0b9e1d4b269
-  branch: fix-execute-memory-leak
-  specs:
-    rdbi-driver-postgresql (0.9.1)
-      epoxy (>= 0.3.1)
-      methlab
-      pg (= 0.9.0)
-      rdbi
-
-GIT
   remote: git://github.com/RDBI/rdbi.git
   revision: e5accb27a99f314db1474f5bb01538b4d2ccb26a
-  ref: e5accb27a9
+  ref: pre-sth-leak
   specs:
     rdbi (0.9.1)
       epoxy (>= 0.3.1)
@@ -35,8 +24,11 @@ GEM
     metaid (1.0)
     methlab (0.1.0)
     mysql (2.8.1)
-    pg (0.9.0)
+    pg (0.15.1)
     rake (0.8.7)
+    rdbi-driver-postgresql (0.9.2)
+      pg (>= 0.10.0)
+      rdbi
     rdbi-driver-sqlite3 (0.9.1)
       epoxy (>= 0.3.1)
       methlab
@@ -56,5 +48,5 @@ DEPENDENCIES
   rake
   rdbi!
   rdbi-driver-mysql!
-  rdbi-driver-postgresql!
+  rdbi-driver-postgresql
   rdbi-driver-sqlite3
