@@ -9,76 +9,80 @@ describe 'M4DBI.last_dbh' do
   end
 end
 
-describe 'M4DBI::Database#select_column' do
+describe 'M4DBI::Database' do
 
-  it 'selects one column' do
-    name = $dbh.select_column(
-      "SELECT name FROM authors LIMIT 1"
-    )
-    name.class.should.not.equal Array
-    name.should.equal 'author1'
+  describe '#select_column' do
 
-    null = $dbh.select_column(
-      "SELECT c4 FROM many_col_table WHERE c3 = 40"
-    )
-    null.should.be.nil
+    it 'selects one column' do
+      name = $dbh.select_column(
+        "SELECT name FROM authors LIMIT 1"
+      )
+      name.class.should.not.equal Array
+      name.should.equal 'author1'
 
-    should.raise( RDBI::Error ) do
-      $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
+      null = $dbh.select_column(
+        "SELECT c4 FROM many_col_table WHERE c3 = 40"
+      )
+      null.should.be.nil
+
+      should.raise( RDBI::Error ) do
+        $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
+      end
+
+      begin
+        $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
+      rescue RDBI::Error => e
+        e.message.should.match /SELECT name FROM authors WHERE 1\+1 = 3/
+      end
     end
 
-    begin
-      $dbh.select_column( "SELECT name FROM authors WHERE 1+1 = 3" )
-    rescue RDBI::Error => e
-      e.message.should.match /SELECT name FROM authors WHERE 1\+1 = 3/
+    it 'selects one column of first row' do
+      name = $dbh.select_column(
+        "SELECT name FROM authors ORDER BY name DESC"
+      )
+      name.should.equal 'author3'
+    end
+
+    it 'selects first column of first row' do
+      name = $dbh.select_column(
+        "SELECT name, id FROM authors ORDER BY name DESC"
+      )
+      name.should.equal 'author3'
     end
   end
 
-  it 'selects one column of first row' do
-    name = $dbh.select_column(
-      "SELECT name FROM authors ORDER BY name DESC"
-    )
-    name.should.equal 'author3'
-  end
+  describe 'row accessors' do
 
-  it 'selects first column of first row' do
-    name = $dbh.select_column(
-      "SELECT name, id FROM authors ORDER BY name DESC"
-    )
-    name.should.equal 'author3'
-  end
-end
+    it 'provide read access via #fieldname' do
+      row = $dbh.select_one(
+        "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
+      )
+      row.should.not.equal nil
 
-describe 'row accessors' do
+      row.author_id.should.be.same_as row[ 'author_id' ]
+      row.text.should.be.same_as row[ 'text' ]
 
-  it 'provide read access via #fieldname' do
-    row = $dbh.select_one(
-      "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
-    )
-    row.should.not.equal nil
+      row.text.should.equal 'Second post.'
+    end
 
-    row.author_id.should.be.same_as row[ 'author_id' ]
-    row.text.should.be.same_as row[ 'text' ]
+    it 'provide in-memory (non-syncing) write access via #fieldname=' do
+      row = $dbh.select_one(
+        "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
+      )
+      row.should.not.equal nil
 
-    row.text.should.equal 'Second post.'
-  end
+      old_id = row[ :id ]
+      row[ :id ] = old_id + 1
+      row[ :id ].should.not.equal old_id
+      row[ :id ].should.equal( old_id + 1 )
 
-  it 'provide in-memory (non-syncing) write access via #fieldname=' do
-    row = $dbh.select_one(
-      "SELECT * FROM posts ORDER BY author_id DESC LIMIT 1"
-    )
-    row.should.not.equal nil
+      old_text = row.text
+      new_text = 'This is the new post text.'
+      row.text = new_text
+      row.text.should.not.equal old_text
+      row.text.should.equal new_text
+    end
 
-    old_id = row[ :id ]
-    row[ :id ] = old_id + 1
-    row[ :id ].should.not.equal old_id
-    row[ :id ].should.equal( old_id + 1 )
-
-    old_text = row.text
-    new_text = 'This is the new post text.'
-    row.text = new_text
-    row.text.should.not.equal old_text
-    row.text.should.equal new_text
   end
 
 end
