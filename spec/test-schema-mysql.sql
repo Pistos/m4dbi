@@ -55,6 +55,10 @@ CREATE TABLE conflicting_cols (
 );
 
 CREATE TABLE has_all_defaults (
-      id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    , time_created DATETIME NOT NULL DEFAULT NOW()
+      id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT
+    , time_created DATETIME NOT NULL DEFAULT '2013-01-01 00:00:00'
+);
+
+CREATE TABLE has_many_rows (
+    id INTEGER
 );

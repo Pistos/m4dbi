@@ -1,9 +1,12 @@
+require 'thread'
+
 module M4DBI
 
   class Database
 
     def initialize( rdbi_dbh )
       @dbh = rdbi_dbh
+      @mutex = Mutex.new
     end
 
     def prepare( *args )
@@ -11,7 +14,10 @@ module M4DBI
     end
 
     def execute( *args )
-      result = @dbh.execute(*args)
+      result = nil
+      @mutex.synchronize do
+        result = @dbh.execute(*args)
+      end
       if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === @dbh.driver
         result.finish
       end

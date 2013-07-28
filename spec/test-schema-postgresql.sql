@@ -58,3 +58,7 @@ CREATE TABLE has_all_defaults (
       id SERIAL PRIMARY KEY
     , time_created TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE has_many_rows (
+    id INTEGER
+);
