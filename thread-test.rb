@@ -1,7 +1,7 @@
 require 'rdbi/driver/postgresql'
 require 'm4dbi'
 
-dbh = M4DBI.connect(
+$dbh = M4DBI.connect(
   :PostgreSQL,
   :database => 'm4dbi',
   :username => 'm4dbi',
@@ -9,18 +9,31 @@ dbh = M4DBI.connect(
   :password => 'm4dbi'
 )
 
-threads = []
-threads << Thread.new {
-  puts "Thread 1 start"
-  # Moderately long-running query
-  dbh.execute "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2;"
-  puts "Thread 1 end"
-}
-threads << Thread.new {
-  puts "Thread 2 start"
-  # Moderately long-running query
-  dbh.execute "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2;"
-  puts "Thread 2 end"
-}
+def test_code(&block)
+  threads = []
+  threads << Thread.new {
+    puts "Thread 1 start"
+    block.call
+    puts "Thread 1 end"
+  }
+  threads << Thread.new {
+    puts "Thread 2 start"
+    block.call
+    puts "Thread 2 end"
+  }
 
-threads.each { |thr| thr.join }
+  threads.each { |thr| thr.join }
+end
+
+test_code do
+  # Moderately long-running query
+  $dbh.execute "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2;"
+end
+
+test_code do
+  $dbh.select "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2"
+end
+
+test_code do
+  $dbh.select_column "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2"
+end
