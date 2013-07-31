@@ -2,23 +2,31 @@ require 'thread'
 
 module M4DBI
   class Statement
-    def initialize( rdbi_statement )
+    def initialize( rdbi_statement, m4dbi_dbh = nil )
       @st = rdbi_statement
-      @mutex = Mutex.new
+      @synchronizer = m4dbi_dbh || Mutex.new
+    end
+
+    def synchronize
+      @synchronizer.synchronize do
+        yield
+      end
     end
 
     def execute( *args )
-      @mutex.synchronize do
+      self.synchronize do
         @st.execute *args
       end
     end
 
     def finish
-      @st.finish
+      self.synchronize do
+        @st.finish
+      end
     end
 
     def select( *bindvars )
-      @mutex.synchronize do
+      self.synchronize do
         @st.execute( *bindvars ).fetch( :all, RDBI::Result::Driver::Struct )
       end
     end
@@ -29,7 +37,7 @@ module M4DBI
 
     def select_column( *bindvars )
       rows = nil
-      @mutex.synchronize do
+      self.synchronize do
         rows = @st.execute( *bindvars ).fetch( 1, RDBI::Result::Driver::Array )
       end
       if rows.any?

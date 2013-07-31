@@ -9,13 +9,21 @@ module M4DBI
       @mutex = Mutex.new
     end
 
+    def synchronize
+      @mutex.synchronize do
+        yield
+      end
+    end
+
     def prepare( *args )
-      Statement.new( @dbh.prepare(*args) )
+      self.synchronize do
+        Statement.new( @dbh.prepare(*args), self )
+      end
     end
 
     def execute( *args )
       result = nil
-      @mutex.synchronize do
+      self.synchronize do
         result = @dbh.execute(*args)
       end
       if defined?( RDBI::Driver::PostgreSQL ) && RDBI::Driver::PostgreSQL === @dbh.driver
@@ -27,7 +35,7 @@ module M4DBI
     def select( sql, *bindvars )
       result = nil
       rows = nil
-      @mutex.synchronize do
+      self.synchronize do
         result = @dbh.execute( sql, *bindvars )
         rows = result.fetch( :all, RDBI::Result::Driver::Struct )
       end
@@ -44,7 +52,7 @@ module M4DBI
     def select_column( sql, *bindvars )
       result = nil
       rows = nil
-      @mutex.synchronize do
+      self.synchronize do
         result = @dbh.execute( sql, *bindvars )
         rows = result.fetch( 1, RDBI::Result::Driver::Array )
       end

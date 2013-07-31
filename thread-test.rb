@@ -37,3 +37,9 @@ end
 test_code do
   $dbh.select_column "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2"
 end
+
+test_code do
+  stm = $dbh.prepare "SELECT COUNT(*) FROM has_many_rows h1, has_many_rows h2"
+  row = stm.select_one
+  stm.finish
+end
