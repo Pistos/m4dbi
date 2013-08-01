@@ -1,3 +1,7 @@
+## 0.9.0
+
+- Now thread safe.
+
 ## 0.6.1
 
 - Fixed major Hash#slice bug that only surfaced in Ruby 1.8.6 and earier.
