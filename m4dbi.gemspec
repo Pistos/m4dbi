@@ -6,6 +6,7 @@ spec = Gem::Specification.new do |s|
     s.summary = 'Models (and More) for RDBI'
     s.description = 'M4DBI provides models, associations and some convenient extensions to RDBI.'
     s.homepage = 'https://github.com/Pistos/m4dbi'
+    s.license = 'MIT'
     s.add_dependency( 'metaid' )
     s.add_dependency( 'rdbi' )
     s.requirements << 'bacon (optional)'
